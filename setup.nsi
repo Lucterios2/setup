@@ -14,14 +14,14 @@ Name "Lucterios"
 BrandingText "www.sd-libre.fr - Sdl 2015"
 
 ; The file to write
-OutFile "..\bin\lucterios_setup.exe"
+OutFile "bin\lucterios_setup.exe"
 
 ; The default installation directory
 InstallDir c:\Lucterios2
 
 WindowIcon on
-Icon ..\utils\favicon.ico
-UninstallIcon ..\utils\favicon.ico
+Icon favicon.ico
+UninstallIcon favicon.ico
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
@@ -36,7 +36,7 @@ RequestExecutionLevel admin ;Require admin rights on NT6+ (When UAC is turned on
 ;Interface Settings
 
   !define MUI_HEADERIMAGE
-  !define MUI_HEADERIMAGE_BITMAP "..\utils\HeaderLucterios.bmp"
+  !define MUI_HEADERIMAGE_BITMAP "HeaderLucterios.bmp"
   !define MUI_ABORTWARNING
 
 ;--------------------------------
