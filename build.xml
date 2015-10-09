@@ -1,0 +1,76 @@
+<project name="Lucterios2" default="all" basedir=".">
+	<property name="project.name" value="lucterios" />
+
+	<available file="/usr/bin/wine" property="wine.present" />
+	<available file="/usr/bin/hdiutil" property="mac.present" />
+	<available file="/usr/bin/genisoimage" property="pseudomac.present" />
+
+	<target name="tar">
+		<delete dir="${basedir}/lucterios" />
+		<copy file="${basedir}/install.sh" todir="${basedir}/lucterios" />
+		<copy file="${basedir}/uninstall.sh" todir="${basedir}/lucterios" />
+		<copy file="${basedir}/License.txt" todir="${basedir}/lucterios" />
+        <chmod file="${basedir}/lucterios/install.sh" perm="ugo+rx"/>
+        <chmod file="${basedir}/lucterios/uninstall.sh" perm="ugo+rx"/>
+		<exec executable="tar" dir="${basedir}">
+			<arg line="-czf ./bin/lucterios_setup.tar.gz lucterios" />
+		</exec>
+	</target>
+
+	<target name="win" if="wine.present">
+		<echo message='user.dir=${user.dir} - basedir=${basedir}' />
+		<exec executable="/usr/bin/wine" dir="${basedir}/bin">
+			<env key="WINEPREFIX" value="/home/ubuntu/.wine" />
+			<env key="DISPLAY" value=":0.0" />
+			<arg value="C:/NSIS/makensis.exe" />
+			<arg value="z:${basedir}/setup.nsi" />
+		</exec>
+	</target>
+
+	<target name="mac" if="mac.present">
+		<delete dir="${basedir}/tmp" />
+		<mkdir dir="${basedir}/tmp" />
+		<delete file="${basedir}/lucterios_setup.dmg" />
+		<copy file="${basedir}/install.sh" tofile="${basedir}/tmp/install_lucterios.command" />
+		<copy file="${basedir}/uninstall.sh" tofile="${basedir}/tmp/uninstall_lucterios.command" />
+		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
+        <chmod file="${basedir}/tmp/install_lucterios.command" perm="ugo+rx"/>
+        <chmod file="${basedir}/tmp/uninstall_lucterios.command" perm="ugo+rx"/>
+		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
+			<arg line="create -ov -srcfolder tmp -volname Lucterios lucterios_setup.dmg" />
+		</exec>
+		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
+			<arg line="internet-enable -yes lucterios_setup.dmg" />
+		</exec>
+		<move file="${basedir}/lucterios_setup.dmg" todir="${basedir}/bin" />
+		<delete dir="${basedir}/tmp" />
+	</target>
+
+	<target name="pseudomac" if="pseudomac.present">
+		<delete dir="${basedir}/tmp" />
+		<mkdir dir="${basedir}/tmp" />
+		<delete file="${basedir}/lucterios_setup.dmg" />
+		<copy file="${basedir}/install.sh" tofile="${basedir}/tmp/install_lucterios.command" />
+		<copy file="${basedir}/uninstall.sh" tofile="${basedir}/tmp/uninstall_lucterios.command" />
+		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
+        <chmod file="${basedir}/tmp/install_lucterios.command" perm="ugo+rx"/>
+        <chmod file="${basedir}/tmp/uninstall_lucterios.command" perm="ugo+rx"/>
+		<exec executable="/usr/bin/genisoimage" dir="${basedir}">
+			<arg line="-V Lucterios -D -R -apple -no-pad -o lucterios_setup.dmg tmp" />
+		</exec>
+		<move file="${basedir}/lucterios_setup.dmg" todir="${basedir}/bin" />
+		<delete dir="${basedir}/tmp" />
+	</target>
+
+	<target name="all">
+		<delete dir="${basedir}/bin" />
+		<mkdir dir="${basedir}/bin" />
+        <chmod file="${basedir}/install.sh" perm="ugo+rx"/>
+        <chmod file="${basedir}/uninstall.sh" perm="ugo+rx"/>
+		<antcall target="tar" />
+		<antcall target="win" />
+		<antcall target="pseudomac" />
+		<antcall target="mac" />
+	</target>
+
+</project>
