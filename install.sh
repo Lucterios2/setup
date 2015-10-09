@@ -168,19 +168,10 @@ then
 fi
 if [ "${OSTYPE:0:6}" == "darwin" ]
 then
-	APPDIR="/Applications/$APP_NAME.app"
-	mkdir -p "$APPDIR/Contents/MacOS"
-	cp "/var/lucterios2/launch_lucterios_gui.sh" "$APPDIR/Contents/MacOS/$APP_NAME"
-	chmod ogu+rx "$APPDIR/Contents/MacOS/$APP_NAME"
-	# change icon
-	icon="/var/lucterios2/virtual_for_lucterios/lib/python3.4/site-packages/$ICON_PATH"
-	rm -rf $APPDIR$'/Icon\r'
-	sips -i $icon >/dev/null
-	DeRez -only icns $icon > /tmp/icns.rsrc
-	Rez -append /tmp/icns.rsrc -o $APPDIR$'/Icon\r'
-	SetFile -a C $APPDIR
-	SetFile -a V $APPDIR$'/Icon\r'
-	chmod -R ogu+r $APPDIR
+    APPDIR="/Applications/$APP_NAME.command"
+    echo '#!/usr/bin/env bash' > $APPDIR
+    echo 'launch_lucterios_gui' >> $APPDIR
+    chmod ogu+rx "$APPDIR"
 fi
 
 echo "============ END ============="
