@@ -1,6 +1,6 @@
 #requires -version 2.0
 param (
-    [string]$extra_url = "http://pypi.lucterios.org/simple",
+    [string]$extra_url = "",
     [string]$packages = "lucterios-standard",
     [string]$icon_path = "lucterios/install/lucterios.ico",
     [string]$app_name = "Lucterios",

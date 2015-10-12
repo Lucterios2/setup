@@ -7,7 +7,7 @@ if [ "$(id -u)" != "0" ]; then
    exit $!
 fi
 
-EXTRA_URL="http://pypi.lucterios.org/simple"
+EXTRA_URL=""
 PACKAGES="lucterios-standard"
 ICON_PATH="lucterios/install/lucterios.png"
 APP_NAME="Lucterios"
