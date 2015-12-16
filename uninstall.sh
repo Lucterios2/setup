@@ -9,7 +9,7 @@ fi
 
 if [ -z "$APP_NAME" ]
 then
-	APP_NAME="Lucterios"
+	APP_NAME="@@NAME@@"
 fi 
 
 echo "====== delete lucterios ======"

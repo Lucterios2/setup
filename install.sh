@@ -7,10 +7,10 @@ if [ "$(id -u)" != "0" ]; then
    exit $!
 fi
 
-EXTRA_URL=""
-PACKAGES="lucterios-standard"
+EXTRA_URL="@@URL@@"
+PACKAGES="@@PACKAGE@@"
 ICON_PATH="lucterios/install/lucterios.png"
-APP_NAME="Lucterios"
+APP_NAME="@@NAME@@"
 
 function usage
 {

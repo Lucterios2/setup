@@ -1,9 +1,9 @@
 #requires -version 2.0
 param (
-    [string]$extra_url = "",
-    [string]$packages = "lucterios-standard",
+    [string]$extra_url = "@@URL@@",
+    [string]$packages = "@@PACKAGE@@",
     [string]$icon_path = "lucterios/install/lucterios.ico",
-    [string]$app_name = "Lucterios",
+    [string]$app_name = "@@NAME@@",
     [switch]$help = $false
 )
 

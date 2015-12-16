@@ -9,12 +9,12 @@
 !define TEMP2 $R1
 
 ; The name of the installer
-Name "Lucterios"
+Name "@@NAME@@"
 
 BrandingText "www.sd-libre.fr - Sdl 2015"
 
 ; The file to write
-OutFile "bin\lucterios_setup.exe"
+OutFile "@@NAME@@_setup.exe"
 
 ; The default installation directory
 InstallDir c:\Lucterios2
