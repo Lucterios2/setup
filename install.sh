@@ -194,10 +194,10 @@ then
     echo "from setuptools import setup" >> $py2app_setup
     echo "setup(" >> $py2app_setup
     echo "	name='$APP_NAME'," >> $py2app_setup
-    echo "	app=['lucterios_gui.py']," >> $py2app_setup
+    echo "	app=['virtual_for_lucterios/bin/lucterios_gui.py']," >> $py2app_setup
     echo "	setup_requires=['py2app']," >> $py2app_setup
     echo ")" >> $py2app_setup
-    $PYTHON_CMD $py2app_setup py2app --iconfile MyIcon.icns --use-pythonpath --site-packages
+    $PYTHON_CMD $py2app_setup py2app --iconfile MyIcon.icns --use-pythonpath --site-packages -A
     mv "/var/lucterios2/dist/$APP_NAME.app" "/Applications/$APP_NAME.app"
     chmod ogu+rx "/Applications/$APP_NAME.app"
 fi
