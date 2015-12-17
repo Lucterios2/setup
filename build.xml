@@ -107,7 +107,7 @@
 
 	<target name="pseudomac" if="pseudomac.present" depends='commun_mac'>
 		<exec executable="/usr/bin/genisoimage" dir="${basedir}">
-			<arg line="-V Lucterios -D -R -apple -no-pad -o ${lct_name}_setup.dmg tmp" />
+			<arg line="-V ${lct_name} -D -R -apple -no-pad -o ${lct_name}_setup.dmg tmp" />
 		</exec>
 		<move file="${basedir}/${lct_name}_setup.dmg" todir="${basedir}/bin" />
 		<delete dir="${basedir}/tmp" />

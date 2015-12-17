@@ -104,7 +104,9 @@ if (!(Test-Path $lucterios_path)) {
     mkdir $lucterios_path
 }
 cd $lucterios_path
-virtualenv virtual_for_lucterios
+if (!(Test-Path $lucterios_path\virtual_for_lucterios)) {
+	virtualenv virtual_for_lucterios
+}
 
 if (!(Test-Path $lucterios_path\virtual_for_lucterios\Scripts\activate)) {
     echo "**** Virtual-Env not created! *****"
@@ -120,12 +122,16 @@ pip install -U pip | out-null
 pip install -U $lxml_install $pycrypto_install
 if ($extra_url -ne '') {
 	$extra_host = ([System.Uri]$extra_url).Host
-	echo "=> pip install -U $packages --extra-index-url $extra_url --trusted-host $extra_host"
-	pip install -U $packages --extra-index-url $extra_url --trusted-host $extra_host
+	echo "=> pip install --extra-index-url $extra_url --trusted-host $extra_host -U $packages"
+	foreach($package in $packages.split()) {
+		pip install --extra-index-url $extra_url --trusted-host $extra_host -U $package
+	}
 }
 else {
 	echo "=> pip install -U $packages"
-	pip install -U $packages
+	foreach($package in $packages.split()) {
+		pip install -U $package
+	}
 }
 
 echo ""
@@ -148,7 +154,7 @@ echo "`$env:TK_LIBRARY='c:\Python34\tcl\tcl8.6'" >> $lucterios_path\launch_lucte
 if ( $extra_url -ne '') {
 	echo "`$env:extra_url='$extra_url'" >> $lucterios_path\launch_lucterios.ps1
 }
-echo "python virtual_for_lucterios\Scripts\lucterios_gui.py" >> $lucterios_path\launch_lucterios.ps1
+echo "pythonw virtual_for_lucterios\Scripts\lucterios_gui.py" >> $lucterios_path\launch_lucterios.ps1
 echo "exit" >> $lucterios_path\launch_lucterios.ps1
 echo "" >> $lucterios_path\launch_lucterios.ps1
 
@@ -157,12 +163,13 @@ if (Test-Path $env:Public\Desktop\$app_name.lnk) {
 }
 
 $WshShell = New-Object -ComObject WScript.shell
-$Shortcut = $WshShell.CreateShortcut("$env:Public\Desktop\$app_name.lnk")
+$Shortcut = $WshShell.CreateShortcut("$lucterios_path\$app_name.lnk")
 $Shortcut.TargetPath = "PowerShell.exe"
-$Shortcut.Arguments = "-ExecutionPolicy Bypass -File $lucterios_path\launch_lucterios.ps1"
+$Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File $lucterios_path\launch_lucterios.ps1"
 $Shortcut.IconLocation = "$lucterios_path\virtual_for_lucterios\Lib\site-packages\$icon_path"
 $Shortcut.WindowStyle = 7
 $Shortcut.Save()
+copy $lucterios_path\$app_name.lnk $env:Public\Desktop\$app_name.lnk
 
 echo "============ END ============="
 Write-Host -NoNewLine "Press a key..."
