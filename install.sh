@@ -151,9 +151,10 @@ ln -sf /var/lucterios2/launch_lucterios.sh /usr/local/bin/launch_lucterios
 ln -sf /var/lucterios2/launch_lucterios_gui.sh /usr/local/bin/launch_lucterios_gui
 
 
+icon_path=$(find "/var/lucterios2/virtual_for_lucterios" -name "$APP_NAME.png" | head -n 1)
+
 if [ -d "/usr/share/applications" ]
 then
-	icon_path=$(find "/var/lucterios2/virtual_for_lucterios" -name "$APP_NAME.png" | head -n 1)
 	LAUNCHER="/usr/share/applications/lucterios.desktop"
 	echo "[Desktop Entry]" > $LAUNCHER
 	echo "Name=$APP_NAME" >> $LAUNCHER
@@ -170,6 +171,35 @@ then
     echo '#!/usr/bin/env bash' > $APPDIR
     echo 'launch_lucterios_gui' >> $APPDIR
     chmod ogu+rx "$APPDIR"
+
+    $PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION py2app
+    rm -rf MyIcon.iconset
+    mkdir MyIcon.iconset
+    sips -z 16 16     $icon_path --out MyIcon.iconset/icon_16x16.png
+    sips -z 32 32     $icon_path --out MyIcon.iconset/icon_16x16@2x.png
+    sips -z 32 32     $icon_path --out MyIcon.iconset/icon_32x32.png
+    sips -z 64 64     $icon_path --out MyIcon.iconset/icon_32x32@2x.png
+    sips -z 128 128   $icon_path --out MyIcon.iconset/icon_128x128.png
+    sips -z 256 256   $icon_path --out MyIcon.iconset/icon_128x128@2x.png
+    sips -z 256 256   $icon_path --out MyIcon.iconset/icon_256x256.png
+    sips -z 512 512   $icon_path --out MyIcon.iconset/icon_256x256@2x.png
+    sips -z 512 512   $icon_path --out MyIcon.iconset/icon_512x512.png
+    cp $icon_path MyIcon.iconset/icon_512x512@2x.png
+    iconutil -c icns MyIcon.iconset
+    rm -rf MyIcon.iconset
+
+    py2app_setup="/var/lucterios2/setup.py"
+    rm -rf $py2app_setup
+    echo "# setup" >> $py2app_setup
+    echo "from setuptools import setup" >> $py2app_setup
+    echo "setup(" >> $py2app_setup
+    echo "	name='$APP_NAME'," >> $py2app_setup
+    echo "	app=['lucterios_gui.py']," >> $py2app_setup
+    echo "	setup_requires=['py2app']," >> $py2app_setup
+    echo ")" >> $py2app_setup
+    $PYTHON_CMD $py2app_setup py2app --iconfile MyIcon.icns --use-pythonpath --site-packages
+    mv "/var/lucterios2/dist/$APP_NAME.app" "/Applications/$APP_NAME.app"
+    chmod ogu+rx "/Applications/$APP_NAME.app"
 fi
 
 echo "============ END ============="
