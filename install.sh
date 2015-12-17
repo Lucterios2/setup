@@ -9,19 +9,17 @@ fi
 
 EXTRA_URL="@@URL@@"
 PACKAGES="@@PACKAGE@@"
-ICON_PATH="lucterios/install/lucterios.png"
 APP_NAME="@@NAME@@"
 
 function usage
 {
 	echo "${0##*/}: installation for Lucterios"
 	echo "	${0##*/} -h"
-	echo "	${0##*/} [-e <extra_url>] [-p <packages>] [-i <icon_path>] [-n <application_name>]"
+	echo "	${0##*/} [-e <extra_url>] [-p <packages>] [-n <application_name>]"
 	echo "option:"
 	echo " -h: show this help"
 	echo " -e: define a extra url of pypi server (default: '$EXTRA_URL')"
 	echo " -p: define the packages list to install (default: '$PACKAGES')"
-	echo " -i: define the icon path for shortcut (default: '$ICON_PATH')"
 	echo " -n: define the application name for shortcut (default: '$APP_NAME')"
 	exit 0
 }
@@ -29,8 +27,6 @@ function usage
 while getopts "e:i:p:n:h" opt ; do
     case $opt in
     e) EXTRA_URL="$OPTARG"
-       ;;
-    i) ICON_PATH="$OPTARG"
        ;;
     p) PACKAGES="$OPTARG"
        ;;
@@ -56,7 +52,7 @@ fi
 
 echo "====== install lucterios ======"
 
-echo "install: extra_url=$EXTRA_URL packages=$PACKAGES icon_path=$ICON_PATH application_name=$APP_NAME"
+echo "install: extra_url=$EXTRA_URL packages=$PACKAGES application_name=$APP_NAME"
 
 echo
 echo "------ check perquisite -------"
@@ -154,14 +150,16 @@ chmod -R ogu+w /var/lucterios2
 ln -sf /var/lucterios2/launch_lucterios.sh /usr/local/bin/launch_lucterios
 ln -sf /var/lucterios2/launch_lucterios_gui.sh /usr/local/bin/launch_lucterios_gui
 
+
 if [ -d "/usr/share/applications" ]
 then
+	icon_path=$(find "/var/lucterios2/virtual_for_lucterios" -name "$APP_NAME.png" | head -n 1)
 	LAUNCHER="/usr/share/applications/lucterios.desktop"
 	echo "[Desktop Entry]" > $LAUNCHER
 	echo "Name=$APP_NAME" >> $LAUNCHER
 	echo "Comment=$APP_NAME installer" >> $LAUNCHER
 	echo "Exec=/var/lucterios2/launch_lucterios_gui.sh" >> $LAUNCHER
-	echo "Icon=/var/lucterios2/virtual_for_lucterios/lib/python3.4/site-packages/$ICON_PATH" >> $LAUNCHER
+	echo "Icon=$icon_path" >> $LAUNCHER
 	echo "Terminal=false" >> $LAUNCHER
 	echo "Type=Application" >> $LAUNCHER
 	echo "Categories=Office" >> $LAUNCHER

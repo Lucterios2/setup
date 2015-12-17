@@ -2,7 +2,6 @@
 param (
     [string]$extra_url = "@@URL@@",
     [string]$packages = "@@PACKAGE@@",
-    [string]$icon_path = "lucterios/install/lucterios.ico",
     [string]$app_name = "@@NAME@@",
     [switch]$help = $false
 )
@@ -20,12 +19,11 @@ if ((Test-Admin) -eq $false)  {
 if ($help) {
 	echo "install.ps1: installation for Lucterios"
 	echo "	install.ps1 -help"
-	echo "	install.ps1 [-extra_url <extra_url>] [-packages <packages>] [-icon_path <icon_path>] [-app_name <application_name>]"
+	echo "	install.ps1 [-extra_url <extra_url>] [-packages <packages>] [-app_name <application_name>]"
 	echo "option:"
 	echo " -help: show this help"
 	echo " -extra_url: define a extra url of pypi server (default: '$extra_url')"
 	echo " -packages: define the packages list to install (default: '$packages')"
-	echo " -icon_path: define the icon path for shortcut (default: '$icon_path')"
 	echo " -app_name: define the application name for shortcut (default: '$app_name')"
 	exit 0
 }
@@ -162,11 +160,13 @@ if (Test-Path $env:Public\Desktop\$app_name.lnk) {
     del $env:Public\Desktop\$app_name.lnk
 }
 
+$icon_path = Get-ChildItem -Path "$lucterios_path\virtual_for_lucterios" -Filter "$app_name.ico" | Select-Object -First 1 | % { $_.FullName }
+
 $WshShell = New-Object -ComObject WScript.shell
 $Shortcut = $WshShell.CreateShortcut("$lucterios_path\$app_name.lnk")
 $Shortcut.TargetPath = "PowerShell.exe"
 $Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File $lucterios_path\launch_lucterios.ps1"
-$Shortcut.IconLocation = "$lucterios_path\virtual_for_lucterios\Lib\site-packages\$icon_path"
+$Shortcut.IconLocation = "$icon_path"
 $Shortcut.WindowStyle = 7
 $Shortcut.Save()
 copy $lucterios_path\$app_name.lnk $env:Public\Desktop\$app_name.lnk
