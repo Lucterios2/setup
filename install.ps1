@@ -160,7 +160,7 @@ if (Test-Path $env:Public\Desktop\$app_name.lnk) {
     del $env:Public\Desktop\$app_name.lnk
 }
 
-$icon_path = Get-ChildItem -Path "$lucterios_path\virtual_for_lucterios" -Filter "$app_name.ico" | Select-Object -First 1 | % { $_.FullName }
+$icon_path = Get-ChildItem -Path "$lucterios_path\virtual_for_lucterios" -Recurse -Filter "$app_name.ico" | Select-Object -First 1 | % { $_.FullName }
 
 $WshShell = New-Object -ComObject WScript.shell
 $Shortcut = $WshShell.CreateShortcut("$lucterios_path\$app_name.lnk")
