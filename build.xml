@@ -58,8 +58,6 @@
 	<target name="win" if="wine.present">
 		<delete dir="${basedir}/tmp" />
 		<mkdir dir="${basedir}/tmp" />
-		<copy file="${basedir}/favicon.ico" todir="${basedir}/tmp" />
-		<copy file="${basedir}/HeaderLucterios.bmp" todir="${basedir}/tmp" />
 		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
 		<copy file="${basedir}/setup.nsi" tofile="${basedir}/tmp/setup.nsi" />
 		<copy file="${basedir}/install.ps1" tofile="${basedir}/tmp/install.ps1" />
@@ -86,14 +84,14 @@
 		<copy file="${basedir}/install.sh" tofile="${basedir}/tmp/install_${lct_name}.command" />
 		<copy file="${basedir}/uninstall.sh" tofile="${basedir}/tmp/uninstall_${lct_name}.command" />
 		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
-		<chmod file="${basedir}/tmp/install_${lct_name}.command" perm="ugo+rx"/>
-		<chmod file="${basedir}/tmp/uninstall_${lct_name}.command" perm="ugo+rx"/>
 		<antcall target="correct_install">
 			<param name="file_path" value="${basedir}/tmp/install_${lct_name}.command" />
 		</antcall>
 		<antcall target="correct_install">
 			<param name="file_path" value="${basedir}/tmp/uninstall_${lct_name}.command" />
 		</antcall>
+		<chmod file="${basedir}/tmp/install_${lct_name}.command" perm="ugo+rx"/>
+		<chmod file="${basedir}/tmp/uninstall_${lct_name}.command" perm="ugo+rx"/>
 	</target>
 
 	<target name="mac" if="mac.present" depends='commun_mac'>
@@ -121,12 +119,13 @@
 		<echo>url=${lct_url}</echo>
 		<delete dir="${basedir}/bin" />
 		<mkdir dir="${basedir}/bin" />
-		<chmod file="${basedir}/install.sh" perm="ugo+rx"/>
-		<chmod file="${basedir}/uninstall.sh" perm="ugo+rx"/>
 		<antcall target="tar" />
 		<antcall target="win" />
 		<antcall target="pseudomac" />
 		<antcall target="mac" />
+		<exec executable="ls" dir="${basedir}/bin">
+			<arg line="-l" />
+		</exec>
 	</target>
 
 </project>

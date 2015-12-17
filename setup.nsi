@@ -19,9 +19,9 @@ OutFile "@@NAME@@_setup.exe"
 ; The default installation directory
 InstallDir c:\Lucterios2
 
-WindowIcon on
-Icon favicon.ico
-UninstallIcon favicon.ico
+WindowIcon off
+; Icon favicon.ico
+; UninstallIcon favicon.ico
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
@@ -35,8 +35,6 @@ RequestExecutionLevel admin ;Require admin rights on NT6+ (When UAC is turned on
 ;--------------------------------
 ;Interface Settings
 
-  !define MUI_HEADERIMAGE
-  !define MUI_HEADERIMAGE_BITMAP "HeaderLucterios.bmp"
   !define MUI_ABORTWARNING
 
 ;--------------------------------
