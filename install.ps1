@@ -171,6 +171,12 @@ $Shortcut.WindowStyle = 7
 $Shortcut.Save()
 copy $lucterios_path\$app_name.lnk $env:Public\Desktop\$app_name.lnk
 
+$acl = Get-Acl $lucterios_path
+$permission = "Domain\User","FullControl","ContainerInherit,ObjectInherit”,”None”,”Allow” 
+$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission 
+$acl.SetAccessRule($accessRule) 
+$acl | Set-Acl $lucterios_path
+
 echo "============ END ============="
 Write-Host -NoNewLine "Press a key..."
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

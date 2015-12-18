@@ -167,7 +167,7 @@ then
 fi
 if [ "${OSTYPE:0:6}" == "darwin" ]
 then
-    APPDIR="/Applications/$APP_NAME.command"
+    APPDIR="$PWD/$APP_NAME.command"
     echo '#!/usr/bin/env bash' > $APPDIR
     echo 'launch_lucterios_gui' >> $APPDIR
     chmod ogu+rx "$APPDIR"
@@ -188,19 +188,40 @@ then
     iconutil -c icns MyIcon.iconset
     rm -rf MyIcon.iconset
 
+    py_run="$PWD/run.py"
+    rm -rf $py_run
+    echo "# launcher for lucterios GUI" >> $py_run
+    echo "import sys, os" >> $py_run
+    echo "sys.path="$($PYTHON_CMD -c "import sys;print(sys.path)") >> $py_run
+    echo "os.chdir('$PWD')" >> $py_run
+    if [ ! -z "$EXTRA_URL" ]
+    then
+	echo "os.environ['extra_url']='$EXTRA_URL'" >> $py_run
+    fi
+    echo "" >> $py_run
+    echo "from lucterios.install.lucterios_gui import LucteriosMainForm" >> $py_run
+    echo "from lucterios.install.lucterios_admin import setup_from_none" >> $py_run
+    echo "setup_from_none()" >> $py_run
+    echo "lct_form = LucteriosMainForm()" >> $py_run
+    echo "lct_form.execute()" >> $py_run
+    echo "" >> $py_run
+
     py2app_setup="/var/lucterios2/setup.py"
     rm -rf $py2app_setup
     echo "# setup" >> $py2app_setup
     echo "from setuptools import setup" >> $py2app_setup
     echo "setup(" >> $py2app_setup
     echo "	name='$APP_NAME'," >> $py2app_setup
-    echo "	app=['virtual_for_lucterios/bin/lucterios_gui.py']," >> $py2app_setup
+    echo "	app=['run.py']," >> $py2app_setup
     echo "	setup_requires=['py2app']," >> $py2app_setup
     echo ")" >> $py2app_setup
     $PYTHON_CMD $py2app_setup py2app --iconfile MyIcon.icns --use-pythonpath --site-packages -A
+
     mv "/var/lucterios2/dist/$APP_NAME.app" "/Applications/$APP_NAME.app"
     chmod ogu+rx "/Applications/$APP_NAME.app"
 fi
+
+chmod -R ogu+rw "/var/lucterios2"
 
 echo "============ END ============="
 exit 0
