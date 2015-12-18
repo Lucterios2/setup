@@ -28,7 +28,7 @@ if ($help) {
 	exit 0
 }
 
-
+Try {
 echo "====== install lucterios ======"
 echo ""
 echo ""
@@ -67,7 +67,7 @@ if (!(Test-Path "c:\Python34")) {
     Start-BitsTransfer -Source $url_python -Destination $python_install
     if (!(Test-Path $python_install)) {
         echo "**** Dowload python failed! *****"
-        exit 1
+        raise
     }echo ""
     echo "------ install python -------"
     echo ""
@@ -82,13 +82,13 @@ echo ""
 Start-BitsTransfer -Source $url_lxml -Destination $lxml_install
 if (!(Test-Path $lxml_install)) {
     echo "**** Dowload lxml failed! *****"
-    exit 1
+    raise
 }
 
 Start-BitsTransfer -Source $url_pycrypto -Destination $pycrypto_install
 if (!(Test-Path $pycrypto_install)) {
     echo "**** Dowload pycrypto failed! *****"
-    exit 1
+    raise
 }
 
 $env:Path="$env:Path;c:\Python34;c:\Python34\Scripts\"
@@ -108,7 +108,7 @@ if (!(Test-Path $lucterios_path\virtual_for_lucterios)) {
 
 if (!(Test-Path $lucterios_path\virtual_for_lucterios\Scripts\activate)) {
     echo "**** Virtual-Env not created! *****"
-    exit 1
+    raise
 }
 
 echo ""
@@ -172,13 +172,19 @@ $Shortcut.Save()
 copy $lucterios_path\$app_name.lnk $env:Public\Desktop\$app_name.lnk
 
 $acl = Get-Acl $lucterios_path
-$permission = "Domain\User","FullControl","ContainerInherit,ObjectInherit”,”None”,”Allow” 
+$permission = "Domain\User","FullControl","ContainerInherit,ObjectInherit","None","Allow"
 $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission 
 $acl.SetAccessRule($accessRule) 
 $acl | Set-Acl $lucterios_path
+$rc=0
 
+}Catch {
+    echo ""
+    echo "**** $app_name not installed ****"
+    $rc=1
+}
 echo "============ END ============="
-Write-Host -NoNewLine "Press a key..."
+echo "Press a key..."
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 Write-Host ""
-exit
+exit $rc
