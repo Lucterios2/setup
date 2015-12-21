@@ -152,7 +152,7 @@ echo "`$env:TK_LIBRARY='c:\Python34\tcl\tcl8.6'" >> $lucterios_path\launch_lucte
 if ( $extra_url -ne '') {
 	echo "`$env:extra_url='$extra_url'" >> $lucterios_path\launch_lucterios.ps1
 }
-echo "pythonw virtual_for_lucterios\Scripts\lucterios_gui.py" >> $lucterios_path\launch_lucterios.ps1
+echo "python virtual_for_lucterios\Scripts\lucterios_gui.py" >> $lucterios_path\launch_lucterios.ps1
 echo "exit" >> $lucterios_path\launch_lucterios.ps1
 echo "" >> $lucterios_path\launch_lucterios.ps1
 
