@@ -174,25 +174,27 @@ then
 
     $PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION py2app
     rm -rf MyIcon.iconset
-    mkdir MyIcon.iconset
-    sips -z 16 16     $icon_path --out MyIcon.iconset/icon_16x16.png
-    sips -z 32 32     $icon_path --out MyIcon.iconset/icon_16x16@2x.png
-    sips -z 32 32     $icon_path --out MyIcon.iconset/icon_32x32.png
-    sips -z 64 64     $icon_path --out MyIcon.iconset/icon_32x32@2x.png
-    sips -z 128 128   $icon_path --out MyIcon.iconset/icon_128x128.png
-    sips -z 256 256   $icon_path --out MyIcon.iconset/icon_128x128@2x.png
-    sips -z 256 256   $icon_path --out MyIcon.iconset/icon_256x256.png
-    sips -z 512 512   $icon_path --out MyIcon.iconset/icon_256x256@2x.png
-    sips -z 512 512   $icon_path --out MyIcon.iconset/icon_512x512.png
-    cp $icon_path MyIcon.iconset/icon_512x512@2x.png
-    iconutil -c icns MyIcon.iconset
-    rm -rf MyIcon.iconset
+    if [ -f $icon_path ]
+    then
+        mkdir MyIcon.iconset
+        sips -z 16 16     $icon_path --out MyIcon.iconset/icon_16x16.png
+        sips -z 32 32     $icon_path --out MyIcon.iconset/icon_16x16@2x.png
+        sips -z 32 32     $icon_path --out MyIcon.iconset/icon_32x32.png
+        sips -z 64 64     $icon_path --out MyIcon.iconset/icon_32x32@2x.png
+        sips -z 128 128   $icon_path --out MyIcon.iconset/icon_128x128.png
+        sips -z 256 256   $icon_path --out MyIcon.iconset/icon_128x128@2x.png
+        sips -z 256 256   $icon_path --out MyIcon.iconset/icon_256x256.png
+        sips -z 512 512   $icon_path --out MyIcon.iconset/icon_256x256@2x.png
+        sips -z 512 512   $icon_path --out MyIcon.iconset/icon_512x512.png
+        cp $icon_path MyIcon.iconset/icon_512x512@2x.png
+        iconutil -c icns MyIcon.iconset
+        rm -rf MyIcon.iconset
+    fi
 
     py_run="$PWD/run.py"
     rm -rf $py_run
     echo "# launcher for lucterios GUI" >> $py_run
-    echo "import sys, os" >> $py_run
-    echo "sys.path="$($PYTHON_CMD -c "import sys;print(sys.path)") >> $py_run
+    echo "import os" >> $py_run
     echo "os.chdir('$PWD')" >> $py_run
     if [ ! -z "$EXTRA_URL" ]
     then
@@ -215,10 +217,27 @@ then
     echo "	app=['run.py']," >> $py2app_setup
     echo "	setup_requires=['py2app']," >> $py2app_setup
     echo ")" >> $py2app_setup
-    $PYTHON_CMD $py2app_setup py2app --iconfile MyIcon.icns --use-pythonpath --site-packages -A
+    if [ -f "MyIcon.icns" ]
+    then
+        $PYTHON_CMD $py2app_setup py2app --iconfile MyIcon.icns --use-pythonpath --site-packages -A
+    else
+        $PYTHON_CMD $py2app_setup py2app --use-pythonpath --site-packages -A
+    fi
+    site_new_name="site_mac"
+    cat "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/__boot__.py" | sed "s|import os, site|import os, $site_new_name|g" | sed "s|site\.|$site_new_name.|g" | sed "s|import site,|import $site_new_name,|g" > "/var/lucterios2/__boot__.py"
+    echo "import sys, os" > "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/__boot__.py"
+    echo "sys.path.append(os.environ['RESOURCEPATH'])" >> "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/__boot__.py"
+    cat "/var/lucterios2/__boot__.py" >> "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/__boot__.py"
+    rm -rf "/var/lucterios2/__boot__.py"
+    mv "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/site.py" "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/$site_new_name.py"
+    rm -rf "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/__pycache__"
 
+    rm -rf "/Applications/$APP_NAME.app"
     mv "/var/lucterios2/dist/$APP_NAME.app" "/Applications/$APP_NAME.app"
-    chmod ogu+rx "/Applications/$APP_NAME.app"
+    chmod -R ogu+rx "/Applications/$APP_NAME.app"
+
+    rm -rf "/var/lucterios2/dist"
+    rm -rf "/var/lucterios2/build"
 fi
 
 chmod -R ogu+rw "/var/lucterios2"
