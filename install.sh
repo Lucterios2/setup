@@ -174,18 +174,18 @@ then
 
     $PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION py2app
     rm -rf MyIcon.iconset
-    if [ -f $icon_path ]
+    if [ ! -z "$icon_path" ]
     then
         mkdir MyIcon.iconset
-        sips -z 16 16     $icon_path --out MyIcon.iconset/icon_16x16.png
-        sips -z 32 32     $icon_path --out MyIcon.iconset/icon_16x16@2x.png
-        sips -z 32 32     $icon_path --out MyIcon.iconset/icon_32x32.png
-        sips -z 64 64     $icon_path --out MyIcon.iconset/icon_32x32@2x.png
-        sips -z 128 128   $icon_path --out MyIcon.iconset/icon_128x128.png
-        sips -z 256 256   $icon_path --out MyIcon.iconset/icon_128x128@2x.png
-        sips -z 256 256   $icon_path --out MyIcon.iconset/icon_256x256.png
-        sips -z 512 512   $icon_path --out MyIcon.iconset/icon_256x256@2x.png
-        sips -z 512 512   $icon_path --out MyIcon.iconset/icon_512x512.png
+        sips -z 16 16     $icon_path --out "MyIcon.iconset/icon_16x16.png"
+        sips -z 32 32     $icon_path --out "MyIcon.iconset/icon_16x16@2x.png"
+        sips -z 32 32     $icon_path --out "MyIcon.iconset/icon_32x32.png"
+        sips -z 64 64     $icon_path --out "MyIcon.iconset/icon_32x32@2x.png"
+        sips -z 128 128   $icon_path --out "MyIcon.iconset/icon_128x128.png"
+        sips -z 256 256   $icon_path --out "MyIcon.iconset/icon_128x128@2x.png"
+        sips -z 256 256   $icon_path --out "MyIcon.iconset/icon_256x256.png"
+        sips -z 512 512   $icon_path --out "MyIcon.iconset/icon_256x256@2x.png"
+        sips -z 512 512   $icon_path --out "MyIcon.iconset/icon_512x512.png"
         cp $icon_path MyIcon.iconset/icon_512x512@2x.png
         iconutil -c icns MyIcon.iconset
         rm -rf MyIcon.iconset
@@ -198,14 +198,11 @@ then
     echo "os.chdir('$PWD')" >> $py_run
     if [ ! -z "$EXTRA_URL" ]
     then
-	echo "os.environ['extra_url']='$EXTRA_URL'" >> $py_run
+        echo "os.environ['extra_url']='$EXTRA_URL'" >> $py_run
     fi
     echo "" >> $py_run
-    echo "from lucterios.install.lucterios_gui import LucteriosMainForm" >> $py_run
-    echo "from lucterios.install.lucterios_admin import setup_from_none" >> $py_run
-    echo "setup_from_none()" >> $py_run
-    echo "lct_form = LucteriosMainForm()" >> $py_run
-    echo "lct_form.execute()" >> $py_run
+    echo "import lucterios.install.lucterios_gui" >> $py_run
+    echo "lucterios.install.lucterios_gui.main()" >> $py_run
     echo "" >> $py_run
 
     py2app_setup="/var/lucterios2/setup.py"
