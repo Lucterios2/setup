@@ -200,6 +200,13 @@ then
     then
         echo "os.environ['extra_url']='$EXTRA_URL'" >> $py_run
     fi
+    for var_item in LC_ALL LC_CTYPE LANG LANGUAGE
+	do 
+		if [ ! -z "${!var_item}" ]
+		then 
+			echo "os.environ['$var_item']='${!var_item}'"
+		fi
+	done
     echo "" >> $py_run
     echo "import lucterios.install.lucterios_gui" >> $py_run
     echo "lucterios.install.lucterios_gui.main()" >> $py_run
@@ -235,6 +242,21 @@ then
 
     rm -rf "/var/lucterios2/dist"
     rm -rf "/var/lucterios2/build"
+
+	dir_app="/var/lucterios2/$APP_NAME.app/Contents/MacOS"
+	if [ -a "/var/lucterios2/$APP_NAME.app" ]
+	then
+		rm -rf "/var/lucterios2/$APP_NAME.app"
+	fi
+	mkdir -p "$dir_app"
+	cp "/var/lucterios2/launch_lucterios_gui.sh" "$dir_app/$APP_NAME"
+	chmod +x "$dir_app/$APP_NAME"
+    if [ -f "MyIcon.icns" ]
+    then
+		mkdir -p "/var/lucterios2/$APP_NAME.app/Contents/Resources"
+		cp MyIcon.icns "/var/lucterios2/$APP_NAME.app/Contents/Resources/$APP_NAME.icns"
+	fi
+
 fi
 
 chmod -R ogu+rw "/var/lucterios2"
