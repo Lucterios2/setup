@@ -243,20 +243,6 @@ then
     rm -rf "/var/lucterios2/dist"
     rm -rf "/var/lucterios2/build"
 
-	dir_app="/var/lucterios2/$APP_NAME.app/Contents/MacOS"
-	if [ -a "/var/lucterios2/$APP_NAME.app" ]
-	then
-		rm -rf "/var/lucterios2/$APP_NAME.app"
-	fi
-	mkdir -p "$dir_app"
-	cp "/var/lucterios2/launch_lucterios_gui.sh" "$dir_app/$APP_NAME"
-	chmod +x "$dir_app/$APP_NAME"
-    if [ -f "MyIcon.icns" ]
-    then
-		mkdir -p "/var/lucterios2/$APP_NAME.app/Contents/Resources"
-		cp MyIcon.icns "/var/lucterios2/$APP_NAME.app/Contents/Resources/$APP_NAME.icns"
-	fi
-
 fi
 
 chmod -R ogu+rw "/var/lucterios2"
