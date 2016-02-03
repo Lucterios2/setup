@@ -172,13 +172,15 @@ $Shortcut.Save()
 copy $lucterios_path\$app_name.lnk $env:Public\Desktop\$app_name.lnk
 
 $acl = Get-Acl $lucterios_path
-$permission = "Domain\User","FullControl","ContainerInherit,ObjectInherit","None","Allow"
+$permission = "Users","FullControl","ContainerInherit,ObjectInherit","None","Allow"
 $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission 
 $acl.SetAccessRule($accessRule) 
 $acl | Set-Acl $lucterios_path
 $rc=0
 
 }Catch {
+    echo ""
+    echo "Error:$_.Exception.Message"
     echo ""
     echo "**** $app_name not installed ****"
     $rc=1
