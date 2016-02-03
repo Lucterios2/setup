@@ -19,6 +19,18 @@ OutFile "@@NAME@@_setup.exe"
 ; The default installation directory
 InstallDir c:\Lucterios2
 
+VIProductVersion                 "2.0.2.0"
+VIAddVersionKey ProductName      "@@NAME@@"
+VIAddVersionKey Comments         "@@NAME@@"
+VIAddVersionKey CompanyName      "sd-libre"
+VIAddVersionKey LegalCopyright   "GENERAL PUBLIC LICENSE v3"
+VIAddVersionKey FileDescription  "@@NAME@@"
+VIAddVersionKey FileVersion      2
+VIAddVersionKey ProductVersion   2
+VIAddVersionKey InternalName     "@@NAME@@"
+VIAddVersionKey LegalTrademarks  "@@NAME@@"
+VIAddVersionKey OriginalFilename "@@NAME@@_setup.exe"
+
 WindowIcon off
 ; Icon favicon.ico
 ; UninstallIcon favicon.ico
