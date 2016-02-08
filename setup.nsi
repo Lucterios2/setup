@@ -89,9 +89,11 @@ Section "install"
   
   ; Create start menu shortcut
   CreateDirectory "$SMPROGRAMS\@@NAME@@"
-  CreateShortcut "$SMPROGRAMS\@@NAME@@"\Uninstall.lnk" "$INSTDIR\Uninstall.exe"  
+  CreateShortcut "$SMPROGRAMS\@@NAME@@"\Uninstall.lnk" "$INSTDIR\uninstall.exe"
   CopyFiles $INSTDIR\@@NAME@@.lnk "$SMPROGRAMS\@@NAME@@"
- 
+
+  CopyFiles $INSTDIR\@@NAME@@.lnk "$DESKTOP\@@NAME@@.lnk"
+
 SectionEnd
 
 Function .onInit

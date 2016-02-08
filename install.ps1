@@ -168,7 +168,6 @@ if (Test-Path $icon_path) {
 }
 $Shortcut.WindowStyle = 7
 $Shortcut.Save()
-copy $lucterios_path\$app_name.lnk $env:Public\Desktop\$app_name.lnk
 
 $acl = Get-Acl $lucterios_path
 $permission = "Everyone","FullControl","ContainerInherit,ObjectInherit","None","Allow"
