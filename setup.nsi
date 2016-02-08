@@ -79,12 +79,18 @@ Section "install"
 
   ExecWait 'PowerShell.exe -ExecutionPolicy Bypass -File $INSTDIR\install.ps1'
 
+  ; Create uninstall exe
   WriteRegStr HKLM Software\Lucterios2 "Install_Dir" "$INSTDIR"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Lucterios2" "DisplayName" "Lucterios"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Lucterios2" "DisplayName" "@@NAME@@"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Lucterios2" "UninstallString" '"$INSTDIR\uninstall.exe"'
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Lucterios2" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Lucterios2" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
+  
+  ; Create start menu shortcut
+  CreateDirectory "$SMPROGRAMS\@@NAME@@"
+  CreateShortcut "$SMPROGRAMS\@@NAME@@"\Uninstall.lnk" "$INSTDIR\Uninstall.exe"  
+  CopyFiles $INSTDIR\@@NAME@@.lnk "$SMPROGRAMS\@@NAME@@"
  
 SectionEnd
 
@@ -119,7 +125,10 @@ Section "Uninstall"
   DeleteRegKey HKLM Software\Lucterios2
 
   ; Remove shortcuts, if any
-  Delete "$DESKTOP\Lucterios.lnk"
+  Delete "$DESKTOP\@@NAME@@.lnk"
+
+  ; Remove start menu
+  RMDir /r "$SMPROGRAMS\@@NAME@@"
 
   ; Remove directories used
   RMDir /r "$INSTDIR"

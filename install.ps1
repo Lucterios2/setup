@@ -66,8 +66,7 @@ if (!(Test-Path "c:\Python34")) {
 
     Start-BitsTransfer -Source $url_python -Destination $python_install
     if (!(Test-Path $python_install)) {
-        echo "**** Dowload python failed! *****"
-        raise
+        throw "**** Dowload python failed! *****"
     }echo ""
     echo "------ install python -------"
     echo ""
@@ -81,14 +80,12 @@ echo ""
 
 Start-BitsTransfer -Source $url_lxml -Destination $lxml_install
 if (!(Test-Path $lxml_install)) {
-    echo "**** Dowload lxml failed! *****"
-    raise
+    throw "**** Dowload lxml failed! *****"    
 }
 
 Start-BitsTransfer -Source $url_pycrypto -Destination $pycrypto_install
 if (!(Test-Path $pycrypto_install)) {
-    echo "**** Dowload pycrypto failed! *****"
-    raise
+    throw "**** Dowload pycrypto failed! *****"
 }
 
 $env:Path="$env:Path;c:\Python34;c:\Python34\Scripts\"
@@ -107,8 +104,7 @@ if (!(Test-Path $lucterios_path\virtual_for_lucterios)) {
 }
 
 if (!(Test-Path $lucterios_path\virtual_for_lucterios\Scripts\activate)) {
-    echo "**** Virtual-Env not created! *****"
-    raise
+    throw "**** Virtual-Env not created! *****"
 }
 
 echo ""
@@ -117,6 +113,7 @@ echo ""
 
 .\virtual_for_lucterios\Scripts\activate
 pip install -U pip | out-null
+echo "=> pip install -U $lxml_install $pycrypto_install"
 pip install -U $lxml_install $pycrypto_install
 if ($extra_url -ne '') {
 	$extra_host = ([System.Uri]$extra_url).Host
@@ -166,7 +163,9 @@ $WshShell = New-Object -ComObject WScript.shell
 $Shortcut = $WshShell.CreateShortcut("$lucterios_path\$app_name.lnk")
 $Shortcut.TargetPath = "PowerShell.exe"
 $Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File $lucterios_path\launch_lucterios.ps1"
-$Shortcut.IconLocation = "$icon_path"
+if (Test-Path $icon_path) {
+	$Shortcut.IconLocation = "$icon_path"
+}
 $Shortcut.WindowStyle = 7
 $Shortcut.Save()
 copy $lucterios_path\$app_name.lnk $env:Public\Desktop\$app_name.lnk
