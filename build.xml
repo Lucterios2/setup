@@ -85,7 +85,6 @@
 		<copy file="${basedir}/uninstall.sh" tofile="${basedir}/tmp/uninstall_${lct_name}.command" />
 		<echo file="${basedir}/tmp/install_brew.command">#!/bin/sh
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-read a
 		</echo>
 		<echo file="${basedir}/tmp/README">#### Install of ${lct_name} dor Mac OS X ####
 To install ${lct_name}, you must to have Mac OS X 10.9 minimum (last version is better)
