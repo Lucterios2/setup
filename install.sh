@@ -75,14 +75,18 @@ else if [ ! -z "$(which yum 2>/dev/null)" ]; then # RPM unix/linux like
 	yum install -y python-devel python-imaging tkinter	
 	yum install -y python3-devel python3-imaging python3-tkinter	
 	easy_install pip
-else if [ ! -z "$(which brew 2>/dev/null)" ]; then # Mac OS X
-	brew_perm=`stat -c "%G:%U" $(which brew)`
-	chown root:wheel $(which brew)
-	brew install libxml2 libxslt
-	easy_install pip
-	brew install python3
-	chown $brew_perm $(which brew)
-	pip3 install --upgrade pip
+else if [ "${OSTYPE:0:6}" == "darwin" ]; then # Mac OS X
+	if [ ! -z "$(which brew 2>/dev/null)" ]; then
+		brew_perm=`stat -c "%G:%U" $(which brew)`
+		chown root:wheel $(which brew)
+		brew install libxml2 libxslt
+		easy_install pip
+		brew install python3
+		chown $brew_perm $(which brew)
+		pip3 install --upgrade pip
+	else
+		echo "++++++ brew not installed on Mac OS X! +++++++"
+	fi
 else
 	echo "++++++ Unix/Linux distribution not available for this script! +++++++"
 fi; fi; fi; fi
