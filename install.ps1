@@ -170,8 +170,8 @@ $Shortcut.WindowStyle = 7
 $Shortcut.Save()
 
 $acl = Get-Acl $lucterios_path
-$permission = "Everyone","FullControl","ContainerInherit,ObjectInherit","None","Allow"
-$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission 
+$sid = new-object System.Security.Principal.SecurityIdentifier "S-1-1-0"
+$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($sid,"FullControl","ContainerInherit,ObjectInherit","None","Allow") 
 $acl.SetAccessRule($accessRule) 
 $acl | Set-Acl $lucterios_path
 $rc=0
