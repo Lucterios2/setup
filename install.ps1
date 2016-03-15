@@ -1,6 +1,5 @@
 #requires -version 2.0
 param (
-    [string]$extra_url = "@@URL@@",
     [string]$packages = "@@PACKAGE@@",
     [string]$app_name = "@@NAME@@",
     [switch]$help = $false
@@ -19,155 +18,97 @@ if ((Test-Admin) -eq $false)  {
 if ($help) {
 	echo "install.ps1: installation for Lucterios"
 	echo "	install.ps1 -help"
-	echo "	install.ps1 [-extra_url <extra_url>] [-packages <packages>] [-app_name <application_name>]"
+	echo "	install.ps1 [-packages <packages>] [-app_name <application_name>]"
 	echo "option:"
 	echo " -help: show this help"
-	echo " -extra_url: define a extra url of pypi server (default: '$extra_url')"
 	echo " -packages: define the packages list to install (default: '$packages')"
 	echo " -app_name: define the application name for shortcut (default: '$app_name')"
 	exit 0
 }
 
 Try {
-echo "====== install lucterios ======"
-echo ""
-echo ""
-echo ""
-echo ""
-echo ""
-echo ""
-echo ""
-echo ""
-echo "====== install lucterios ======"
 
 $lucterios_path="c:\lucterios2"
-if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
-    $url_python = "https://www.python.org/ftp/python/3.4.3/python-3.4.3.amd64.msi"    
-    $url_lxml = "https://raw.githubusercontent.com/Lucterios2/core/master/packages/lxml-3.4.4-cp34-none-win_amd64.whl"
-    $url_pycrypto = "https://raw.githubusercontent.com/Lucterios2/core/master/packages/pycrypto-2.6.1-cp34-none-win_amd64.whl"
-    $lxml_install = "$env:temp\lxml-3.4.4-cp34-none-win_amd64.whl"
-    $pycrypto_install = "$env:temp\pycrypto-2.6.1-cp34-none-win_amd64.whl"
-} else {
-    $url_python = "https://www.python.org/ftp/python/3.4.3/python-3.4.3.msi"
-    $url_lxml = "https://raw.githubusercontent.com/Lucterios2/core/master/packages/lxml-3.4.4-cp34-none-win32.whl"
-    $url_pycrypto = "https://raw.githubusercontent.com/Lucterios2/core/master/packages/pycrypto-2.6.1-cp34-none-win32.whl"
-    $lxml_install = "$env:temp\lxml-3.4.4-cp34-none-win32.whl"
-    $pycrypto_install = "$env:temp\pycrypto-2.6.1-cp34-none-win32.whl"
-}
-$python_install = "$env:temp\python.msi"
 
-Import-Module BitsTransfer
-
-if (!(Test-Path "c:\Python34")) {
-
-    echo ""
-    echo "------ download python -------"
-    echo ""
-
-    Start-BitsTransfer -Source $url_python -Destination $python_install
-    if (!(Test-Path $python_install)) {
-        throw "**** Dowload python failed! *****"
-    }echo ""
-    echo "------ install python -------"
-    echo ""
-
-    msiexec /i $python_install /passive | Out-Null
-}
-
-echo ""
-echo "------ download and install python tools -------"
-echo ""
-
-Start-BitsTransfer -Source $url_lxml -Destination $lxml_install
-if (!(Test-Path $lxml_install)) {
-    throw "**** Dowload lxml failed! *****"    
-}
-
-Start-BitsTransfer -Source $url_pycrypto -Destination $pycrypto_install
-if (!(Test-Path $pycrypto_install)) {
-    throw "**** Dowload pycrypto failed! *****"
-}
-
-$env:Path="$env:Path;c:\Python34;c:\Python34\Scripts\"
-pip install -U virtualenv
-
-echo ""
-echo "------ configure virtual environment ------"
-echo ""
-
-if (!(Test-Path $lucterios_path)) {
-    mkdir $lucterios_path
-}
 cd $lucterios_path
-if (!(Test-Path $lucterios_path\virtual_for_lucterios)) {
-	virtualenv virtual_for_lucterios
-}
 
-if (!(Test-Path $lucterios_path\virtual_for_lucterios\Scripts\activate)) {
-    throw "**** Virtual-Env not created! *****"
-}
+$env:Path="$lucterios_path\Python;$lucterios_path\Python\Scripts;$env:Path"
 
 echo ""
-echo "------ install lucterios ------"
+echo "------ install lucterios #@@BUILD@@ ------"
 echo ""
 
-.\virtual_for_lucterios\Scripts\activate
-pip install -U pip | out-null
-echo "=> pip install -U $lxml_install $pycrypto_install"
-pip install -U $lxml_install $pycrypto_install
-if ($extra_url -ne '') {
-	$extra_host = ([System.Uri]$extra_url).Host
-	echo "=> pip install --extra-index-url $extra_url --trusted-host $extra_host -U $packages"
-	foreach($package in $packages.split()) {
-		pip install --extra-index-url $extra_url --trusted-host $extra_host -U $package
-	}
-}
-else {
-	echo "=> pip install -U $packages"
-	foreach($package in $packages.split()) {
-		pip install -U $package
-	}
+echo "=> pip install -U $packages"
+foreach($package in $packages.split()) {
+    echo "===> pip install -U $package"
+	pip install -U $package
 }
 
+python Python\Scripts\lucterios_admin.py refreshall | Out-Null
+
 echo ""
-echo "------ refresh shortcut ------"
+echo "------ create starter bat ------"
 echo ""
 
 if (Test-Path $lucterios_path\launch_lucterios.ps1) {
     del $lucterios_path\launch_lucterios.ps1
 }
-echo "#requires -version 2.0" >> $lucterios_path\launch_lucterios.ps1
-echo "" >> $lucterios_path\launch_lucterios.ps1
-echo "echo '$app_name GUI launcher'" >> $lucterios_path\launch_lucterios.ps1
-echo "" >> $lucterios_path\launch_lucterios.ps1
-echo "cd $lucterios_path" >> $lucterios_path\launch_lucterios.ps1
-echo "virtual_for_lucterios\Scripts\activate" >> $lucterios_path\launch_lucterios.ps1
-echo "" >> $lucterios_path\launch_lucterios.ps1
-echo "`$env:Path=`"`$env:Path;c:\Python34;c:\Python34\DLLs`"" >> $lucterios_path\launch_lucterios.ps1
-echo "`$env:TCL_LIBRARY='c:\Python34\tcl\tcl8.6'" >> $lucterios_path\launch_lucterios.ps1
-echo "`$env:TK_LIBRARY='c:\Python34\tcl\tcl8.6'" >> $lucterios_path\launch_lucterios.ps1
-if ( $extra_url -ne '') {
-	echo "`$env:extra_url='$extra_url'" >> $lucterios_path\launch_lucterios.ps1
+if (Test-Path $lucterios_path\lucterios_gui.ps1) {
+    del $lucterios_path\lucterios_gui.ps1
 }
-echo "python virtual_for_lucterios\Scripts\lucterios_gui.py" >> $lucterios_path\launch_lucterios.ps1
-echo "exit" >> $lucterios_path\launch_lucterios.ps1
-echo "" >> $lucterios_path\launch_lucterios.ps1
+if (Test-Path $lucterios_path\lucterios_admin.ps1) {
+    del $lucterios_path\lucterios_admin.ps1
+}
+if (Test-Path $lucterios_path\virtual_for_lucterios) {
+    del -r $lucterios_path\virtual_for_lucterios
+}
+if (!(Test-Path $lucterios_path\extra_url)) {
+    echo "# Pypi servers" | Out-File -Encoding ascii -Append -FilePath $lucterios_path\extra_url
+}
+
+
+echo "#requires -version 2.0" >> $lucterios_path\lucterios_admin.ps1
+echo "" >> $lucterios_path\lucterios_admin.ps1
+echo "echo '$app_name GUI launcher'" >> $lucterios_path\lucterios_admin.ps1
+echo "" >> $lucterios_path\lucterios_admin.ps1
+echo "cd $lucterios_path" >> $lucterios_path\lucterios_admin.ps1
+echo "" >> $lucterios_path\lucterios_admin.ps1
+echo "`$env:Path=`"`$lucterios_path\Python;$lucterios_path\Python\Scripts;$env:Path`"" >> $lucterios_path\lucterios_admin.ps1
+echo "`$env:TCL_LIBRARY='$lucterios_path\Python\tcl\tcl8.6'" >> $lucterios_path\lucterios_admin.ps1
+echo "`$env:TK_LIBRARY='$lucterios_path\Python\tcl\tcl8.6'" >> $lucterios_path\lucterios_admin.ps1
+cp $lucterios_path\lucterios_admin.ps1 $lucterios_path\lucterios_gui.ps1
+
+echo "python Python\Scripts\lucterios_gui.py" >> $lucterios_path\lucterios_gui.ps1
+echo "exit" >> $lucterios_path\lucterios_gui.ps1
+echo "" >> $lucterios_path\lucterios_gui.ps1
+
+echo "python Python\Scripts\lucterios_admin.py $args[0] $args[1] $args[2] $args[3] $args[4] $args[5] $args[6] $args[7] $args[8] $args[9]" >> $lucterios_path\lucterios_admin.ps1
+echo "exit" >> $lucterios_path\lucterios_admin.ps1
+echo "" >> $lucterios_path\lucterios_admin.ps1
+
+echo ""
+echo "------ refresh shortcut ------"
+echo ""
 
 if (Test-Path $env:Public\Desktop\$app_name.lnk) {
     del $env:Public\Desktop\$app_name.lnk
 }
 
-$icon_path = Get-ChildItem -Path "$lucterios_path\virtual_for_lucterios" -Recurse -Filter "$app_name.ico" | Select-Object -First 1 | % { $_.FullName }
+$icon_path = Get-ChildItem -Path "$lucterios_path\python" -Recurse -Filter "$app_name.ico" | Select-Object -First 1 | % { $_.FullName }
 
 $WshShell = New-Object -ComObject WScript.shell
 $Shortcut = $WshShell.CreateShortcut("$lucterios_path\$app_name.lnk")
 $Shortcut.TargetPath = "PowerShell.exe"
-$Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File $lucterios_path\launch_lucterios.ps1"
-if (Test-Path $icon_path) {
+$Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File $lucterios_path\lucterios_gui.ps1"
+if (($icon_path -ne "") -and (Test-Path $icon_path)) {
 	$Shortcut.IconLocation = "$icon_path"
 }
 $Shortcut.WindowStyle = 7
 $Shortcut.Save()
+
+echo ""
+echo "------ refresh permission ------"
+echo ""
 
 $acl = Get-Acl $lucterios_path
 $sid = new-object System.Security.Principal.SecurityIdentifier "S-1-1-0"

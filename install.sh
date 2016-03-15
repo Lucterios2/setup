@@ -7,7 +7,6 @@ if [ "$(id -u)" != "0" ]; then
    exit $!
 fi
 
-EXTRA_URL="@@URL@@"
 PACKAGES="@@PACKAGE@@"
 APP_NAME="@@NAME@@"
 
@@ -15,19 +14,16 @@ function usage
 {
 	echo "${0##*/}: installation for Lucterios"
 	echo "	${0##*/} -h"
-	echo "	${0##*/} [-e <extra_url>] [-p <packages>] [-n <application_name>]"
+	echo "	${0##*/} [-p <packages>] [-n <application_name>]"
 	echo "option:"
 	echo " -h: show this help"
-	echo " -e: define a extra url of pypi server (default: '$EXTRA_URL')"
 	echo " -p: define the packages list to install (default: '$PACKAGES')"
 	echo " -n: define the application name for shortcut (default: '$APP_NAME')"
 	exit 0
 }
 
-while getopts "e:i:p:n:h" opt ; do
+while getopts "i:p:n:h" opt ; do
     case $opt in
-    e) EXTRA_URL="$OPTARG"
-       ;;
     p) PACKAGES="$OPTARG"
        ;;
     n) APP_NAME="$OPTARG"
@@ -50,9 +46,9 @@ then
 	PIP_OPTION="$PIP_OPTION --proxy=$http_proxy"
 fi
 
-echo "====== install lucterios ======"
+echo "====== install lucterios #@@BUILD@@ ======"
 
-echo "install: extra_url=$EXTRA_URL packages=$PACKAGES application_name=$APP_NAME"
+echo "install: packages=$PACKAGES application_name=$APP_NAME"
 
 echo
 echo "------ check perquisite -------"
@@ -122,8 +118,9 @@ echo "------ install lucterios ------"
 echo
 
 . /var/lucterios2/virtual_for_lucterios/bin/activate
-[ ! -z "$EXTRA_URL" ] && PIP_OPTION="$PIP_OPTION --extra-index-url $EXTRA_URL --trusted-host $(echo $EXTRA_URL | awk -F/ '{print $3}')"
 pip install -U $PIP_OPTION $PACKAGES
+lucterios_admin.py refreshall || echo '--no refresh--'
+[ -f "/var/lucterios2/extra_url" ] || echo "# Pypi server" > "/var/lucterios2/extra_url"
 
 echo
 echo "------ refresh shortcut ------"
@@ -134,10 +131,6 @@ echo "#!/usr/bin/env bash" >> /var/lucterios2/launch_lucterios.sh
 echo  >> /var/lucterios2/launch_lucterios.sh
 echo ". /var/lucterios2/virtual_for_lucterios/bin/activate" >> /var/lucterios2/launch_lucterios.sh
 echo "cd /var/lucterios2/" >> /var/lucterios2/launch_lucterios.sh
-if [ ! -z "$EXTRA_URL" ]
-then
-	echo "export extra_url='$EXTRA_URL'" >> /var/lucterios2/launch_lucterios.sh
-fi
 if [ -z "$LANG" -o "$LANG" == "C" ]
 then
 	echo "export LANG=en_US.UTF-8" >> /var/lucterios2/launch_lucterios.sh
@@ -200,10 +193,6 @@ then
     echo "# launcher for lucterios GUI" >> $py_run
     echo "import os" >> $py_run
     echo "os.chdir('$PWD')" >> $py_run
-    if [ ! -z "$EXTRA_URL" ]
-    then
-        echo "os.environ['extra_url']='$EXTRA_URL'" >> $py_run
-    fi
     for var_item in LC_ALL LC_CTYPE LANG LANGUAGE
 	do 
 		if [ ! -z "${!var_item}" ]

@@ -9,7 +9,7 @@
 !define TEMP2 $R1
 
 ; The name of the installer
-Name "@@NAME@@"
+Name "@@NAME@@ #@@BUILD@@"
 
 BrandingText "www.sd-libre.fr - Sdl 2016"
 
@@ -76,6 +76,7 @@ Section "install"
 
   SetOutPath "$INSTDIR"
   File "install.ps1"
+  File /r "Python" 
 
   ExecWait 'PowerShell.exe -ExecutionPolicy Bypass -File $INSTDIR\install.ps1'
 

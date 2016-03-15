@@ -35,6 +35,7 @@
 		<replace file="${file_path}" token="@@NAME@@" value="${lct_name}"/>
 		<replace file="${file_path}" token="@@PACKAGE@@" value="${lct_package}"/>
 		<replace file="${file_path}" token="@@URL@@" value="${lct_url}"/>
+		<replace file="${file_path}" token="@@BUILD@@" value="${build.num}"/>
 	</target>
 
 	<target name="tar">
@@ -53,6 +54,7 @@
 		<exec executable="tar" dir="${basedir}">
 			<arg line="-czf ./bin/${lct_name}_setup.tar.gz ${lct_name}" />
 		</exec>
+		<delete dir="${basedir}/${lct_name}" />
 	</target>
 
 	<target name="win" if="wine.present">
@@ -61,6 +63,7 @@
 		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
 		<copy file="${basedir}/setup.nsi" tofile="${basedir}/tmp/setup.nsi" />
 		<copy file="${basedir}/install.ps1" tofile="${basedir}/tmp/install.ps1" />
+		<unzip src="${basedir}/PythonWin32.zip" dest="${basedir}/tmp/"/>
 		<antcall target="correct_install">
 			<param name="file_path" value="${basedir}/tmp/setup.nsi" />
 		</antcall>
@@ -75,6 +78,7 @@
 			<arg value="z:${basedir}/tmp/setup.nsi" />
 		</exec>
 		<move file="${basedir}/tmp/${lct_name}_setup.exe" todir="${basedir}/bin" />
+		<delete dir="${basedir}/tmp" />
 	</target>
 
 	<target name="commun_mac">
@@ -132,6 +136,10 @@ Disponible sur cette image:
 	</target>
 
 	<target name="all">
+		<exec executable="/bin/bash" outputproperty="build.num" failifexecutionfails="false" errorproperty="">
+			<arg line="-c 'let num=($(git log -1 --format=%at)-1451606400)/3600;echo $num'" />
+		</exec>
+		<echo>num=${build.num}</echo>
 		<echo>name=${lct_name}</echo>
 		<echo>package=${lct_package}</echo>
 		<echo>url=${lct_url}</echo>
@@ -141,8 +149,9 @@ Disponible sur cette image:
 		<antcall target="win" />
 		<antcall target="pseudomac" />
 		<antcall target="mac" />
+		<delete dir="${basedir}/tmp" />
 		<exec executable="ls" dir="${basedir}/bin">
-			<arg line="-l" />
+			<arg line="-lh" />
 		</exec>
 	</target>
 
