@@ -82,7 +82,7 @@ echo "python Python\Scripts\lucterios_gui.py" >> $lucterios_path\lucterios_gui.p
 echo "exit" >> $lucterios_path\lucterios_gui.ps1
 echo "" >> $lucterios_path\lucterios_gui.ps1
 
-echo "python Python\Scripts\lucterios_admin.py $args[0] $args[1] $args[2] $args[3] $args[4] $args[5] $args[6] $args[7] $args[8] $args[9]" >> $lucterios_path\lucterios_admin.ps1
+echo "python Python\Scripts\lucterios_admin.py `$args[0] `$args[1] `$args[2] `$args[3] `$args[4] `$args[5] `$args[6] `$args[7] `$args[8] `$args[9]" >> $lucterios_path\lucterios_admin.ps1
 echo "exit" >> $lucterios_path\lucterios_admin.ps1
 echo "" >> $lucterios_path\lucterios_admin.ps1
 
