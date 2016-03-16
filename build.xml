@@ -136,8 +136,12 @@ Disponible sur cette image:
 	</target>
 
 	<target name="all">
-		<exec executable="/bin/bash" outputproperty="build.num" failifexecutionfails="false" errorproperty="">
-			<arg line="-c 'let num=($(git log -1 --format=%at)-1451606400)/3600;echo $num'" />
+		<exec executable="/bin/bash" outputproperty="build.tstmp" failifexecutionfails="false" errorproperty="">
+			<arg line="-c 'git log -1 --format=%at'" />
+		</exec>
+		<exec executable="python" outputproperty="build.num" failifexecutionfails="false" errorproperty="">
+			<arg value="-c" />
+			<arg value="import datetime;print(datetime.datetime.fromtimestamp(int('${build.tstmp}')).strftime('%y%m%d%H'))" />
 		</exec>
 		<echo>num=${build.num}</echo>
 		<echo>name=${lct_name}</echo>
@@ -150,6 +154,7 @@ Disponible sur cette image:
 		<antcall target="pseudomac" />
 		<antcall target="mac" />
 		<delete dir="${basedir}/tmp" />
+		<echo message="num=${build.num}" file="${basedir}/bin/${lct_name}_${build.num}" append="false" />
 		<exec executable="ls" dir="${basedir}/bin">
 			<arg line="-lh" />
 		</exec>

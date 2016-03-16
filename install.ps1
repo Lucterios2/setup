@@ -60,7 +60,7 @@ if (Test-Path $lucterios_path\lucterios_admin.ps1) {
     del $lucterios_path\lucterios_admin.ps1
 }
 if (Test-Path $lucterios_path\virtual_for_lucterios) {
-    del -r $lucterios_path\virtual_for_lucterios
+    del -r $lucterios_path\virtual_for_lucterios | Out-Null
 }
 if (!(Test-Path $lucterios_path\extra_url)) {
     echo "# Pypi servers" | Out-File -Encoding ascii -Append -FilePath $lucterios_path\extra_url
