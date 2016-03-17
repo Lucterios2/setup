@@ -38,6 +38,7 @@ echo ""
 echo "------ install lucterios #@@BUILD@@ ------"
 echo ""
 
+pip install -U pip | Out-Null
 echo "=> pip install -U $packages"
 foreach($package in $packages.split()) {
     echo "===> pip install -U $package"

@@ -118,6 +118,7 @@ echo "------ install lucterios ------"
 echo
 
 . /var/lucterios2/virtual_for_lucterios/bin/activate
+pip install -U $PIP_OPTION pip
 pip install -U $PIP_OPTION $PACKAGES
 lucterios_admin.py refreshall || echo '--no refresh--'
 [ -f "/var/lucterios2/extra_url" ] || echo "# Pypi server" > "/var/lucterios2/extra_url"
