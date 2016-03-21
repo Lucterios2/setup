@@ -77,7 +77,10 @@
 			<arg value="C:/NSIS/makensis.exe" />
 			<arg value="z:${basedir}/tmp/setup.nsi" />
 		</exec>
-		<move file="${basedir}/tmp/${lct_name}_setup.exe" todir="${basedir}/bin" />
+		<move file="${basedir}/tmp/${lct_name}_setup.exe" todir="${basedir}/bin/" />
+		<exec executable="osslsigncode" dir="${basedir}">
+			<arg line="sign -pkcs12 sslcert/sdlibre-cert.p12 -pass 'sd-libre' -i 'http://www.sd-libre.fr' -n '${lct_name}' bin/${lct_name}_setup.exe bin/${lct_name}_setup-signed.exe"/>
+		</exec>
 		<delete dir="${basedir}/tmp" />
 	</target>
 
