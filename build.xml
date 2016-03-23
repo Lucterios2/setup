@@ -5,6 +5,7 @@
 	<available file="/usr/bin/wine" property="wine.present" />
 	<available file="/usr/bin/hdiutil" property="mac.present" />
 	<available file="/usr/bin/genisoimage" property="pseudomac.present" />
+	<available file="/usr/bin/osslsigncode" property="sign.present" />
 
 	<condition property="lct_name" value="${env.LCT_NAME}">
 		<isset property="env.LCT_NAME" />
@@ -31,6 +32,20 @@
 		</not>
 	</condition>
 
+	<target name="init">
+		<exec executable="/bin/bash" outputproperty="build.tstmp" failifexecutionfails="false" errorproperty="">
+			<arg line="-c 'git log -1 --format=%at'" />
+		</exec>
+		<exec executable="python" outputproperty="build.num" failifexecutionfails="false" errorproperty="">
+			<arg value="-c" />
+			<arg value="import datetime;print(datetime.datetime.fromtimestamp(int('${build.tstmp}')).strftime('%y%m%d%H'))" />
+		</exec>
+		<echo>num=${build.num}</echo>
+		<echo>name=${lct_name}</echo>
+		<echo>package=${lct_package}</echo>
+		<echo>url=${lct_url}</echo>
+	</target>
+
 	<target name="correct_install">
 		<replace file="${file_path}" token="@@NAME@@" value="${lct_name}"/>
 		<replace file="${file_path}" token="@@PACKAGE@@" value="${lct_package}"/>
@@ -56,8 +71,14 @@
 		</exec>
 		<delete dir="${basedir}/${lct_name}" />
 	</target>
+	
+	<target name="winsign" if="sign.present">
+		<exec executable="osslsigncode" dir="${basedir}">
+			<arg line="sign -pkcs12 sslcert/sdlibre-cert.p12 -pass 'sd-libre' -i 'http://www.sd-libre.fr' -n '${lct_name}' bin/${lct_name}_setup.exe bin/${lct_name}_setup-signed.exe"/>
+		</exec>
+	</target>
 
-	<target name="win" if="wine.present">
+	<target name="nsis" if="wine.present">
 		<delete dir="${basedir}/tmp" />
 		<mkdir dir="${basedir}/tmp" />
 		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
@@ -78,9 +99,31 @@
 			<arg value="z:${basedir}/tmp/setup.nsi" />
 		</exec>
 		<move file="${basedir}/tmp/${lct_name}_setup.exe" todir="${basedir}/bin/" />
-		<exec executable="osslsigncode" dir="${basedir}">
-			<arg line="sign -pkcs12 sslcert/sdlibre-cert.p12 -pass 'sd-libre' -i 'http://www.sd-libre.fr' -n '${lct_name}' bin/${lct_name}_setup.exe bin/${lct_name}_setup-signed.exe"/>
+		<antcall target="winsign" />
+	</target>
+
+	<target name="inno" if="wine.present">
+		<delete dir="${basedir}/tmp" />
+		<mkdir dir="${basedir}/tmp" />
+		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
+		<copy file="${basedir}/setup.iss" tofile="${basedir}/tmp/setup.iss" />
+		<copy file="${basedir}/install.ps1" tofile="${basedir}/tmp/install.ps1" />
+		<unzip src="${basedir}/PythonWin32.zip" dest="${basedir}/tmp/"/>
+		<antcall target="correct_install">
+			<param name="file_path" value="${basedir}/tmp/setup.iss" />
+		</antcall>
+		<antcall target="correct_install">
+			<param name="file_path" value="${basedir}/tmp/install.ps1" />
+		</antcall>
+		<echo message='user.dir=${user.dir} - basedir=${basedir}' />
+		<exec executable="/usr/bin/wine" dir="${basedir}/bin">
+			<env key="WINEPREFIX" value="/home/ubuntu/.wine" />
+			<env key="DISPLAY" value=":0.0" />
+			<arg value="C:/InnoSetup5/ISCC.exe" />
+			<arg value="z:${basedir}/tmp/setup.iss" />
 		</exec>
+		<move file="${basedir}/tmp/${lct_name}_setup.exe" todir="${basedir}/bin/" />
+		<antcall target="winsign" />
 		<delete dir="${basedir}/tmp" />
 	</target>
 
@@ -138,22 +181,11 @@ Disponible sur cette image:
 		<delete dir="${basedir}/tmp" />
 	</target>
 
-	<target name="all">
-		<exec executable="/bin/bash" outputproperty="build.tstmp" failifexecutionfails="false" errorproperty="">
-			<arg line="-c 'git log -1 --format=%at'" />
-		</exec>
-		<exec executable="python" outputproperty="build.num" failifexecutionfails="false" errorproperty="">
-			<arg value="-c" />
-			<arg value="import datetime;print(datetime.datetime.fromtimestamp(int('${build.tstmp}')).strftime('%y%m%d%H'))" />
-		</exec>
-		<echo>num=${build.num}</echo>
-		<echo>name=${lct_name}</echo>
-		<echo>package=${lct_package}</echo>
-		<echo>url=${lct_url}</echo>
+	<target name="all" depends="init">
 		<delete dir="${basedir}/bin" />
 		<mkdir dir="${basedir}/bin" />
 		<antcall target="tar" />
-		<antcall target="win" />
+		<antcall target="inno" />
 		<antcall target="pseudomac" />
 		<antcall target="mac" />
 		<delete dir="${basedir}/tmp" />
