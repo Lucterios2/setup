@@ -71,18 +71,6 @@ else if [ ! -z "$(which yum 2>/dev/null)" ]; then # RPM unix/linux like
 	yum install -y python-devel python-imaging tkinter	
 	yum install -y python3-devel python3-imaging python3-tkinter	
 	easy_install pip
-else if [ "${OSTYPE:0:6}" == "darwin" ]; then # Mac OS X
-	if [ ! -z "$(which brew 2>/dev/null)" ]; then
-		brew_perm=`stat -c "%G:%U" $(which brew)`
-		chown root:wheel $(which brew)
-		brew install libxml2 libxslt
-		easy_install pip
-		brew install python3
-		chown $brew_perm $(which brew)
-		pip3 install --upgrade pip
-	else
-		echo "++++++ brew not installed on Mac OS X! +++++++"
-	fi
 else
 	echo "++++++ Unix/Linux distribution not available for this script! +++++++"
 fi; fi; fi; fi
@@ -91,6 +79,7 @@ echo
 echo "------ configure virtual environment ------"
 echo
 
+LUCTERIOS_PATH="/var/lucterios2"
 PIP_CMD=
 PYTHON_CMD=
 for pip_iter in 3 2
@@ -108,8 +97,8 @@ set -e
 echo "$PYTHON_CMD $(which $PIP_CMD) install $PIP_OPTION virtualenv -U"
 $PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION pip virtualenv
 
-mkdir -p /var/lucterios2
-cd /var/lucterios2
+mkdir -p $LUCTERIOS_PATH
+cd $LUCTERIOS_PATH
 echo "$PYTHON_CMD $(which virtualenv) virtual_for_lucterios"
 $PYTHON_CMD $(which virtualenv) virtual_for_lucterios
 
@@ -117,39 +106,39 @@ echo
 echo "------ install lucterios ------"
 echo
 
-. /var/lucterios2/virtual_for_lucterios/bin/activate
+. $LUCTERIOS_PATH/virtual_for_lucterios/bin/activate
 pip install -U $PIP_OPTION pip
 pip install -U $PIP_OPTION $PACKAGES
 lucterios_admin.py refreshall || echo '--no refresh--'
-[ -f "/var/lucterios2/extra_url" ] || echo "# Pypi server" > "/var/lucterios2/extra_url"
+[ -f "$LUCTERIOS_PATH/extra_url" ] || echo "# Pypi server" > "$LUCTERIOS_PATH/extra_url"
 
 echo
 echo "------ refresh shortcut ------"
 echo
-rm -rf /var/lucterios2/launch_lucterios.sh
-touch /var/lucterios2/launch_lucterios.sh
-echo "#!/usr/bin/env bash" >> /var/lucterios2/launch_lucterios.sh
-echo  >> /var/lucterios2/launch_lucterios.sh
-echo ". /var/lucterios2/virtual_for_lucterios/bin/activate" >> /var/lucterios2/launch_lucterios.sh
-echo "cd /var/lucterios2/" >> /var/lucterios2/launch_lucterios.sh
+rm -rf $LUCTERIOS_PATH/launch_lucterios.sh
+touch $LUCTERIOS_PATH/launch_lucterios.sh
+echo "#!/usr/bin/env bash" >> $LUCTERIOS_PATH/launch_lucterios.sh
+echo  >> $LUCTERIOS_PATH/launch_lucterios.sh
+echo ". $LUCTERIOS_PATH/virtual_for_lucterios/bin/activate" >> $LUCTERIOS_PATH/launch_lucterios.sh
+echo "cd $LUCTERIOS_PATH/" >> $LUCTERIOS_PATH/launch_lucterios.sh
 if [ -z "$LANG" -o "$LANG" == "C" ]
 then
-	echo "export LANG=en_US.UTF-8" >> /var/lucterios2/launch_lucterios.sh
+	echo "export LANG=en_US.UTF-8" >> $LUCTERIOS_PATH/launch_lucterios.sh
 fi
 
-cp /var/lucterios2/launch_lucterios.sh /var/lucterios2/launch_lucterios_gui.sh
-echo "lucterios_gui.py" >> /var/lucterios2/launch_lucterios_gui.sh
-chmod +x /var/lucterios2/launch_lucterios_gui.sh
+cp $LUCTERIOS_PATH/launch_lucterios.sh $LUCTERIOS_PATH/launch_lucterios_gui.sh
+echo "lucterios_gui.py" >> $LUCTERIOS_PATH/launch_lucterios_gui.sh
+chmod +x $LUCTERIOS_PATH/launch_lucterios_gui.sh
 
-echo 'lucterios_admin.py $@' >> /var/lucterios2/launch_lucterios.sh
-chmod +x /var/lucterios2/launch_lucterios.sh
-chmod -R ogu+w /var/lucterios2
+echo 'lucterios_admin.py $@' >> $LUCTERIOS_PATH/launch_lucterios.sh
+chmod +x $LUCTERIOS_PATH/launch_lucterios.sh
+chmod -R ogu+w $LUCTERIOS_PATH
 
-ln -sf /var/lucterios2/launch_lucterios.sh /usr/local/bin/launch_lucterios
-ln -sf /var/lucterios2/launch_lucterios_gui.sh /usr/local/bin/launch_lucterios_gui
+ln -sf $LUCTERIOS_PATH/launch_lucterios.sh /usr/local/bin/launch_lucterios
+ln -sf $LUCTERIOS_PATH/launch_lucterios_gui.sh /usr/local/bin/launch_lucterios_gui
 
 
-icon_path=$(find "/var/lucterios2/virtual_for_lucterios" -name "$APP_NAME.png" | head -n 1)
+icon_path=$(find "$LUCTERIOS_PATH/virtual_for_lucterios" -name "$APP_NAME.png" | head -n 1)
 
 if [ -d "/usr/share/applications" ]
 then
@@ -157,89 +146,14 @@ then
 	echo "[Desktop Entry]" > $LAUNCHER
 	echo "Name=$APP_NAME" >> $LAUNCHER
 	echo "Comment=$APP_NAME installer" >> $LAUNCHER
-	echo "Exec=/var/lucterios2/launch_lucterios_gui.sh" >> $LAUNCHER
+	echo "Exec=$LUCTERIOS_PATH/launch_lucterios_gui.sh" >> $LAUNCHER
 	echo "Icon=$icon_path" >> $LAUNCHER
 	echo "Terminal=false" >> $LAUNCHER
 	echo "Type=Application" >> $LAUNCHER
 	echo "Categories=Office" >> $LAUNCHER
 fi
-if [ "${OSTYPE:0:6}" == "darwin" ]
-then
-    APPDIR="$PWD/$APP_NAME.command"
-    echo '#!/usr/bin/env bash' > $APPDIR
-    echo 'launch_lucterios_gui' >> $APPDIR
-    chmod ogu+rx "$APPDIR"
 
-    $PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION py2app
-    rm -rf MyIcon.iconset
-    if [ ! -z "$icon_path" ]
-    then
-        mkdir MyIcon.iconset
-        sips -z 16 16     $icon_path --out "MyIcon.iconset/icon_16x16.png"
-        sips -z 32 32     $icon_path --out "MyIcon.iconset/icon_16x16@2x.png"
-        sips -z 32 32     $icon_path --out "MyIcon.iconset/icon_32x32.png"
-        sips -z 64 64     $icon_path --out "MyIcon.iconset/icon_32x32@2x.png"
-        sips -z 128 128   $icon_path --out "MyIcon.iconset/icon_128x128.png"
-        sips -z 256 256   $icon_path --out "MyIcon.iconset/icon_128x128@2x.png"
-        sips -z 256 256   $icon_path --out "MyIcon.iconset/icon_256x256.png"
-        sips -z 512 512   $icon_path --out "MyIcon.iconset/icon_256x256@2x.png"
-        sips -z 512 512   $icon_path --out "MyIcon.iconset/icon_512x512.png"
-        cp $icon_path MyIcon.iconset/icon_512x512@2x.png
-        iconutil -c icns MyIcon.iconset
-        rm -rf MyIcon.iconset
-    fi
-
-    py_run="$PWD/run.py"
-    rm -rf $py_run
-    echo "# launcher for lucterios GUI" >> $py_run
-    echo "import os" >> $py_run
-    echo "os.chdir('$PWD')" >> $py_run
-    for var_item in LC_ALL LC_CTYPE LANG LANGUAGE
-	do 
-		if [ ! -z "${!var_item}" ]
-		then 
-			echo "os.environ['$var_item']='${!var_item}'"
-		fi
-	done
-    echo "" >> $py_run
-    echo "import lucterios.install.lucterios_gui" >> $py_run
-    echo "lucterios.install.lucterios_gui.main()" >> $py_run
-    echo "" >> $py_run
-
-    py2app_setup="/var/lucterios2/setup.py"
-    rm -rf $py2app_setup
-    echo "# setup" >> $py2app_setup
-    echo "from setuptools import setup" >> $py2app_setup
-    echo "setup(" >> $py2app_setup
-    echo "	name='$APP_NAME'," >> $py2app_setup
-    echo "	app=['run.py']," >> $py2app_setup
-    echo "	setup_requires=['py2app']," >> $py2app_setup
-    echo ")" >> $py2app_setup
-    if [ -f "MyIcon.icns" ]
-    then
-        $PYTHON_CMD $py2app_setup py2app --iconfile MyIcon.icns --use-pythonpath --site-packages -A
-    else
-        $PYTHON_CMD $py2app_setup py2app --use-pythonpath --site-packages -A
-    fi
-    site_new_name="site_mac"
-    cat "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/__boot__.py" | sed "s|import os, site|import os, $site_new_name|g" | sed "s|site\.|$site_new_name.|g" | sed "s|import site,|import $site_new_name,|g" > "/var/lucterios2/__boot__.py"
-    echo "import sys, os" > "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/__boot__.py"
-    echo "sys.path.append(os.environ['RESOURCEPATH'])" >> "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/__boot__.py"
-    cat "/var/lucterios2/__boot__.py" >> "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/__boot__.py"
-    rm -rf "/var/lucterios2/__boot__.py"
-    mv "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/site.py" "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/$site_new_name.py"
-    rm -rf "/var/lucterios2/dist/$APP_NAME.app/Contents/Resources/__pycache__"
-
-    rm -rf "/Applications/$APP_NAME.app"
-    mv "/var/lucterios2/dist/$APP_NAME.app" "/Applications/$APP_NAME.app"
-    chmod -R ogu+rx "/Applications/$APP_NAME.app"
-
-    rm -rf "/var/lucterios2/dist"
-    rm -rf "/var/lucterios2/build"
-
-fi
-
-chmod -R ogu+rw "/var/lucterios2"
+chmod -R ogu+rw "$LUCTERIOS_PATH"
 
 echo "============ END ============="
 exit 0

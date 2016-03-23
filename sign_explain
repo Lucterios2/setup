@@ -1,7 +1,7 @@
 cd /tmp
 wget http://netix.dl.sourceforge.net/project/osslsigncode/osslsigncode/osslsigncode-1.7.1.tar.gz
 tar -xzf osslsigncode-1.7.1.tar.gz
-cd osslsigncode
+cd osslsigncode-1.7.1
 sudo apt-get install libssl-dev libcurl4-gnutls-dev
 ./configure
 make

@@ -5,7 +5,7 @@
 	<available file="/usr/bin/wine" property="wine.present" />
 	<available file="/usr/bin/hdiutil" property="mac.present" />
 	<available file="/usr/bin/genisoimage" property="pseudomac.present" />
-	<available file="/usr/bin/osslsigncode" property="sign.present" />
+	<available file="/usr/local/bin/osslsigncode" property="sign.present" />
 
 	<condition property="lct_name" value="${env.LCT_NAME}">
 		<isset property="env.LCT_NAME" />
@@ -131,8 +131,8 @@
 		<delete dir="${basedir}/tmp" />
 		<mkdir dir="${basedir}/tmp" />
 		<delete file="${basedir}/${lct_name}_setup.dmg" />
-		<copy file="${basedir}/install.sh" tofile="${basedir}/tmp/install_${lct_name}.command" />
-		<copy file="${basedir}/uninstall.sh" tofile="${basedir}/tmp/uninstall_${lct_name}.command" />
+		<copy file="${basedir}/install_mac.sh" tofile="${basedir}/tmp/install_${lct_name}.command" />
+		<copy file="${basedir}/uninstall_mac.sh" tofile="${basedir}/tmp/uninstall_${lct_name}.command" />
 		<echo file="${basedir}/tmp/install_brew.command">#!/bin/sh
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 		</echo>
