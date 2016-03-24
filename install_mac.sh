@@ -6,13 +6,6 @@ then # Not Mac OS X
    exit 1
 fi
 
-if [ "$(id -u)" != "0" ]; then
-   echo ">>> This script must be run as 'super user' <<<" 1>&2
-   [ -z "$(which sudo)" ] && exit 1
-   sudo -E -H $0 $@
-   exit $!
-fi
-
 PACKAGES="@@PACKAGE@@"
 APP_NAME="@@NAME@@"
 
@@ -61,12 +54,9 @@ echo "------ check perquisite -------"
 echo
 
 if [ ! -z "$(which brew 2>/dev/null)" ]; then
-	brew_perm=`stat -c "%G:%U" $(which brew)`
-	chown root:wheel $(which brew)
 	brew install libxml2 libxslt libjpeg libpng libtiff giflib
 	easy_install pip
 	brew install python3
-	chown $brew_perm $(which brew)
 	pip3 install --upgrade pip
 else
 	echo "++++++ brew not installed on Mac OS X! +++++++"
@@ -77,7 +67,7 @@ echo
 echo "------ configure virtual environment ------"
 echo
 
-LUCTERIOS_PATH="/var/lucterios2"
+LUCTERIOS_PATH="$HOME/lucterios2" 
 
 PIP_CMD=
 PYTHON_CMD=
@@ -95,6 +85,17 @@ set -e
 
 echo "$PYTHON_CMD $(which $PIP_CMD) install $PIP_OPTION virtualenv -U"
 $PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION pip virtualenv
+
+if [ -d "/var/lucterios2" ]
+then
+	if [ -d $LUCTERIOS_PATH ]
+	then
+		sudo rm -rf "/var/lucterios2"
+	else
+		sudo mv "/var/lucterios2" "$LUCTERIOS_PATH"  
+		sudo chown -R $LOGNAME "$LUCTERIOS_PATH"
+	fi
+fi
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH

@@ -127,8 +127,35 @@
 		<delete dir="${basedir}/tmp" />
 	</target>
 
+	<target name="create_app_mac">
+		<mkdir dir="${dir_path}/${name_app}.app/Contents/MacOS" />
+		<mkdir dir="${dir_path}/${name_app}.app/Contents/Resources" />
+		<copy file="${basedir}/package.icns" todir="${dir_path}/${name_app}.app/Contents/Resources" />
+		<move file="${dir_path}/${script}" tofile="${dir_path}/${name_app}.app/Contents/MacOS/${name_app}" />
+		<chmod file="${dir_path}/${name_app}.app/Contents/MacOS/${name_app}" perm="ugo+rx"/>
+		<echo file="${dir_path}/${name_app}.app/Contents/Info.plist">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+	&lt;key&gt;CFBundleExecutable&lt;/key&gt;
+	&lt;string&gt;${name_app}&lt;/string&gt;
+	&lt;key&gt;CFBundleGetInfoString&lt;/key&gt;
+	&lt;string&gt;${name_app}&lt;/string&gt;
+	&lt;key&gt;CFBundleIconFile&lt;/key&gt;
+	&lt;string&gt;package.icns&lt;/string&gt;
+	&lt;key&gt;CFBundleName&lt;/key&gt;
+	&lt;string&gt;${name_app}&lt;/string&gt;
+	&lt;key&gt;CFBundlePackageType&lt;/key&gt;
+	&lt;string&gt;APPL&lt;/string&gt;
+	&lt;key&gt;CFBundleShortVersionString&lt;/key&gt;
+	&lt;string&gt;${build.num}&lt;/string&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;</echo>
+	</target>
+
 	<target name="commun_mac">
 		<delete dir="${basedir}/tmp" />
+		<delete dir="${basedir}/tmp2" />
 		<mkdir dir="${basedir}/tmp" />
 		<delete file="${basedir}/${lct_name}_setup.dmg" />
 		<copy file="${basedir}/install_mac.sh" tofile="${basedir}/tmp/install_${lct_name}.command" />
@@ -160,6 +187,24 @@ Disponible sur cette image:
 		<chmod file="${basedir}/tmp/install_brew.command" perm="ugo+rx"/>
 		<chmod file="${basedir}/tmp/install_${lct_name}.command" perm="ugo+rx"/>
 		<chmod file="${basedir}/tmp/uninstall_${lct_name}.command" perm="ugo+rx"/>
+		<copy todir="${basedir}/tmpapp">
+    		<fileset dir="${basedir}/tmp"/>
+  		</copy>		
+		<antcall target="create_app_mac">
+			<param name="name_app" value="install ${lct_name}" />
+			<param name="dir_path" value="${basedir}/tmpapp" />
+			<param name="script" value="install_${lct_name}.command" />
+		</antcall>
+		<antcall target="create_app_mac">
+			<param name="name_app" value="uninstall ${lct_name}" />
+			<param name="dir_path" value="${basedir}/tmpapp" />
+			<param name="script" value="uninstall_${lct_name}.command" />
+		</antcall>
+		<antcall target="create_app_mac">
+			<param name="name_app" value="install brew" />
+			<param name="dir_path" value="${basedir}/tmpapp" />
+			<param name="script" value="install_brew.command" />
+		</antcall>
 	</target>
 
 	<target name="mac" if="mac.present" depends='commun_mac'>
@@ -170,7 +215,16 @@ Disponible sur cette image:
 			<arg line="internet-enable -yes ${lct_name}_setup.dmg" />
 		</exec>
 		<move file="${basedir}/${lct_name}_setup.dmg" todir="${basedir}/bin" />
+		
+		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
+			<arg line="create -ov -srcfolder tmpapp -volname ${lct_name} ${lct_name}_setup_app.dmg" />
+		</exec>
+		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
+			<arg line="internet-enable -yes ${lct_name}_setup_app.dmg" />
+		</exec>
+		<move file="${basedir}/${lct_name}_setup_app.dmg" todir="${basedir}/bin" />
 		<delete dir="${basedir}/tmp" />
+		<delete dir="${basedir}/tmpapp" />
 	</target>
 
 	<target name="pseudomac" if="pseudomac.present" depends='commun_mac'>
@@ -178,7 +232,12 @@ Disponible sur cette image:
 			<arg line="-V ${lct_name} -D -R -apple -no-pad -o ${lct_name}_setup.dmg tmp" />
 		</exec>
 		<move file="${basedir}/${lct_name}_setup.dmg" todir="${basedir}/bin" />
+		<exec executable="/usr/bin/genisoimage" dir="${basedir}">
+			<arg line="-V ${lct_name} -D -R -apple -no-pad -o ${lct_name}_setup_app.dmg tmpapp" />
+		</exec>
+		<move file="${basedir}/${lct_name}_setup_app.dmg" todir="${basedir}/bin" />
 		<delete dir="${basedir}/tmp" />
+		<delete dir="${basedir}/tmpapp" />
 	</target>
 
 	<target name="all" depends="init">
