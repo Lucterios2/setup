@@ -132,12 +132,13 @@
 		<mkdir dir="${dir_path}/${name_app}.app/Contents/Resources" />
 		<copy file="${basedir}/package.icns" todir="${dir_path}/${name_app}.app/Contents/Resources" />
 		<move file="${dir_path}/${script}" todir="${dir_path}/${name_app}.app/Contents/MacOS/" />
-		<chmod file="${dir_path}/${name_app}.app/Contents/MacOS/${name_app}" perm="ugo+rx"/>
+		<chmod file="${dir_path}/${name_app}.app/Contents/MacOS/${script}" perm="ugo+rx"/>
 		<echo file="${dir_path}/${name_app}.app/Contents/MacOS/${name_app}">#!/bin/bash
 CURPATH=$(dirname "$0")
 cd "$CURPATH"
 open ./${script}
 		</echo>
+		<chmod file="${dir_path}/${name_app}.app/Contents/MacOS/${name_app}" perm="ugo+rx"/>
 		<echo file="${dir_path}/${name_app}.app/Contents/Info.plist">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
 &lt;plist version="1.0"&gt;
