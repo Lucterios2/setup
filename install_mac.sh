@@ -45,6 +45,18 @@ then
 	PIP_OPTION="$PIP_OPTION --proxy=$http_proxy"
 fi
 
+LUCTERIOS_PATH="$HOME/lucterios2" 
+if [ -d "/var/lucterios2" ] # conversion from old installation
+then
+	if [ -d $LUCTERIOS_PATH ]
+	then
+		sudo rm -rf "/var/lucterios2"
+	else
+		sudo mv "/var/lucterios2" "$LUCTERIOS_PATH"  
+		sudo chown -R $LOGNAME "$LUCTERIOS_PATH"
+	fi
+fi
+
 echo "====== install lucterios #@@BUILD@@ ======"
 
 echo "install: packages=$PACKAGES application_name=$APP_NAME"
@@ -67,8 +79,6 @@ echo
 echo "------ configure virtual environment ------"
 echo
 
-LUCTERIOS_PATH="$HOME/lucterios2" 
-
 PIP_CMD=
 PYTHON_CMD=
 for pip_iter in 3 2
@@ -85,17 +95,6 @@ set -e
 
 echo "$PYTHON_CMD $(which $PIP_CMD) install $PIP_OPTION virtualenv -U"
 $PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION pip virtualenv
-
-if [ -d "/var/lucterios2" ]
-then
-	if [ -d $LUCTERIOS_PATH ]
-	then
-		sudo rm -rf "/var/lucterios2"
-	else
-		sudo mv "/var/lucterios2" "$LUCTERIOS_PATH"  
-		sudo chown -R $LOGNAME "$LUCTERIOS_PATH"
-	fi
-fi
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
