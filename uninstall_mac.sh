@@ -15,6 +15,7 @@ fi
 echo "====== delete lucterios #@@BUILD@@ ======"
 rm -f /usr/local/bin/launch_lucterios
 rm -f /usr/local/bin/launch_lucterios_gui
+rm -rf $HOME/lucterios2
 rm -rf /var/lucterios2/
 rm -rf /usr/share/applications/lucterios.desktop
 rm -rf /Applications/$APP_NAME.*

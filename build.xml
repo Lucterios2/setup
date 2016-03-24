@@ -131,8 +131,13 @@
 		<mkdir dir="${dir_path}/${name_app}.app/Contents/MacOS" />
 		<mkdir dir="${dir_path}/${name_app}.app/Contents/Resources" />
 		<copy file="${basedir}/package.icns" todir="${dir_path}/${name_app}.app/Contents/Resources" />
-		<move file="${dir_path}/${script}" tofile="${dir_path}/${name_app}.app/Contents/MacOS/${name_app}" />
+		<move file="${dir_path}/${script}" todir="${dir_path}/${name_app}.app/Contents/MacOS/" />
 		<chmod file="${dir_path}/${name_app}.app/Contents/MacOS/${name_app}" perm="ugo+rx"/>
+		<echo file="${dir_path}/${name_app}.app/Contents/MacOS/${name_app}">#!/bin/bash
+CURPATH=$(dirname "$0")
+cd "$CURPATH"
+open ./${script}
+		</echo>
 		<echo file="${dir_path}/${name_app}.app/Contents/Info.plist">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
 &lt;plist version="1.0"&gt;
@@ -163,7 +168,7 @@
 		<echo file="${basedir}/tmp/install_brew.command">#!/bin/sh
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 		</echo>
-		<echo file="${basedir}/tmp/README">#### Install of ${lct_name} dor Mac OS X ####
+		<echo file="${basedir}/tmp/README" encoding="UTF-8">#### Install of ${lct_name} for Mac OS X ####
 To install ${lct_name}, you must to have Mac OS X 10.9 minimum (last version is better)
 Available on this image:
  - install_brew.command: allow to install "brew" tool, need to install ${lct_name}
@@ -190,6 +195,20 @@ Disponible sur cette image:
 		<copy todir="${basedir}/tmpapp">
     		<fileset dir="${basedir}/tmp"/>
   		</copy>		
+		<echo file="${basedir}/tmpapp/README" encoding="UTF-8">#### Install of ${lct_name} for Mac OS X ####
+To install ${lct_name}, you must to have Mac OS X 10.9 minimum (last version is better)
+Available on this image:
+ - installbrew: allow to install "brew" tool, need to install ${lct_name}
+ - install ${lct_name}: allow to install ${lct_name} and dependancy
+ - uninstall ${lct_name}: allow to uninstall ${lct_name}
+
+#### Installation de ${lct_name} pour Mac OS X ####
+Pour installer ${lct_name}, vous devez disposer de Mac OS X 10.9 minimum (prévilègier la dernière version disponible)
+Disponible sur cette image:
+ - install brew: permet d'installer l'outil "brew" nécessaire à l'installation de ${lct_name}
+ - install ${lct_name}: permet d'installer ${lct_name} ainsi que ces dépendance
+ - uninstall ${lct_name}: permet de désinstaller ${lct_name}
+		</echo>
 		<antcall target="create_app_mac">
 			<param name="name_app" value="install ${lct_name}" />
 			<param name="dir_path" value="${basedir}/tmpapp" />
@@ -209,33 +228,33 @@ Disponible sur cette image:
 
 	<target name="mac" if="mac.present" depends='commun_mac'>
 		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
-			<arg line="create -ov -srcfolder tmp -volname ${lct_name} ${lct_name}_setup.dmg" />
+			<arg line="create -ov -srcfolder tmp -volname ${lct_name} ${lct_name}_setup_simple.dmg" />
+		</exec>
+		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
+			<arg line="internet-enable -yes ${lct_name}_setup_simple.dmg" />
+		</exec>
+		<move file="${basedir}/${lct_name}_setup_simple.dmg" todir="${basedir}/bin" />
+		
+		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
+			<arg line="create -ov -srcfolder tmpapp -volname ${lct_name} ${lct_name}_setup.dmg" />
 		</exec>
 		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
 			<arg line="internet-enable -yes ${lct_name}_setup.dmg" />
 		</exec>
 		<move file="${basedir}/${lct_name}_setup.dmg" todir="${basedir}/bin" />
-		
-		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
-			<arg line="create -ov -srcfolder tmpapp -volname ${lct_name} ${lct_name}_setup_app.dmg" />
-		</exec>
-		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
-			<arg line="internet-enable -yes ${lct_name}_setup_app.dmg" />
-		</exec>
-		<move file="${basedir}/${lct_name}_setup_app.dmg" todir="${basedir}/bin" />
 		<delete dir="${basedir}/tmp" />
 		<delete dir="${basedir}/tmpapp" />
 	</target>
 
 	<target name="pseudomac" if="pseudomac.present" depends='commun_mac'>
 		<exec executable="/usr/bin/genisoimage" dir="${basedir}">
-			<arg line="-V ${lct_name} -D -R -apple -no-pad -o ${lct_name}_setup.dmg tmp" />
+			<arg line="-V ${lct_name} -D -R -apple -no-pad -o ${lct_name}_setup_simple.dmg tmp" />
+		</exec>
+		<move file="${basedir}/${lct_name}_setup_simple.dmg" todir="${basedir}/bin" />
+		<exec executable="/usr/bin/genisoimage" dir="${basedir}">
+			<arg line="-V ${lct_name} -D -R -apple -no-pad -o ${lct_name}_setup.dmg tmpapp" />
 		</exec>
 		<move file="${basedir}/${lct_name}_setup.dmg" todir="${basedir}/bin" />
-		<exec executable="/usr/bin/genisoimage" dir="${basedir}">
-			<arg line="-V ${lct_name} -D -R -apple -no-pad -o ${lct_name}_setup_app.dmg tmpapp" />
-		</exec>
-		<move file="${basedir}/${lct_name}_setup_app.dmg" todir="${basedir}/bin" />
 		<delete dir="${basedir}/tmp" />
 		<delete dir="${basedir}/tmpapp" />
 	</target>
