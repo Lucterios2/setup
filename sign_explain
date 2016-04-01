@@ -17,3 +17,5 @@ openssl pkcs12 -export -in sdlibre-cert.pem -inkey private/sdlibre-key.pem -cert
 
 # mv bin/Lucterios_setup.exe bin/Lucterios_setup-unsigned.exe
 # osslsigncode sign -pkcs12 sslcert/sdlibre-cert.p12 -pass 'sd-libre' -i 'http://www.sd-libre.fr' -n 'Sd-Libre' bin/Lucterios_setup-unsigned.exe bin/Lucterios_setup.exe
+
+# => http://cc.in2p3.fr/docenligne/84

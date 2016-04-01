@@ -1,11 +1,22 @@
 <project name="Lucterios2" default="all" basedir=".">
 	<property name="project.name" value="lucterios" />
 	<property environment="env" />
-
+	<property name="p12certificatpath" value="/opt/certificate.p12" />
+	<exec executable="python" outputproperty="p12certificatpass" failifexecutionfails="false" errorproperty="">
+		<arg value="-c" />
+		<arg value="print(open('/opt/p12certificatpass').read().strip())" />
+	</exec>
+	
 	<available file="/usr/bin/wine" property="wine.present" />
 	<available file="/usr/bin/hdiutil" property="mac.present" />
 	<available file="/usr/bin/genisoimage" property="pseudomac.present" />
-	<available file="/usr/local/bin/osslsigncode" property="sign.present" />
+	<condition property="sign.present">
+		<and>
+		    <available file="/usr/local/bin/osslsigncode"/>
+		    <available file="/opt/p12certificatpass"/>
+		    <available file="${p12certificatpath}"/>
+		</and>
+	</condition>
 
 	<condition property="lct_name" value="${env.LCT_NAME}">
 		<isset property="env.LCT_NAME" />
@@ -74,7 +85,7 @@
 	
 	<target name="winsign" if="sign.present">
 		<exec executable="osslsigncode" dir="${basedir}">
-			<arg line="sign -pkcs12 sslcert/sdlibre-cert.p12 -pass 'sd-libre' -i 'http://www.sd-libre.fr' -n '${lct_name}' bin/${lct_name}_setup.exe bin/${lct_name}_setup-signed.exe"/>
+			<arg line="sign -pkcs12 ${p12certificatpath} -pass '${p12certificatpass}' -i 'http://www.sd-libre.fr' -n '${lct_name}' bin/${lct_name}_setup.exe bin/${lct_name}_setup-signed.exe"/>
 		</exec>
 	</target>
 
@@ -100,6 +111,7 @@
 		</exec>
 		<move file="${basedir}/tmp/${lct_name}_setup.exe" todir="${basedir}/bin/" />
 		<antcall target="winsign" />
+		<delete dir="${basedir}/tmp" />
 	</target>
 
 	<target name="inno" if="wine.present">
@@ -161,7 +173,6 @@ open ./${script}
 
 	<target name="commun_mac">
 		<delete dir="${basedir}/tmp" />
-		<delete dir="${basedir}/tmp2" />
 		<mkdir dir="${basedir}/tmp" />
 		<delete file="${basedir}/${lct_name}_setup.dmg" />
 		<copy file="${basedir}/install_mac.sh" tofile="${basedir}/tmp/install_${lct_name}.command" />
@@ -170,33 +181,6 @@ open ./${script}
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 		</echo>
 		<echo file="${basedir}/tmp/README" encoding="UTF-8">#### Install of ${lct_name} for Mac OS X ####
-To install ${lct_name}, you must to have Mac OS X 10.9 minimum (last version is better)
-Available on this image:
- - install_brew.command: allow to install "brew" tool, need to install ${lct_name}
- - install_${lct_name}.command: allow to install ${lct_name} and dependancy
- - uninstall_${lct_name}.command: allow to uninstall ${lct_name}
-
-#### Installation de ${lct_name} pour Mac OS X ####
-Pour installer ${lct_name}, vous devez disposer de Mac OS X 10.9 minimum (prévilègier la dernière version disponible)
-Disponible sur cette image:
- - install_brew.command: permet d'installer l'outil "brew" nécessaire à l'installation de ${lct_name}
- - install_${lct_name}.command: permet d'installer ${lct_name} ainsi que ces dépendance
- - uninstall_${lct_name}.command: permet de désinstaller ${lct_name}
-		</echo>
-		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
-		<antcall target="correct_install">
-			<param name="file_path" value="${basedir}/tmp/install_${lct_name}.command" />
-		</antcall>
-		<antcall target="correct_install">
-			<param name="file_path" value="${basedir}/tmp/uninstall_${lct_name}.command" />
-		</antcall>
-		<chmod file="${basedir}/tmp/install_brew.command" perm="ugo+rx"/>
-		<chmod file="${basedir}/tmp/install_${lct_name}.command" perm="ugo+rx"/>
-		<chmod file="${basedir}/tmp/uninstall_${lct_name}.command" perm="ugo+rx"/>
-		<copy todir="${basedir}/tmpapp">
-    		<fileset dir="${basedir}/tmp"/>
-  		</copy>		
-		<echo file="${basedir}/tmpapp/README" encoding="UTF-8">#### Install of ${lct_name} for Mac OS X ####
 To install ${lct_name}, you must to have Mac OS X 10.9 minimum (last version is better)
 Available on this image:
  - installbrew: allow to install "brew" tool, need to install ${lct_name}
@@ -210,54 +194,50 @@ Disponible sur cette image:
  - install ${lct_name}: permet d'installer ${lct_name} ainsi que ces dépendance
  - uninstall ${lct_name}: permet de désinstaller ${lct_name}
 		</echo>
+		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
+		<antcall target="correct_install">
+			<param name="file_path" value="${basedir}/tmp/install_${lct_name}.command" />
+		</antcall>
+		<antcall target="correct_install">
+			<param name="file_path" value="${basedir}/tmp/uninstall_${lct_name}.command" />
+		</antcall>
+		<chmod file="${basedir}/tmp/install_brew.command" perm="ugo+rx"/>
+		<chmod file="${basedir}/tmp/install_${lct_name}.command" perm="ugo+rx"/>
+		<chmod file="${basedir}/tmp/uninstall_${lct_name}.command" perm="ugo+rx"/>
 		<antcall target="create_app_mac">
 			<param name="name_app" value="install ${lct_name}" />
-			<param name="dir_path" value="${basedir}/tmpapp" />
+			<param name="dir_path" value="${basedir}/tmp" />
 			<param name="script" value="install_${lct_name}.command" />
 		</antcall>
 		<antcall target="create_app_mac">
 			<param name="name_app" value="uninstall ${lct_name}" />
-			<param name="dir_path" value="${basedir}/tmpapp" />
+			<param name="dir_path" value="${basedir}/tmp" />
 			<param name="script" value="uninstall_${lct_name}.command" />
 		</antcall>
 		<antcall target="create_app_mac">
 			<param name="name_app" value="install brew" />
-			<param name="dir_path" value="${basedir}/tmpapp" />
+			<param name="dir_path" value="${basedir}/tmp" />
 			<param name="script" value="install_brew.command" />
 		</antcall>
 	</target>
 
 	<target name="mac" if="mac.present" depends='commun_mac'>
 		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
-			<arg line="create -ov -srcfolder tmp -volname ${lct_name} ${lct_name}_setup_simple.dmg" />
-		</exec>
-		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
-			<arg line="internet-enable -yes ${lct_name}_setup_simple.dmg" />
-		</exec>
-		<move file="${basedir}/${lct_name}_setup_simple.dmg" todir="${basedir}/bin" />
-		
-		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
-			<arg line="create -ov -srcfolder tmpapp -volname ${lct_name} ${lct_name}_setup.dmg" />
+			<arg line="create -ov -srcfolder tmp -volname ${lct_name} ${lct_name}_setup.dmg" />
 		</exec>
 		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
 			<arg line="internet-enable -yes ${lct_name}_setup.dmg" />
 		</exec>
 		<move file="${basedir}/${lct_name}_setup.dmg" todir="${basedir}/bin" />
 		<delete dir="${basedir}/tmp" />
-		<delete dir="${basedir}/tmpapp" />
 	</target>
 
 	<target name="pseudomac" if="pseudomac.present" depends='commun_mac'>
 		<exec executable="/usr/bin/genisoimage" dir="${basedir}">
-			<arg line="-V ${lct_name} -D -R -apple -no-pad -o ${lct_name}_setup_simple.dmg tmp" />
-		</exec>
-		<move file="${basedir}/${lct_name}_setup_simple.dmg" todir="${basedir}/bin" />
-		<exec executable="/usr/bin/genisoimage" dir="${basedir}">
-			<arg line="-V ${lct_name} -D -R -apple -no-pad -o ${lct_name}_setup.dmg tmpapp" />
+			<arg line="-V ${lct_name} -D -R -apple -no-pad -o ${lct_name}_setup.dmg tmp" />
 		</exec>
 		<move file="${basedir}/${lct_name}_setup.dmg" todir="${basedir}/bin" />
 		<delete dir="${basedir}/tmp" />
-		<delete dir="${basedir}/tmpapp" />
 	</target>
 
 	<target name="all" depends="init">
