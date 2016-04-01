@@ -1,19 +1,14 @@
 <project name="Lucterios2" default="all" basedir=".">
 	<property name="project.name" value="lucterios" />
 	<property environment="env" />
-	<property name="p12certificatpath" value="/opt/certificate.p12" />
-	<exec executable="python" outputproperty="p12certificatpass" failifexecutionfails="false" errorproperty="">
-		<arg value="-c" />
-		<arg value="print(open('/opt/p12certificatpass').read().strip())" />
-	</exec>
+	<property name="p12certificatpath" value="/opt/sign/authenticode.spc" />
 	
 	<available file="/usr/bin/wine" property="wine.present" />
 	<available file="/usr/bin/hdiutil" property="mac.present" />
 	<available file="/usr/bin/genisoimage" property="pseudomac.present" />
 	<condition property="sign.present">
 		<and>
-		    <available file="/usr/local/bin/osslsigncode"/>
-		    <available file="/opt/p12certificatpass"/>
+		    <available file="/usr/bin/signcode"/>
 		    <available file="${p12certificatpath}"/>
 		</and>
 	</condition>
@@ -84,9 +79,11 @@
 	</target>
 	
 	<target name="winsign" if="sign.present">
-		<exec executable="osslsigncode" dir="${basedir}">
-			<arg line="sign -pkcs12 ${p12certificatpath} -pass '${p12certificatpass}' -i 'http://www.sd-libre.fr' -n '${lct_name}' bin/${lct_name}_setup.exe bin/${lct_name}_setup-signed.exe"/>
+		<copy file="bin/${lct_name}_setup.exe" tofile="bin/${lct_name}_setup-signed.exe" />
+		<exec executable="signcode" dir="${basedir}">
+			<arg line="-spc ${p12certificatpath} -a sha1 -$ commercial -n Lucterios -i 'http://www.Lucterios.org' -t http://timestamp.verisign.com/scripts/timstamp.dll -tr 10 bin/${lct_name}_setup-signed.exe"/>
 		</exec>
+		<delete file="${basedir}/bin/${lct_name}_setup-signed.exe.bak" />
 	</target>
 
 	<target name="nsis" if="wine.present">
@@ -244,7 +241,8 @@ Disponible sur cette image:
 		<delete dir="${basedir}/bin" />
 		<mkdir dir="${basedir}/bin" />
 		<antcall target="tar" />
-		<antcall target="inno" />
+		<!-- antcall target="inno" /-->
+		<antcall target="nsis" />
 		<antcall target="pseudomac" />
 		<antcall target="mac" />
 		<delete dir="${basedir}/tmp" />
