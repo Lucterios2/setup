@@ -81,8 +81,9 @@
 	</target>
 	
 	<target name="winsign" if="sign.present">
+		<copy file="bin/${lct_name}_setup.exe" tofile="bin/${lct_name}_setup-unsigned.exe" />
 		<exec executable="osslsigncode" dir="${basedir}">
-			<arg line="sign -certs ${certificatpath} -key ${privatekeypath} -i 'http://www.sd-libre.fr' -n '${lct_name}' bin/${lct_name}_setup.exe bin/${lct_name}_setup-signed.exe"/>
+			<arg line="sign -certs ${certificatpath} -key ${privatekeypath} -i 'http://www.sd-libre.fr' -n '${lct_name}' bin/${lct_name}_setup-unsigned.exe bin/${lct_name}_setup.exe"/>
 		</exec>
 	</target>
 
@@ -180,9 +181,10 @@ open ./${script}
 		<echo file="${basedir}/tmp/README" encoding="UTF-8">#### Install of ${lct_name} for Mac OS X ####
 To install ${lct_name}, you must to have Mac OS X 10.9 minimum (last version is better)
 Available on this image:
- - installbrew: allow to install "brew" tool, need to install ${lct_name}
+ - install brew: allow to install "brew" tool, need to install ${lct_name}
  - install ${lct_name}: allow to install ${lct_name} and dependancy
  - uninstall ${lct_name}: allow to uninstall ${lct_name}
+Note: Mac OS X can to ask you for confirmation to run this installation on your computer.
 
 #### Installation de ${lct_name} pour Mac OS X ####
 Pour installer ${lct_name}, vous devez disposer de Mac OS X 10.9 minimum (prévilègier la dernière version disponible)
@@ -190,6 +192,7 @@ Disponible sur cette image:
  - install brew: permet d'installer l'outil "brew" nécessaire à l'installation de ${lct_name}
  - install ${lct_name}: permet d'installer ${lct_name} ainsi que ces dépendance
  - uninstall ${lct_name}: permet de désinstaller ${lct_name}
+Remarque: Mac OS X peut vous demander une confirmation pour dérouler cette installation sur votre ordinateur.
 		</echo>
 		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
 		<antcall target="correct_install">

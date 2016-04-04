@@ -8,14 +8,4 @@ make
 sudo make install
 
 # -------
-
-cd sslcert/
-openssl req -new -x509 -extensions v3_ca -keyout private/cakey.pem -out cacert.pem -days 3650 -config ./openssl.cnf
-openssl req -new -nodes -out sdlibre-req.pem -keyout private/sdlibre-key.pem -days 3650 -config ./openssl.cnf
-openssl ca -out sdlibre-cert.pem -days 3650 -config ./openssl.cnf -infiles sdlibre-req.pem
-openssl pkcs12 -export -in sdlibre-cert.pem -inkey private/sdlibre-key.pem -certfile cacert.pem -name "Sd-Libre" -out sdlibre-cert.p12
-
-# mv bin/Lucterios_setup.exe bin/Lucterios_setup-unsigned.exe
-# osslsigncode sign -pkcs12 sslcert/sdlibre-cert.p12 -pass 'sd-libre' -i 'http://www.sd-libre.fr' -n 'Sd-Libre' bin/Lucterios_setup-unsigned.exe bin/Lucterios_setup.exe
-
 # => http://cc.in2p3.fr/docenligne/84
