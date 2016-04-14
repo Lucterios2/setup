@@ -73,7 +73,7 @@ else if [ ! -z "$(which yum 2>/dev/null)" ]; then # RPM unix/linux like
 	easy_install pip
 else
 	echo "++++++ Unix/Linux distribution not available for this script! +++++++"
-fi; fi; fi; fi
+fi; fi; fi
 
 echo
 echo "------ configure virtual environment ------"
