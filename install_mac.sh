@@ -79,17 +79,10 @@ echo
 echo "------ configure virtual environment ------"
 echo
 
-PIP_CMD=
-PYTHON_CMD=
-for pip_iter in 3 2
-do
-	 if [ -z "$PIP_CMD" -a ! -z "$(which "pip$pip_iter")" ]
-	 then
-	 	PIP_CMD="pip$pip_iter"
-	 	PYTHON_CMD="python$pip_iter"
-	 fi 
-done
-[ -z "$PIP_CMD" ] && echo "No pip found!" && exit 1
+[ -z "$(which "pip3")" ] && echo "No pip3 found!" && exit 1
+
+PIP_CMD="pip3"
+PYTHON_CMD="python3"
 
 set -e
 

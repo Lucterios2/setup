@@ -11,7 +11,7 @@
 ; The name of the installer
 Name "@@NAME@@ #@@BUILD@@"
 
-BrandingText "www.sd-libre.fr - Sdl 2016"
+BrandingText "www.sd-libre.fr - Sdl 2017"
 
 ; The file to write
 OutFile "@@NAME@@_setup.exe"
@@ -19,7 +19,7 @@ OutFile "@@NAME@@_setup.exe"
 ; The default installation directory
 InstallDir c:\Lucterios2
 
-VIProductVersion                 "2.0.2.0"
+VIProductVersion                 "2.2.0.0"
 VIAddVersionKey ProductName      "@@NAME@@"
 VIAddVersionKey Comments         "@@NAME@@"
 VIAddVersionKey CompanyName      "sd-libre"

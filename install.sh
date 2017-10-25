@@ -56,19 +56,15 @@ echo
 
 if [ ! -z "$(which apt-get 2>/dev/null)" ]; then  # DEB linux like
 	apt-get install -y libxml2-dev libxslt-dev libjpeg-dev libfreetype6 libfreetype6-dev zlib1g-dev
-	apt-get install -y python-pip python-dev
 	apt-get install -y python3-pip python3-dev
-	apt-get install -y python-tk python-imaging
 	apt-get install -y python3-tk 'python3-imaging|python3-pil'
 else if [ ! -z "$(which dnf 2>/dev/null)" ]; then # RPM unix/linux like
 	dnf install -y libxml2-devel libxslt-devel libjpeg-devel gcc
 	dnf install -y libfreetype6 libfreetype6-devel
-	dnf install -y python-devel python-imaging tkinter	
 	dnf install -y python3-devel python3-imaging python3-tkinter	
 else if [ ! -z "$(which yum 2>/dev/null)" ]; then # RPM unix/linux like
 	yum install -y libxml2-devel libxslt-devel libjpeg-devel gcc
 	yum install -y libfreetype6 libfreetype6-devel
-	yum install -y python-devel python-imaging tkinter	
 	yum install -y python3-devel python3-imaging python3-tkinter	
 	easy_install pip
 else
@@ -80,17 +76,10 @@ echo "------ configure virtual environment ------"
 echo
 
 LUCTERIOS_PATH="/var/lucterios2"
-PIP_CMD=
-PYTHON_CMD=
-for pip_iter in 3 2
-do
-	 if [ -z "$PIP_CMD" -a ! -z "$(which "pip$pip_iter")" ]
-	 then
-	 	PIP_CMD="pip$pip_iter"
-	 	PYTHON_CMD="python$pip_iter"
-	 fi 
-done
-[ -z "$PIP_CMD" ] && echo "No pip found!" && exit 1
+[ -z "$(which "pip3")" ] && echo "No pip3 found!" && exit 1
+
+PIP_CMD="pip3"
+PYTHON_CMD="python3"
 
 set -e
 
