@@ -39,7 +39,7 @@ while getopts "i:p:n:h" opt ; do
     esac
 done
 
-PIP_OPTION=""
+PIP_OPTION="@@PIPOPTION@@"
 if [ ! -z "$http_proxy" ]
 then
 	PIP_OPTION="$PIP_OPTION --proxy=$http_proxy"

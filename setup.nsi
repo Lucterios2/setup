@@ -75,6 +75,7 @@ Section "install"
   File "License.txt"
 
   SetOutPath "$INSTDIR"
+  RMDir /r $INSTDIR/Python
   File "install.ps1"
   File /r "Python" 
 

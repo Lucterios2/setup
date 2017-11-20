@@ -23,6 +23,11 @@
 		    <isset property="env.LCT_NAME" />
 		</not>
 	</condition>
+	<condition property="pip_option" value="">
+		<not>
+		    <isset property="env.PIP_OPTION" />
+		</not>
+	</condition>
 	<condition property="lct_package" value="${env.LCT_PACKAGES}">
 		<isset property="env.LCT_PACKAGES" />
 	</condition>
@@ -59,6 +64,7 @@
 		<replace file="${file_path}" token="@@PACKAGE@@" value="${lct_package}"/>
 		<replace file="${file_path}" token="@@URL@@" value="${lct_url}"/>
 		<replace file="${file_path}" token="@@BUILD@@" value="${build.num}"/>
+		<replace file="${file_path}" token="@@PIPOPTION@@" value="${pip_option}"/>
 	</target>
 
 	<target name="tar">

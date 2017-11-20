@@ -42,7 +42,7 @@ pip install -U pip 2>&1 | Out-Null
 echo "=> pip install -U $packages"
 foreach($package in $packages.split()) {
     echo "===> pip install -U $package"
-	pip install -U $package
+	pip install -U $package @@PIPOPTION@@
 }
 
 python Python\Scripts\lucterios_admin.py refreshall | Out-Null
