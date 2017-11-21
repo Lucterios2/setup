@@ -23,6 +23,9 @@
 		    <isset property="env.LCT_NAME" />
 		</not>
 	</condition>
+	<condition property="pip_option" value="${env.PIP_OPTION}">
+	    <isset property="env.PIP_OPTION" />
+	</condition>
 	<condition property="pip_option" value="">
 		<not>
 		    <isset property="env.PIP_OPTION" />
