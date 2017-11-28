@@ -63,10 +63,10 @@ else if [ ! -z "$(which dnf 2>/dev/null)" ]; then # RPM unix/linux like
 	dnf install -y libfreetype6 libfreetype6-devel
 	dnf install -y python3-devel python3-imaging python3-tkinter	
 else if [ ! -z "$(which yum 2>/dev/null)" ]; then # RPM unix/linux like
+	yum install -y epel-release
 	yum install -y libxml2-devel libxslt-devel libjpeg-devel gcc
-	yum install -y libfreetype6 libfreetype6-devel
-	yum install -y python3-devel python3-imaging python3-tkinter	
-	easy_install pip
+	yum install -y python34-devel python34-imaging python34-tkinter	python34-setuptools
+	easy_install-3.4 pip
 else
 	echo "++++++ Unix/Linux distribution not available for this script! +++++++"
 fi; fi; fi
