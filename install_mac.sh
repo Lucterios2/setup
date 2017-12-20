@@ -142,7 +142,7 @@ echo '#!/usr/bin/env bash' > $APPDIR
 echo 'launch_lucterios_gui' >> $APPDIR
 chmod ogu+rx "$APPDIR"
 
-$PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION py2app
+$PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION py2app==0.12
 rm -rf MyIcon.iconset
 if [ ! -z "$icon_path" ]
 then
@@ -210,6 +210,10 @@ rm -rf "$LUCTERIOS_PATH/dist"
 rm -rf "$LUCTERIOS_PATH/build"
 
 chmod -R ogu+rw "$LUCTERIOS_PATH"
+
+sed "s|^127\.0\.0\.1.*$|127.0.0.1 localhost $HOSTNAME|g" /etc/hosts > new_hosts
+sudo cp new_hosts /etc/hosts
+rm -f new_hosts
 
 echo "============ END ============="
 exit 0
