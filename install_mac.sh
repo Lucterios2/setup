@@ -96,6 +96,7 @@ $PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION pip virtualenv
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
 echo "$PYTHON_CMD $(which virtualenv) virtual_for_lucterios"
+rm -rf virtual_for_lucterios
 $PYTHON_CMD $(which virtualenv) virtual_for_lucterios
 
 echo
@@ -170,7 +171,7 @@ for var_item in LC_ALL LC_CTYPE LANG LANGUAGE
 do 
 	if [ ! -z "${!var_item}" ]
 	then 
-		echo "os.environ['$var_item']='${!var_item}'"
+		echo "os.environ['$var_item']='${!var_item}'" >> $py_run
 	fi
 done
 echo "" >> $py_run
