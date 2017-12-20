@@ -184,13 +184,9 @@ open ./${script}
 		<delete file="${basedir}/${lct_name}_setup.dmg" />
 		<copy file="${basedir}/install_mac.sh" tofile="${basedir}/tmp/install_${lct_name}.command" />
 		<copy file="${basedir}/uninstall_mac.sh" tofile="${basedir}/tmp/uninstall_${lct_name}.command" />
-		<echo file="${basedir}/tmp/install_brew.command">#!/bin/sh
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-		</echo>
 		<echo file="${basedir}/tmp/README" encoding="UTF-8">#### Install of ${lct_name} for Mac OS X ####
 To install ${lct_name}, you must to have Mac OS X 10.9 minimum (last version is better)
 Available on this image:
- - install brew: allow to install "brew" tool, need to install ${lct_name}
  - install ${lct_name}: allow to install ${lct_name} and dependancy
  - uninstall ${lct_name}: allow to uninstall ${lct_name}
 Note: Mac OS X can to ask you for confirmation to run this installation on your computer.
@@ -198,7 +194,6 @@ Note: Mac OS X can to ask you for confirmation to run this installation on your 
 #### Installation de ${lct_name} pour Mac OS X ####
 Pour installer ${lct_name}, vous devez disposer de Mac OS X 10.9 minimum (prévilègier la dernière version disponible)
 Disponible sur cette image:
- - install brew: permet d'installer l'outil "brew" nécessaire à l'installation de ${lct_name}
  - install ${lct_name}: permet d'installer ${lct_name} ainsi que ces dépendance
  - uninstall ${lct_name}: permet de désinstaller ${lct_name}
 Remarque: Mac OS X peut vous demander une confirmation pour dérouler cette installation sur votre ordinateur.
@@ -210,7 +205,6 @@ Remarque: Mac OS X peut vous demander une confirmation pour dérouler cette inst
 		<antcall target="correct_install">
 			<param name="file_path" value="${basedir}/tmp/uninstall_${lct_name}.command" />
 		</antcall>
-		<chmod file="${basedir}/tmp/install_brew.command" perm="ugo+rx"/>
 		<chmod file="${basedir}/tmp/install_${lct_name}.command" perm="ugo+rx"/>
 		<chmod file="${basedir}/tmp/uninstall_${lct_name}.command" perm="ugo+rx"/>
 		<antcall target="create_app_mac">
@@ -222,11 +216,6 @@ Remarque: Mac OS X peut vous demander une confirmation pour dérouler cette inst
 			<param name="name_app" value="uninstall ${lct_name}" />
 			<param name="dir_path" value="${basedir}/tmp" />
 			<param name="script" value="uninstall_${lct_name}.command" />
-		</antcall>
-		<antcall target="create_app_mac">
-			<param name="name_app" value="install brew" />
-			<param name="dir_path" value="${basedir}/tmp" />
-			<param name="script" value="install_brew.command" />
 		</antcall>
 	</target>
 

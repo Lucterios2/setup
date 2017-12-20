@@ -65,6 +65,10 @@ echo
 echo "------ check perquisite -------"
 echo
 
+if [ -z "$(which brew 2>/dev/null)" ]; then
+	/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+fi
+
 if [ ! -z "$(which brew 2>/dev/null)" ]; then
 	brew install libxml2 libxslt libjpeg libpng libtiff giflib
 	easy_install pip
