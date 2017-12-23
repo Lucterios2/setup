@@ -66,7 +66,7 @@ echo "------ check perquisite -------"
 echo
 
 sudo chown -R "$USER":admin /usr/local
-[ -d /Library/Caches/Homebrew] && sudo chown -R "$USER":admin /Library/Caches/Homebrew	
+[ -d /Library/Caches/Homebrew ] && sudo chown -R "$USER":admin /Library/Caches/Homebrew	
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 if [ ! -z "$(which brew 2>/dev/null)" ]; then	
