@@ -65,9 +65,11 @@ echo
 echo "------ check perquisite -------"
 echo
 
+sudo chown -R "$USER":admin /usr/local
+[ -d /Library/Caches/Homebrew] && sudo chown -R "$USER":admin /Library/Caches/Homebrew	
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-if [ ! -z "$(which brew 2>/dev/null)" ]; then
+if [ ! -z "$(which brew 2>/dev/null)" ]; then	
 	brew update
 	brew install libxml2 libxslt libjpeg libpng libtiff giflib
 	brew install python3
@@ -87,10 +89,8 @@ PYTHON_CMD="python3"
 
 set -e
 
-$PYTHON_CMD $(which $PIP_CMD)install --upgrade pip
-
 echo "$PYTHON_CMD $(which $PIP_CMD) install $PIP_OPTION virtualenv -U"
-$PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION pip virtualenv
+$PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION pip setuptools wheels virtualenv
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
