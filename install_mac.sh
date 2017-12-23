@@ -71,7 +71,14 @@ sudo chown -R "$USER":admin /usr/local
 
 if [ ! -z "$(which brew 2>/dev/null)" ]; then	
 	brew update
-	brew install libxml2 libxslt libjpeg libpng libtiff giflib
+	brew uninstall --force libxslt || echo '-- no libxslt --'	
+	brew uninstall --force libxml2 || echo '-- no libxslt --'	
+	brew uninstall --force libtiff || echo '-- no libxslt --'	
+	brew uninstall --force libjpeg || echo '-- no libxslt --'
+	brew uninstall --force libpng || echo '-- no libxslt --'	
+	brew uninstall --force giflib || echo '-- no libxslt --'	
+	brew uninstall --force python3 || echo '-- no libxslt --'	
+	brew install libxml2 libxslt libjpeg libpng libtiff giflib	
 	brew install python3
 else
 	echo "++++++ brew not installed on Mac OS X! +++++++"
