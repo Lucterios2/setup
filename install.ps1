@@ -38,7 +38,7 @@ echo ""
 echo "------ install lucterios #@@BUILD@@ ------"
 echo ""
 
-python .\Python\Scripts\get-pip.py -U pip 2>&1 | Out-Null
+python .\Python\Scripts\get-pip.py -U pip==9.0.* 2>&1 | Out-Null
 echo "=> python .\Python\Scripts\get-pip.py -U $packages"
 foreach($package in $packages.split()) {
     echo "===> python .\Python\Scripts\get-pip.py -U $package"

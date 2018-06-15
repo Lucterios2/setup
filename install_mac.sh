@@ -97,7 +97,7 @@ PYTHON_CMD="python3"
 set -e
 
 echo "$PYTHON_CMD $(which $PIP_CMD) install $PIP_OPTION virtualenv -U"
-$PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION pip virtualenv
+$PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION pip==9.0.* virtualenv
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
