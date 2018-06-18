@@ -11,7 +11,7 @@
 ; The name of the installer
 Name "@@NAME@@ #@@BUILD@@"
 
-BrandingText "www.sd-libre.fr - Sdl 2017"
+BrandingText "www.sd-libre.fr - Sdl 2018"
 
 ; The file to write
 OutFile "@@NAME@@_setup.exe"
