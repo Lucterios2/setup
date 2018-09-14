@@ -94,7 +94,7 @@ echo "------ configure virtual environment ------"
 echo
 
 py_version=$(python3 --version)
-if [ "${py_version:0:11}" == "Python 3.6." ]
+if [ "${py_version:0:11}" != "Python 3.6." ]
 then
     echo "Not Python 3.6 !"
     exit 1
@@ -119,7 +119,9 @@ echo
 . $LUCTERIOS_PATH/virtual_for_lucterios/bin/activate
 pip install -U $PIP_OPTION $PACKAGES
 
-sed 's|!= "nt"|!= "nt" and False|g' virtual_for_lucterios/lib/python3.5/site-packages/lucterios/framework/settings.py > /tmp/settings.py && cp /tmp/settings.py virtual_for_lucterios/lib/python3.5/site-packages/lucterios/framework/settings.py
+sed 's|!= "nt"|!= "nt" and False|g' virtual_for_lucterios/lib/python3.6/site-packages/lucterios/framework/settings.py > /tmp/settings.py
+cp /tmp/settings.py virtual_for_lucterios/lib/python3.6/site-packages/lucterios/framework/settings.py
+rm /tmp/settings.py
 
 lucterios_admin.py refreshall || echo '--no refresh--'
 [ -f "$LUCTERIOS_PATH/extra_url" ] || echo "# Pypi server" > "$LUCTERIOS_PATH/extra_url"
@@ -187,18 +189,20 @@ echo 'cd $HOME/lucterios2/' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_N
 echo 'export LANG=fr_FR.UTF-8' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
 echo 'lucterios_gui.py' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
 chmod ugo+rx /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
+
+
 echo '<?xml version="1.0" encoding="UTF-8"?>' > /Applications/$APP_NAME.app/Contents/Info.plist
 echo '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" " www.apple.com/DTDs/PropertyList-1.0.dtd ">' >> /Applications/$APP_NAME.app/Contents/Info.plist
 echo '<plist version="1.0">' >> /Applications/$APP_NAME.app/Contents/Info.plist
 echo '<dict>' >> /Applications/$APP_NAME.app/Contents/Info.plist
 echo ' <key>CFBundleExecutable</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <string>$APP_NAME</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <string>'$APP_NAME'</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
 echo ' <key>CFBundleGetInfoString</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <string>$APP_NAME</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <string>'$APP_NAME'</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
 echo ' <key>CFBundleIconFile</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <string>$APP_NAME.icns</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <string>'$APP_NAME'.icns</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
 echo ' <key>CFBundleName</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <string>$APP_NAME</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <string>'$APP_NAME'</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
 echo ' <key>CFBundlePackageType</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
 echo ' <string>APPL</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
 echo ' <key>CFBundleShortVersionString</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
