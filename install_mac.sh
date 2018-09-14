@@ -72,12 +72,12 @@ sudo chown -R "$USER":admin /usr/local
 if [ ! -z "$(which brew 2>/dev/null)" ]; then	
 	brew update
 	brew uninstall --force libxslt || echo '-- no libxslt --'	
-	brew uninstall --force libxml2 || echo '-- no libxslt --'	
-	brew uninstall --force libtiff || echo '-- no libxslt --'	
-	brew uninstall --force libjpeg || echo '-- no libxslt --'
-	brew uninstall --force libpng || echo '-- no libxslt --'	
-	brew uninstall --force giflib || echo '-- no libxslt --'	
-	brew uninstall --force python3 || echo '-- no libxslt --'	
+	brew uninstall --force libxml2 || echo '-- no libxml2 --'	
+	brew uninstall --force libtiff || echo '-- no libtiff --'	
+	brew uninstall --force libjpeg || echo '-- no libjpeg --'
+	brew uninstall --force libpng || echo '-- no libpng --'	
+	brew uninstall --force giflib || echo '-- no giflib --'	
+	brew uninstall --force python3 || echo '-- no python3 --'	
 	brew install libxml2 libxslt libjpeg libpng libtiff giflib	
 	brew install python3
 else
