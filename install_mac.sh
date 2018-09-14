@@ -67,6 +67,7 @@ echo
 
 sudo chown -R "$USER":admin /usr/local
 [ -d /Library/Caches/Homebrew ] && sudo chown -R "$USER":admin /Library/Caches/Homebrew	
+
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 if [ ! -z "$(which brew 2>/dev/null)" ]; then	
@@ -77,27 +78,33 @@ if [ ! -z "$(which brew 2>/dev/null)" ]; then
 	brew uninstall --force libjpeg || echo '-- no libjpeg --'
 	brew uninstall --force libpng || echo '-- no libpng --'	
 	brew uninstall --force giflib || echo '-- no giflib --'	
-	brew uninstall --force python3 || echo '-- no python3 --'	
-	brew install libxml2 libxslt libjpeg libpng libtiff giflib	
-	brew install python3
+    brew uninstall --force tcl-tk || echo '-- no tcl-tk --'
+	brew uninstall --force python3 || echo '-- no python3 --'
+	brew install libxml2 libxslt libjpeg libpng libtiff giflib tcl-tk
+	brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/f2a764ef944b1080be64bd88dca9a1d80130c558/Formula/python.rb --with-tcl-tk
 else
 	echo "++++++ brew not installed on Mac OS X! +++++++"
 	exit 1
 fi
 
+[ -z "$(grep $HOSTNAME /etc/hosts)" ] && sudo sh -c "echo 127.0.0.1 $HOSTNAME >> /etc/hosts"
+
 echo
 echo "------ configure virtual environment ------"
 echo
 
-[ -z "$(which "pip3")" ] && echo "No pip3 found!" && exit 1
-
-PIP_CMD="pip3"
+py_version=$(python3 --version)
+if [ "${py_version:0:11}" == "Python 3.6." ]
+then
+    echo "Not Python 3.6 !"
+    exit 1
+fi
 PYTHON_CMD="python3"
 
 set -e
 
-echo "$PYTHON_CMD $(which $PIP_CMD) install $PIP_OPTION virtualenv -U"
-$PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION pip==9.0.* virtualenv
+echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==18.0.* virtualenv"
+sudo $PYTHON_CMD -m pip install -U $PIP_OPTION pip==18.0.* virtualenv
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
@@ -110,9 +117,10 @@ echo "------ install lucterios ------"
 echo
 
 . $LUCTERIOS_PATH/virtual_for_lucterios/bin/activate
-pip install -U $PIP_OPTION pip 
-pip install -I pillow
 pip install -U $PIP_OPTION $PACKAGES
+
+sed 's|!= "nt"|!= "nt" and False|g' virtual_for_lucterios/lib/python3.5/site-packages/lucterios/framework/settings.py > /tmp/settings.py && cp /tmp/settings.py virtual_for_lucterios/lib/python3.5/site-packages/lucterios/framework/settings.py
+
 lucterios_admin.py refreshall || echo '--no refresh--'
 [ -f "$LUCTERIOS_PATH/extra_url" ] || echo "# Pypi server" > "$LUCTERIOS_PATH/extra_url"
 
@@ -149,78 +157,56 @@ echo '#!/usr/bin/env bash' > $APPDIR
 echo 'launch_lucterios_gui' >> $APPDIR
 chmod ogu+rx "$APPDIR"
 
-$PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION py2app==0.12
-rm -rf MyIcon.iconset
+rm -rf $APP_NAME.iconset
 if [ ! -z "$icon_path" ]
 then
-    mkdir MyIcon.iconset
-    sips -z 16 16     $icon_path --out "MyIcon.iconset/icon_16x16.png"
-    sips -z 32 32     $icon_path --out "MyIcon.iconset/icon_16x16@2x.png"
-    sips -z 32 32     $icon_path --out "MyIcon.iconset/icon_32x32.png"
-    sips -z 64 64     $icon_path --out "MyIcon.iconset/icon_32x32@2x.png"
-    sips -z 128 128   $icon_path --out "MyIcon.iconset/icon_128x128.png"
-    sips -z 256 256   $icon_path --out "MyIcon.iconset/icon_128x128@2x.png"
-    sips -z 256 256   $icon_path --out "MyIcon.iconset/icon_256x256.png"
-    sips -z 512 512   $icon_path --out "MyIcon.iconset/icon_256x256@2x.png"
-    sips -z 512 512   $icon_path --out "MyIcon.iconset/icon_512x512.png"
-    cp $icon_path MyIcon.iconset/icon_512x512@2x.png
-    iconutil -c icns MyIcon.iconset
-    rm -rf MyIcon.iconset
+    mkdir $APP_NAME.iconset
+    sips -z 16 16     $icon_path --out "$APP_NAME.iconset/icon_16x16.png"
+    sips -z 32 32     $icon_path --out "$APP_NAME.iconset/icon_16x16@2x.png"
+    sips -z 32 32     $icon_path --out "$APP_NAME.iconset/icon_32x32.png"
+    sips -z 64 64     $icon_path --out "$APP_NAME.iconset/icon_32x32@2x.png"
+    sips -z 128 128   $icon_path --out "$APP_NAME.iconset/icon_128x128.png"
+    sips -z 256 256   $icon_path --out "$APP_NAME.iconset/icon_128x128@2x.png"
+    sips -z 256 256   $icon_path --out "$APP_NAME.iconset/icon_256x256.png"
+    sips -z 512 512   $icon_path --out "$APP_NAME.iconset/icon_256x256@2x.png"
+    sips -z 512 512   $icon_path --out "$APP_NAME.iconset/icon_512x512.png"
+    cp $icon_path $APP_NAME.iconset/icon_512x512@2x.png
+    iconutil -c icns $APP_NAME.iconset
+    rm -rf $APP_NAME.iconset
 fi
 
-py_run="$PWD/run.py"
-rm -rf $py_run
-echo "# launcher for lucterios GUI" >> $py_run
-echo "import os" >> $py_run
-echo "os.chdir('$PWD')" >> $py_run
-for var_item in LC_ALL LC_CTYPE LANG LANGUAGE
-do 
-	if [ ! -z "${!var_item}" ]
-	then 
-		echo "os.environ['$var_item']='${!var_item}'" >> $py_run
-	fi
-done
-echo "" >> $py_run
-echo "import lucterios.install.lucterios_gui" >> $py_run
-echo "lucterios.install.lucterios_gui.main()" >> $py_run
-echo "" >> $py_run
+[ -d "/Applications/$APP_NAME.app" ] && rm -rf /Applications/$APP_NAME.app
 
-py2app_setup="$LUCTERIOS_PATH/setup.py"
-rm -rf $py2app_setup
-echo "# setup" >> $py2app_setup
-echo "from setuptools import setup" >> $py2app_setup
-echo "setup(" >> $py2app_setup
-echo "	name='$APP_NAME'," >> $py2app_setup
-echo "	app=['run.py']," >> $py2app_setup
-echo "	setup_requires=['py2app']," >> $py2app_setup
-echo ")" >> $py2app_setup
-if [ -f "MyIcon.icns" ]
-then
-    $PYTHON_CMD $py2app_setup py2app --iconfile MyIcon.icns --use-pythonpath --site-packages -A
-else
-    $PYTHON_CMD $py2app_setup py2app --use-pythonpath --site-packages -A
-fi
-site_new_name="site_mac"
-cat "$LUCTERIOS_PATH/dist/$APP_NAME.app/Contents/Resources/__boot__.py" | sed "s|import os, site|import os, $site_new_name|g" | sed "s|site\.|$site_new_name.|g" | sed "s|import site,|import $site_new_name,|g" > "$LUCTERIOS_PATH/__boot__.py"
-echo "import sys, os" > "$LUCTERIOS_PATH/dist/$APP_NAME.app/Contents/Resources/__boot__.py"
-echo "sys.path.append(os.environ['RESOURCEPATH'])" >> "$LUCTERIOS_PATH/dist/$APP_NAME.app/Contents/Resources/__boot__.py"
-cat "$LUCTERIOS_PATH/__boot__.py" >> "$LUCTERIOS_PATH/dist/$APP_NAME.app/Contents/Resources/__boot__.py"
-rm -rf "$LUCTERIOS_PATH/__boot__.py"
-mv "$LUCTERIOS_PATH/dist/$APP_NAME.app/Contents/Resources/site.py" "$LUCTERIOS_PATH/dist/$APP_NAME.app/Contents/Resources/$site_new_name.py"
-rm -rf "$LUCTERIOS_PATH/dist/$APP_NAME.app/Contents/Resources/__pycache__"
-
-rm -rf "/Applications/$APP_NAME.app"
-mv "$LUCTERIOS_PATH/dist/$APP_NAME.app" "/Applications/$APP_NAME.app"
-chmod -R ogu+rx "/Applications/$APP_NAME.app"
-
-rm -rf "$LUCTERIOS_PATH/dist"
-rm -rf "$LUCTERIOS_PATH/build"
+mkdir -p /Applications/$APP_NAME.app/Contents/MacOS
+mkdir -p /Applications/$APP_NAME.app/Contents/Resources
+cp $HOME/lucterios2/$APP_NAME.icns /Applications/$APP_NAME.app/Contents/Resources/
+echo '#!/usr/bin/env bash' > /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
+echo '' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
+echo '. $HOME/lucterios2/virtual_for_lucterios/bin/activate' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
+echo 'cd $HOME/lucterios2/' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
+echo 'export LANG=fr_FR.UTF-8' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
+echo 'lucterios_gui.py' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
+chmod ugo+rx /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
+echo '<?xml version="1.0" encoding="UTF-8"?>' > /Applications/$APP_NAME.app/Contents/Info.plist
+echo '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" " www.apple.com/DTDs/PropertyList-1.0.dtd ">' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo '<plist version="1.0">' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo '<dict>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <key>CFBundleExecutable</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <string>$APP_NAME</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <key>CFBundleGetInfoString</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <string>$APP_NAME</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <key>CFBundleIconFile</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <string>$APP_NAME.icns</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <key>CFBundleName</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <string>$APP_NAME</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <key>CFBundlePackageType</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <string>APPL</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <key>CFBundleShortVersionString</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo ' <string>@@BUILD@@</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo '</dict>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+echo '</plist>' >> /Applications/$APP_NAME.app/Contents/Info.plist
 
 chmod -R ogu+rw "$LUCTERIOS_PATH"
-
-sed "s|^127\.0\.0\.1.*$|127.0.0.1 localhost $HOSTNAME|g" /etc/hosts > new_hosts
-sudo cp new_hosts /etc/hosts
-rm -f new_hosts
 
 echo "============ END ============="
 exit 0
