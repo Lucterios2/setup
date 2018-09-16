@@ -21,6 +21,15 @@ function usage
 	exit 0
 }
 
+function finish_error
+{
+	msg=$1
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!">&2
+	echo " Error: $msg">&2
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!">&2
+	exit 1
+}
+
 while getopts "i:p:n:h" opt ; do
     case $opt in
     p) PACKAGES="$OPTARG"
@@ -30,11 +39,9 @@ while getopts "i:p:n:h" opt ; do
     h) usage $0
        exit 0
        ;;
-   \?) echo "Unrecognized parameter -$OPTARG" >&2
-       exit 1
+   \?) finish_error "Unrecognized parameter -$OPTARG"
        ;;
-    :) echo "Option -$OPTARG requires an argument." >&2
-       exit 1
+    :) finish_error "Option -$OPTARG requires an argument."
        ;;
     esac
 done
@@ -83,8 +90,7 @@ if [ ! -z "$(which brew 2>/dev/null)" ]; then
 	brew install libxml2 libxslt libjpeg libpng libtiff giflib tcl-tk
 	brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/f2a764ef944b1080be64bd88dca9a1d80130c558/Formula/python.rb --with-tcl-tk
 else
-	echo "++++++ brew not installed on Mac OS X! +++++++"
-	exit 1
+	finish_error "brew not installed on Mac OS X!"
 fi
 
 [ -z "$(grep $HOSTNAME /etc/hosts)" ] && sudo sh -c "echo 127.0.0.1 $HOSTNAME >> /etc/hosts"
@@ -96,8 +102,7 @@ echo
 py_version=$(python3 --version)
 if [ "${py_version:0:11}" != "Python 3.6." ]
 then
-    echo "Not Python 3.6 !"
-    exit 1
+    finish_error "Not Python 3.6 !"
 fi
 PYTHON_CMD="python3"
 
@@ -119,9 +124,15 @@ echo
 . $LUCTERIOS_PATH/virtual_for_lucterios/bin/activate
 pip install -U $PIP_OPTION $PACKAGES
 
-sed 's|!= "nt"|!= "nt" and False|g' virtual_for_lucterios/lib/python3.6/site-packages/lucterios/framework/settings.py > /tmp/settings.py
-cp /tmp/settings.py virtual_for_lucterios/lib/python3.6/site-packages/lucterios/framework/settings.py
-rm /tmp/settings.py
+[ -z "$(pip list 2>/dev/null | grep 'Django ')" ] && finish_error "Django not installed !"
+[ -z "$(pip list 2>/dev/null | grep 'lucterios ')" ]&& finish_error "Lucterios not installed !"
+
+if [ -f virtual_for_lucterios/lib/python3.6/site-packages/lucterios/framework/settings.py ]
+then
+	sed 's|!= "nt"|!= "nt" and False|g' virtual_for_lucterios/lib/python3.6/site-packages/lucterios/framework/settings.py > /tmp/settings.py
+	cp /tmp/settings.py virtual_for_lucterios/lib/python3.6/site-packages/lucterios/framework/settings.py
+	rm /tmp/settings.py
+fi
 
 lucterios_admin.py refreshall || echo '--no refresh--'
 [ -f "$LUCTERIOS_PATH/extra_url" ] || echo "# Pypi server" > "$LUCTERIOS_PATH/extra_url"
@@ -212,5 +223,7 @@ echo '</plist>' >> /Applications/$APP_NAME.app/Contents/Info.plist
 
 chmod -R ogu+rw "$LUCTERIOS_PATH"
 
-echo "============ END ============="
+echo "=================================="
+echo " Installation finish with success."
+echo "============== END ==============="
 exit 0
