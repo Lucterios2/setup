@@ -38,13 +38,13 @@ echo ""
 echo "------ install lucterios #@@BUILD@@ ------"
 echo ""
 
-python .\Python\Scripts\get-pip.py -U pip==18.0.* 2>&1 | Out-Null
+python .\Python\Scripts\get-pip.py -U pip==19.0.* 2>&1 | Out-Null
 echo "=> python .\Python\Scripts\get-pip.py -U $packages"
 foreach($package in $packages.split()) {
     echo "===> python .\Python\Scripts\get-pip.py -U $package"
 	python .\Python\Scripts\get-pip.py -U $package @@PIPOPTION@@
 }
-python .\Python\Scripts\get-pip.py -U pip==18.0.* 2>&1 | Out-Null
+python .\Python\Scripts\get-pip.py -U pip==19.0.* 2>&1 | Out-Null
 python -m pip list
 
 python Python\Scripts\lucterios_admin.py refreshall | Out-Null
