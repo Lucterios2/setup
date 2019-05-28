@@ -88,7 +88,7 @@ if [ ! -z "$(which brew 2>/dev/null)" ]; then
     brew uninstall --force tcl-tk || echo '-- no tcl-tk --'
 	brew uninstall --force python3 || echo '-- no python3 --'
 	brew install libxml2 libxslt libjpeg libpng libtiff giflib tcl-tk
-	brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/f2a764ef944b1080be64bd88dca9a1d80130c558/Formula/python.rb --with-tcl-tk
+	brew install python3
 else
 	finish_error "brew not installed on Mac OS X!"
 fi
@@ -100,9 +100,10 @@ echo "------ configure virtual environment ------"
 echo
 
 py_version=$(python3 --version)
-if [ "${py_version:0:11}" != "Python 3.6." ]
+py_version=${py_version:7:3}
+if [ "$py_version" != "3.6" -a "$py_version" != "3.7" ]
 then
-    finish_error "Not Python 3.6 !"
+    finish_error "Not Python 3.6 or 3.7 (but $py_version) !"
 fi
 PYTHON_CMD="python3"
 
@@ -113,9 +114,9 @@ sudo $PYTHON_CMD -m pip install -U $PIP_OPTION pip==19.0.* virtualenv
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
-echo "$PYTHON_CMD $(which virtualenv) virtual_for_lucterios"
+echo "$PYTHON_CMD -m virtualenv virtual_for_lucterios"
 rm -rf virtual_for_lucterios
-$PYTHON_CMD $(which virtualenv) virtual_for_lucterios
+$PYTHON_CMD -m virtualenv virtual_for_lucterios
 
 echo
 echo "------ install lucterios ------"
@@ -127,10 +128,10 @@ pip install -U $PIP_OPTION $PACKAGES
 [ -z "$(pip list 2>/dev/null | grep 'Django ')" ] && finish_error "Django not installed !"
 [ -z "$(pip list 2>/dev/null | grep 'lucterios ')" ]&& finish_error "Lucterios not installed !"
 
-if [ -f virtual_for_lucterios/lib/python3.6/site-packages/lucterios/framework/settings.py ]
+if [ -f virtual_for_lucterios/lib/python$py_version/site-packages/lucterios/framework/settings.py ]
 then
-	sed 's|!= "nt"|!= "nt" and False|g' virtual_for_lucterios/lib/python3.6/site-packages/lucterios/framework/settings.py > /tmp/settings.py
-	cp /tmp/settings.py virtual_for_lucterios/lib/python3.6/site-packages/lucterios/framework/settings.py
+	sed 's|!= "nt"|!= "nt" and False|g' virtual_for_lucterios/lib/python$py_version/site-packages/lucterios/framework/settings.py > /tmp/settings.py
+	cp /tmp/settings.py virtual_for_lucterios/lib/python$py_version/site-packages/lucterios/framework/settings.py
 	rm /tmp/settings.py
 fi
 
