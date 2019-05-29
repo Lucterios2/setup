@@ -47,7 +47,7 @@ foreach($package in $packages.split()) {
 python .\Python\Scripts\get-pip.py -U pip==19.0.* 2>&1 | Out-Null
 python -m pip list
 
-python Python\Scripts\lucterios_admin.py refreshall | Out-Null
+python Python\Scripts\lucterios_admin.py update | python Python\Scripts\lucterios_admin.py refreshall | Out-Null
 
 echo ""
 echo "------ create starter bat ------"

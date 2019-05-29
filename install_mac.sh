@@ -115,7 +115,7 @@ sudo $PYTHON_CMD -m pip install -U $PIP_OPTION pip==19.0.* virtualenv
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
 echo "$PYTHON_CMD -m virtualenv virtual_for_lucterios"
-rm -rf virtual_for_lucterios
+sudo rm -rf virtual_for_lucterios
 $PYTHON_CMD -m virtualenv virtual_for_lucterios
 
 echo
@@ -135,7 +135,7 @@ then
 	rm /tmp/settings.py
 fi
 
-lucterios_admin.py refreshall || echo '--no refresh--'
+lucterios_admin.py update || lucterios_admin.py refreshall || echo '--no update/refresh--'
 [ -f "$LUCTERIOS_PATH/extra_url" ] || echo "# Pypi server" > "$LUCTERIOS_PATH/extra_url"
 
 echo
