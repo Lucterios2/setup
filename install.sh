@@ -65,8 +65,8 @@ else if [ ! -z "$(which dnf 2>/dev/null)" ]; then # RPM unix/linux like
 else if [ ! -z "$(which yum 2>/dev/null)" ]; then # RPM unix/linux like
 	yum install -y epel-release
 	yum install -y libxml2-devel libxslt-devel libjpeg-devel gcc
-	yum install -y python34-devel python34-imaging python34-tkinter	python34-setuptools
-	easy_install-3.4 pip
+	yum install -y python35-devel python35-imaging python35-tkinter	python35-setuptools
+	easy_install-3.5 pip
 else
 	echo "++++++ Unix/Linux distribution not available for this script! +++++++"
 fi; fi; fi
@@ -78,13 +78,12 @@ echo
 LUCTERIOS_PATH="/var/lucterios2"
 [ -z "$(which "pip3")" ] && echo "No pip3 found!" && exit 1
 
-PIP_CMD="pip3"
 PYTHON_CMD="python3"
 
 set -e
 
-echo "$PYTHON_CMD $(which $PIP_CMD) install $PIP_OPTION virtualenv -U"
-$PYTHON_CMD $(which $PIP_CMD) install -U $PIP_OPTION pip==19.0.* virtualenv
+echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==19.1.* virtualenv"
+$PYTHON_CMD -m pip install -U $PIP_OPTION pip==19.1.* virtualenv
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
