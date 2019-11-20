@@ -38,13 +38,13 @@ echo ""
 echo "------ install lucterios #@@BUILD@@ ------"
 echo ""
 
-python .\Python\Scripts\get-pip.py -U pip==19.0.* 2>&1 | Out-Null
+python .\Python\Scripts\get-pip.py -U pip==19.3.* 2>&1 | Out-Null
 echo "=> python .\Python\Scripts\get-pip.py -U $packages"
 foreach($package in $packages.split()) {
     echo "===> python .\Python\Scripts\get-pip.py -U $package"
 	python .\Python\Scripts\get-pip.py -U $package @@PIPOPTION@@
 }
-python .\Python\Scripts\get-pip.py -U pip==19.0.* 2>&1 | Out-Null
+python .\Python\Scripts\get-pip.py -U pip==19.3.* 2>&1 | Out-Null
 python -m pip list
 
 python Python\Scripts\lucterios_admin.py update | python Python\Scripts\lucterios_admin.py refreshall | Out-Null
@@ -58,6 +58,9 @@ if (Test-Path $lucterios_path\launch_lucterios.ps1) {
 }
 if (Test-Path $lucterios_path\lucterios_gui.ps1) {
     del $lucterios_path\lucterios_gui.ps1
+}
+if (Test-Path $lucterios_path\lucterios_qt.ps1) {
+    del $lucterios_path\lucterios_qt.ps1
 }
 if (Test-Path $lucterios_path\lucterios_admin.ps1) {
     del $lucterios_path\lucterios_admin.ps1
@@ -79,11 +82,16 @@ echo "" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:Path=`"`$lucterios_path\Python;$lucterios_path\Python\Scripts;$env:Path`"" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:TCL_LIBRARY='$lucterios_path\Python\tcl\tcl8.6'" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:TK_LIBRARY='$lucterios_path\Python\tcl\tcl8.6'" >> $lucterios_path\lucterios_admin.ps1
-cp $lucterios_path\lucterios_admin.ps1 $lucterios_path\lucterios_gui.ps1
 
+cp $lucterios_path\lucterios_admin.ps1 $lucterios_path\lucterios_gui.ps1
 echo "python Python\Scripts\lucterios_gui.py" >> $lucterios_path\lucterios_gui.ps1
 echo "exit" >> $lucterios_path\lucterios_gui.ps1
 echo "" >> $lucterios_path\lucterios_gui.ps1
+
+cp $lucterios_path\lucterios_admin.ps1 $lucterios_path\lucterios_qt.ps1
+echo "python Python\Scripts\lucterios_qt.py" >> $lucterios_path\lucterios_qt.ps1
+echo "exit" >> $lucterios_path\lucterios_qt.ps1
+echo "" >> $lucterios_path\lucterios_qt.ps1
 
 echo "python Python\Scripts\lucterios_admin.py `$args[0] `$args[1] `$args[2] `$args[3] `$args[4] `$args[5] `$args[6] `$args[7] `$args[8] `$args[9]" >> $lucterios_path\lucterios_admin.ps1
 echo "exit" >> $lucterios_path\lucterios_admin.ps1
@@ -98,11 +106,16 @@ if (Test-Path $env:Public\Desktop\$app_name.lnk) {
 }
 
 $icon_path = Get-ChildItem -Path "$lucterios_path\python" -Recurse -Filter "$app_name.ico" | Select-Object -First 1 | % { $_.FullName }
+$qt_version= & python -c 'from PyQt5.QtCore import QT_VERSION_STR;print(QT_VERSION_STR)'
 
 $WshShell = New-Object -ComObject WScript.shell
 $Shortcut = $WshShell.CreateShortcut("$lucterios_path\$app_name.lnk")
 $Shortcut.TargetPath = "PowerShell.exe"
-$Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File $lucterios_path\lucterios_gui.ps1"
+if ($qt_version.Substring(2).equals("5.")) {
+	$Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File $lucterios_path\lucterios_qt.ps1"
+else {
+	$Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File $lucterios_path\lucterios_gui.ps1"
+}
 if (($icon_path -ne "") -and (Test-Path $icon_path)) {
 	$Shortcut.IconLocation = "$icon_path"
 }

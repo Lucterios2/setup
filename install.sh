@@ -56,12 +56,12 @@ echo
 
 if [ ! -z "$(which apt-get 2>/dev/null)" ]; then  # DEB linux like
 	apt-get install -y libxml2-dev libxslt-dev libjpeg-dev libfreetype6 libfreetype6-dev zlib1g-dev
-	apt-get install -y python3-pip python3-dev
+	apt-get install -y python3-pip python3-dev 
 	apt-get install -y python3-tk 'python3-imaging|python3-pil'
 else if [ ! -z "$(which dnf 2>/dev/null)" ]; then # RPM unix/linux like
 	dnf install -y libxml2-devel libxslt-devel libjpeg-devel gcc
 	dnf install -y libfreetype6 libfreetype6-devel
-	dnf install -y python3-devel python3-imaging python3-tkinter	
+	dnf install -y python3-devel python3-imaging python3-tkinter
 else if [ ! -z "$(which yum 2>/dev/null)" ]; then # RPM unix/linux like
 	yum install -y epel-release
 	yum install -y libxml2-devel libxslt-devel libjpeg-devel gcc
@@ -82,8 +82,8 @@ PYTHON_CMD="python3"
 
 set -e
 
-echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==19.1.* virtualenv"
-$PYTHON_CMD -m pip install -U $PIP_OPTION pip==19.1.* virtualenv
+echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==19.3.* virtualenv"
+$PYTHON_CMD -m pip install -U $PIP_OPTION pip==19.3.* virtualenv
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
@@ -115,9 +115,15 @@ then
 	echo "export LANG=en_US.UTF-8" >> $LUCTERIOS_PATH/launch_lucterios.sh
 fi
 
+qt_version=$($PYTHON_CMD -c 'from PyQt5.QtCore import QT_VERSION_STR;print(QT_VERSION_STR)' 2>/dev/null) 
+
 cp $LUCTERIOS_PATH/launch_lucterios.sh $LUCTERIOS_PATH/launch_lucterios_gui.sh
 echo "lucterios_gui.py" >> $LUCTERIOS_PATH/launch_lucterios_gui.sh
 chmod +x $LUCTERIOS_PATH/launch_lucterios_gui.sh
+
+cp $LUCTERIOS_PATH/launch_lucterios.sh $LUCTERIOS_PATH/launch_lucterios_qt.sh
+echo "lucterios_qt.py" >> $LUCTERIOS_PATH/launch_lucterios_qt.sh
+chmod +x $LUCTERIOS_PATH/launch_lucterios_qt.sh
 
 echo 'lucterios_admin.py $@' >> $LUCTERIOS_PATH/launch_lucterios.sh
 chmod +x $LUCTERIOS_PATH/launch_lucterios.sh
@@ -125,6 +131,7 @@ chmod -R ogu+w $LUCTERIOS_PATH
 
 ln -sf $LUCTERIOS_PATH/launch_lucterios.sh /usr/local/bin/launch_lucterios
 ln -sf $LUCTERIOS_PATH/launch_lucterios_gui.sh /usr/local/bin/launch_lucterios_gui
+ln -sf $LUCTERIOS_PATH/launch_lucterios_qt.sh /usr/local/bin/launch_lucterios_qt
 
 
 icon_path=$(find "$LUCTERIOS_PATH/virtual_for_lucterios" -name "$APP_NAME.png" | head -n 1)
@@ -135,7 +142,12 @@ then
 	echo "[Desktop Entry]" > $LAUNCHER
 	echo "Name=$APP_NAME" >> $LAUNCHER
 	echo "Comment=$APP_NAME installer" >> $LAUNCHER
-	echo "Exec=$LUCTERIOS_PATH/launch_lucterios_gui.sh" >> $LAUNCHER
+	if [ "${qt_version:0:2}" == "5." ]
+	then
+		echo "Exec=$LUCTERIOS_PATH/launch_lucterios_qt.sh" >> $LAUNCHER
+	else
+		echo "Exec=$LUCTERIOS_PATH/launch_lucterios_gui.sh" >> $LAUNCHER
+	fi
 	echo "Icon=$icon_path" >> $LAUNCHER
 	echo "Terminal=false" >> $LAUNCHER
 	echo "Type=Application" >> $LAUNCHER
