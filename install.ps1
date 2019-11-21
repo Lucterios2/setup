@@ -111,9 +111,9 @@ $qt_version= & python -c 'from PyQt5.QtCore import QT_VERSION_STR;print(QT_VERSI
 $WshShell = New-Object -ComObject WScript.shell
 $Shortcut = $WshShell.CreateShortcut("$lucterios_path\$app_name.lnk")
 $Shortcut.TargetPath = "PowerShell.exe"
-if ($qt_version.Substring(2).equals("5.")) {
+if ($qt_version.Substring(0,2).equals("5.")) {
 	$Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File $lucterios_path\lucterios_qt.ps1"
-else {
+} else {
 	$Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File $lucterios_path\lucterios_gui.ps1"
 }
 if (($icon_path -ne "") -and (Test-Path $icon_path)) {
