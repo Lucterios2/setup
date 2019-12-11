@@ -101,9 +101,9 @@ echo
 
 py_version=$(python3 --version)
 py_version=${py_version:7:3}
-if [ "$py_version" != "3.6" -a "$py_version" != "3.7" ]
+if [ "$py_version" != "3.6" -a "$py_version" != "3.7" -a "$py_version" != "3.8" ]
 then
-    finish_error "Not Python 3.6 or 3.7 (but $py_version) !"
+    finish_error "Not Python 3.6, 3.7 or 3.8 (but $py_version) !"
 fi
 PYTHON_CMD="python3"
 
