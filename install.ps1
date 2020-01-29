@@ -109,8 +109,10 @@ $icon_path = Get-ChildItem -Path "$lucterios_path\python" -Recurse -Filter "$app
 Try {
 	$qt_version= & python -c 'from PyQt5.QtCore import QT_VERSION_STR;print(QT_VERSION_STR)'
 }Catch {
-	$qt_version= "---"
+	$qt_version="---"
 }
+if ($qt_version -eq $null) {$qt_version="???"}
+echo ">> Qt = $qt_version"
 
 $WshShell = New-Object -ComObject WScript.shell
 $Shortcut = $WshShell.CreateShortcut("$lucterios_path\$app_name.lnk")
