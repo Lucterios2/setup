@@ -106,7 +106,11 @@ if (Test-Path $env:Public\Desktop\$app_name.lnk) {
 }
 
 $icon_path = Get-ChildItem -Path "$lucterios_path\python" -Recurse -Filter "$app_name.ico" | Select-Object -First 1 | % { $_.FullName }
-$qt_version= & python -c 'from PyQt5.QtCore import QT_VERSION_STR;print(QT_VERSION_STR)'
+Try {
+	$qt_version= & python -c 'from PyQt5.QtCore import QT_VERSION_STR;print(QT_VERSION_STR)'
+}Catch {
+	$qt_version= "---"
+}
 
 $WshShell = New-Object -ComObject WScript.shell
 $Shortcut = $WshShell.CreateShortcut("$lucterios_path\$app_name.lnk")
@@ -121,6 +125,8 @@ if (($icon_path -ne "") -and (Test-Path $icon_path)) {
 }
 $Shortcut.WindowStyle = 7
 $Shortcut.Save()
+
+copy $lucterios_path\$app_name.lnk $env:Public\Desktop\$app_name.lnk
 
 echo ""
 echo "------ refresh permission ------"
