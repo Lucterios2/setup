@@ -79,7 +79,7 @@ echo "echo '$app_name GUI launcher'" >> $lucterios_path\lucterios_admin.ps1
 echo "" >> $lucterios_path\lucterios_admin.ps1
 echo "cd $lucterios_path" >> $lucterios_path\lucterios_admin.ps1
 echo "" >> $lucterios_path\lucterios_admin.ps1
-echo "`$env:Path=`"`$lucterios_path\Python;$lucterios_path\Python\Scripts;$env:Path`"" >> $lucterios_path\lucterios_admin.ps1
+echo "`$env:Path='$lucterios_path\Python;$lucterios_path\Python\Scripts;$env:Path'" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:TCL_LIBRARY='$lucterios_path\Python\tcl\tcl8.6'" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:TK_LIBRARY='$lucterios_path\Python\tcl\tcl8.6'" >> $lucterios_path\lucterios_admin.ps1
 
