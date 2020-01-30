@@ -128,8 +128,6 @@ if (($icon_path -ne "") -and (Test-Path $icon_path)) {
 $Shortcut.WindowStyle = 7
 $Shortcut.Save()
 
-copy $lucterios_path\$app_name.lnk $env:Public\Desktop\$app_name.lnk
-
 echo ""
 echo "------ refresh permission ------"
 echo ""
