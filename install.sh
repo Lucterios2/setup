@@ -22,6 +22,15 @@ function usage
 	exit 0
 }
 
+function finish_error
+{
+	msg=$1
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!">&2
+	echo " Error: $msg">&2
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!">&2
+	exit 1
+}
+
 while getopts "i:p:n:h" opt ; do
     case $opt in
     p) PACKAGES="$OPTARG"
@@ -31,11 +40,9 @@ while getopts "i:p:n:h" opt ; do
     h) usage $0
        exit 0
        ;;
-   \?) echo "Unrecognized parameter -$OPTARG" >&2
-       exit 1
+   \?) finish_error "Unrecognized parameter -$OPTARG"
        ;;
-    :) echo "Option -$OPTARG requires an argument." >&2
-       exit 1
+    :) finish_error "Option -$OPTARG requires an argument."
        ;;
     esac
 done
@@ -65,7 +72,7 @@ else if [ ! -z "$(which dnf 2>/dev/null)" ]; then # RPM unix/linux like
 else if [ ! -z "$(which yum 2>/dev/null)" ]; then # RPM unix/linux like
 	yum install -y epel-release
 	yum install -y libxml2-devel libxslt-devel libjpeg-devel gcc
-	yum install -y python35-devel python35-imaging python35-tkinter	python35-setuptools
+	yum install -y python37-devel python37-imaging python37-tkinter	python37-setuptools
 	easy_install-3.5 pip
 else
 	echo "++++++ Unix/Linux distribution not available for this script! +++++++"
@@ -78,12 +85,19 @@ echo
 LUCTERIOS_PATH="/var/lucterios2"
 [ -z "$(which "pip3")" ] && echo "No pip3 found!" && exit 1
 
+py_version=$(python3 --version)
+py_version=${py_version:7:3}
+if [ "$py_version" != "3.6" -a "$py_version" != "3.7" -a "$py_version" != "3.8" ]
+then
+    finish_error "Not Python 3.6, 3.7 or 3.8 (but $py_version) !"
+fi
+
 PYTHON_CMD="python3"
 
 set -e
 
-echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==19.3.* virtualenv"
-$PYTHON_CMD -m pip install -U $PIP_OPTION pip==19.3.* virtualenv
+echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==20.1.* virtualenv"
+$PYTHON_CMD -m pip install -U $PIP_OPTION pip==20.1.* virtualenv
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
@@ -98,6 +112,10 @@ echo
 . $LUCTERIOS_PATH/virtual_for_lucterios/bin/activate
 pip install -U $PIP_OPTION pip
 pip install -U $PIP_OPTION $PACKAGES
+
+[ -z "$(pip list 2>/dev/null | grep 'Django ')" ] && finish_error "Django not installed !"
+[ -z "$(pip list 2>/dev/null | grep 'lucterios ')" ]&& finish_error "Lucterios not installed !"
+
 lucterios_admin.py update || lucterios_admin.py refreshall || echo '--no update/refresh--'
 [ -f "$LUCTERIOS_PATH/extra_url" ] || echo "# Pypi server" > "$LUCTERIOS_PATH/extra_url"
 
