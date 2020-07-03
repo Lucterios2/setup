@@ -75,6 +75,8 @@ if (!(Test-Path $lucterios_path\extra_url)) {
 
 echo "#requires -version 2.0" >> $lucterios_path\lucterios_admin.ps1
 echo "" >> $lucterios_path\lucterios_admin.ps1
+echo "`$env:LUCTERIOS_INSTALL='@@BUILD@@'" >> $lucterios_path\lucterios_admin.ps1
+echo "" >> $lucterios_path\lucterios_admin.ps1
 echo "echo '$app_name GUI launcher'" >> $lucterios_path\lucterios_admin.ps1
 echo "" >> $lucterios_path\lucterios_admin.ps1
 echo "cd $lucterios_path" >> $lucterios_path\lucterios_admin.ps1

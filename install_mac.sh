@@ -145,6 +145,8 @@ rm -rf $LUCTERIOS_PATH/launch_lucterios.sh
 touch $LUCTERIOS_PATH/launch_lucterios.sh
 echo "#!/usr/bin/env bash" >> $LUCTERIOS_PATH/launch_lucterios.sh
 echo  >> $LUCTERIOS_PATH/launch_lucterios.sh
+echo "export LUCTERIOS_INSTALL='@@BUILD@@'" >> $LUCTERIOS_PATH/launch_lucterios.sh
+echo  >> $LUCTERIOS_PATH/launch_lucterios.sh
 echo ". $LUCTERIOS_PATH/virtual_for_lucterios/bin/activate" >> $LUCTERIOS_PATH/launch_lucterios.sh
 echo "cd $LUCTERIOS_PATH/" >> $LUCTERIOS_PATH/launch_lucterios.sh
 if [ -z "$LANG" -o "$LANG" == "C" ]
