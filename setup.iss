@@ -4,7 +4,7 @@
 #define MyAppName "@@NAME@@"
 #define MyAppVersion "@@NAME@@ #@@BUILD@@"
 #define MyAppPublisher "sd-libre.fr"
-#define MyAppURL "http://www.sd-libre.fr"
+#define MyAppURL "https://www.sd-libre.fr"
 #define INSTDIR "c:\lucterios2"
 
 [Setup]

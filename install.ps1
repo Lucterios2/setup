@@ -75,8 +75,6 @@ if (!(Test-Path $lucterios_path\extra_url)) {
 
 echo "#requires -version 2.0" >> $lucterios_path\lucterios_admin.ps1
 echo "" >> $lucterios_path\lucterios_admin.ps1
-echo "`$env:LUCTERIOS_INSTALL='@@BUILD@@'" >> $lucterios_path\lucterios_admin.ps1
-echo "" >> $lucterios_path\lucterios_admin.ps1
 echo "echo '$app_name GUI launcher'" >> $lucterios_path\lucterios_admin.ps1
 echo "" >> $lucterios_path\lucterios_admin.ps1
 echo "cd $lucterios_path" >> $lucterios_path\lucterios_admin.ps1
@@ -84,6 +82,7 @@ echo "" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:Path='$lucterios_path\Python;$lucterios_path\Python\Scripts;$env:Path'" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:TCL_LIBRARY='$lucterios_path\Python\tcl\tcl8.6'" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:TK_LIBRARY='$lucterios_path\Python\tcl\tcl8.6'" >> $lucterios_path\lucterios_admin.ps1
+echo "`$env:LUCTERIOS_INSTALL='@@BUILD@@'" >> $lucterios_path\lucterios_admin.ps1
 
 cp $lucterios_path\lucterios_admin.ps1 $lucterios_path\lucterios_gui.ps1
 echo "python Python\Scripts\lucterios_gui.py" >> $lucterios_path\lucterios_gui.ps1
