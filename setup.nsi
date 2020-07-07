@@ -54,7 +54,13 @@ RequestExecutionLevel admin ;Require admin rights on NT6+ (When UAC is turned on
 
   !insertmacro MUI_PAGE_LICENSE "License.txt"
   !insertmacro MUI_PAGE_INSTFILES
-  !define MUI_FINISHPAGE_TITLE "Install finished"
+  !define MUI_FINISHPAGE_TITLE "Installation finie"
+  !define MUI_FINISHPAGE_RUN
+  !define MUI_FINISHPAGE_RUN_TEXT "Lancer l'application"
+  !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
+  !define MUI_FINISHPAGE_SHOWREADME
+  !define MUI_FINISHPAGE_SHOWREADME_TEXT "Démarrer automatiquement"
+  !define MUI_FINISHPAGE_SHOWREADME_FUNCTION "Startup" 
   !insertmacro MUI_PAGE_FINISH
   
   !insertmacro MUI_UNPAGE_CONFIRM
@@ -63,7 +69,7 @@ RequestExecutionLevel admin ;Require admin rights on NT6+ (When UAC is turned on
 ;--------------------------------
 ;Languages
  
-  !insertmacro MUI_LANGUAGE "English"
+  !insertmacro MUI_LANGUAGE "French"
 
 ;--------------------------------
 ;Installer Sections
@@ -97,6 +103,14 @@ Section "install"
   CopyFiles $INSTDIR\@@NAME@@.lnk "$DESKTOP\@@NAME@@.lnk"
 
 SectionEnd
+
+Function LaunchLink
+  ExecShell "" "$INSTDIR\@@NAME@@.lnk"
+FunctionEnd
+
+Function Startup
+  CopyFiles $INSTDIR\@@NAME@@.lnk "$APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
+FunctionEnd
 
 Function .onInit
   UserInfo::GetAccountType
