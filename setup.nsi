@@ -59,7 +59,7 @@ RequestExecutionLevel admin ;Require admin rights on NT6+ (When UAC is turned on
   !define MUI_FINISHPAGE_RUN_TEXT "Lancer l'application"
   !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
   !define MUI_FINISHPAGE_SHOWREADME
-  !define MUI_FINISHPAGE_SHOWREADME_TEXT "Démarrer automatiquement"
+  !define MUI_FINISHPAGE_SHOWREADME_TEXT "Demarrer automatiquement"
   !define MUI_FINISHPAGE_SHOWREADME_FUNCTION "Startup" 
   !insertmacro MUI_PAGE_FINISH
   
