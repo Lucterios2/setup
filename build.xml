@@ -7,6 +7,8 @@
 	<available file="/usr/bin/wine" property="wine.present" />
 	<available file="/usr/bin/hdiutil" property="mac.present" />
 	<available file="/usr/bin/genisoimage" property="pseudomac.present" />
+	<available file="${basedir}/lct-core/client/build.json" property="clientdesktop.present" />
+	
 	<condition property="sign.present">
 		<and>
 		    <available file="/usr/local/bin/osslsigncode"/>
@@ -238,6 +240,29 @@ Remarque: Mac OS X peut vous demander une confirmation pour dérouler cette inst
 		<delete dir="${basedir}/tmp" />
 	</target>
 
+	<target name="clientdesktop" if="clientdesktop.present">
+		<exec executable="/bin/bash" outputproperty="lct_name_lower" failifexecutionfails="false" errorproperty="">
+			<arg line="-c 'echo ${lct_name} | tr ''[:upper:]'' ''[:lower:]'' '" />
+		</exec>
+ 	
+ 		<replaceregexp file="${basedir}/lct-core/client/config.xml" match='Lucterios' replace='${lct_name}' byline="true" />	
+ 		<replaceregexp file="${basedir}/lct-core/client/config.xml" match='lucterios' replace='${lct_name_lower}' byline="true" />	
+		<replaceregexp file="${basedir}/lct-core/client/package.json" match='Lucterios' replace='${lct_name}' byline="true" />	
+		<replaceregexp file="${basedir}/lct-core/client/package.json" match='lucterios' replace='${lct_name_lower}' byline="true" />	
+ 			<delete dir="${basedir}/lct-core/client/platforms/electron/build" />
+		<exec executable="cordova" dir="${basedir}/lct-core/client">
+			<arg value="build" />
+			<arg value="electron" />
+		</exec>
+		
+		<move todir="${basedir}/bin" >
+			<fileset dir="${basedir}/lct-core/client/platforms/electron/build">
+	    		<include name="*${lct_name}*"/>
+	    		<include name="*${lct_name_lower}*"/>
+	  		</fileset>
+  		</move>
+	</target>
+	
 	<target name="all" depends="init">
 		<delete dir="${basedir}/bin" />
 		<mkdir dir="${basedir}/bin" />
@@ -246,6 +271,7 @@ Remarque: Mac OS X peut vous demander une confirmation pour dérouler cette inst
 		<antcall target="nsis" />
 		<antcall target="pseudomac" />
 		<antcall target="mac" />
+		<antcall target="clientdesktop" />
 		<delete dir="${basedir}/tmp" />
 		<echo message="num=${build.num}" file="${basedir}/bin/${lct_name}_${build.num}" append="false" />
 		<exec executable="ls" dir="${basedir}/bin">
