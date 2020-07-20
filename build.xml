@@ -240,27 +240,58 @@ Remarque: Mac OS X peut vous demander une confirmation pour dérouler cette inst
 		<delete dir="${basedir}/tmp" />
 	</target>
 
+	<target name="clientitem" if="clientdesktop.present">
+	 	<delete dir="${basedir}/lct-core/client/platforms/electron/build" />
+		<echo file="${basedir}/lct-core/client/build.json" encoding="UTF-8">
+{
+	"electron": {
+		"${osname}": {
+			"package": [
+				"${packname}"
+			]
+		}
+	}
+}		
+		</echo>
+		<exec executable="cordova" dir="${basedir}/lct-core/client" failifexecutionfails="false">
+			<arg value="build" />
+			<arg value="electron" />
+			<arg value="--release" />
+		</exec>	
+		<exec executable="/bin/bash" dir="${basedir}/lct-core/client/platforms/electron/build/" outputproperty="result_filename" failifexecutionfails="false">
+			<arg line="-c 'ls *.${packname}'" />
+		</exec>
+		<copy file="${basedir}/lct-core/client/platforms/electron/build/${result_filename}" tofile="${basedir}/bin/Client${lct_name}_Setup.${packname}" failonerror="false"/>
+	</target>
+
 	<target name="clientdesktop" if="clientdesktop.present">
 		<exec executable="/bin/bash" outputproperty="lct_name_lower" failifexecutionfails="false" errorproperty="">
 			<arg line="-c 'echo ${lct_name} | tr ''[:upper:]'' ''[:lower:]'' '" />
 		</exec>
- 	
- 		<replaceregexp file="${basedir}/lct-core/client/config.xml" match='Lucterios' replace='${lct_name}' byline="true" />	
+ 	 	<replaceregexp file="${basedir}/lct-core/client/config.xml" match='Lucterios' replace='${lct_name}' byline="true" />	
  		<replaceregexp file="${basedir}/lct-core/client/config.xml" match='lucterios' replace='${lct_name_lower}' byline="true" />	
 		<replaceregexp file="${basedir}/lct-core/client/package.json" match='Lucterios' replace='${lct_name}' byline="true" />	
-		<replaceregexp file="${basedir}/lct-core/client/package.json" match='lucterios' replace='${lct_name_lower}' byline="true" />	
- 			<delete dir="${basedir}/lct-core/client/platforms/electron/build" />
-		<exec executable="cordova" dir="${basedir}/lct-core/client">
-			<arg value="build" />
-			<arg value="electron" />
-		</exec>
-		
-		<move todir="${basedir}/bin" >
-			<fileset dir="${basedir}/lct-core/client/platforms/electron/build">
-	    		<include name="*${lct_name}*"/>
-	    		<include name="*${lct_name_lower}*"/>
-	  		</fileset>
-  		</move>
+		<replaceregexp file="${basedir}/lct-core/client/package.json" match='lucterios' replace='${lct_name_lower}' byline="true" />				
+		<antcall target="clientitem">
+			<param name="osname" value="linux" />
+			<param name="packname" value="AppImage" />
+		</antcall>
+		<antcall target="clientitem">
+			<param name="osname" value="windows" />
+			<param name="packname" value="nsis" />
+		</antcall>					
+		<antcall target="clientitem">
+			<param name="osname" value="windows" />
+			<param name="packname" value="zip" />
+		</antcall>					
+		<antcall target="clientitem">
+			<param name="osname" value="mac" />
+			<param name="packname" value="dmg" />
+		</antcall>					
+		<antcall target="clientitem">
+			<param name="osname" value="mac" />
+			<param name="packname" value="7z" />
+		</antcall>					
 	</target>
 	
 	<target name="all" depends="init">
