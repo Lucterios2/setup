@@ -210,7 +210,7 @@ echo 'cd $HOME/lucterios2/' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_N
 echo 'export LANG=fr_FR.UTF-8' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
 if [ "${qt_version:0:2}" == "5." ]
 then
-	echo 'lucterios_qt.py' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
+	echo 'lucterios_qt.py | lucterios_gui.py' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
 else
 	echo 'lucterios_gui.py' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
 fi
