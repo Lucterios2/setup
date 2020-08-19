@@ -109,8 +109,8 @@ PYTHON_CMD="python3"
 
 set -e
 
-echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==19.3.* virtualenv"
-sudo $PYTHON_CMD -m pip install -U $PIP_OPTION pip==19.3.* virtualenv
+echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==20.2.* virtualenv"
+sudo $PYTHON_CMD -m pip install -U $PIP_OPTION pip==20.2.* virtualenv
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
