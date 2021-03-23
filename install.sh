@@ -72,8 +72,8 @@ else if [ ! -z "$(which dnf 2>/dev/null)" ]; then # RPM unix/linux like
 else if [ ! -z "$(which yum 2>/dev/null)" ]; then # RPM unix/linux like
 	yum install -y epel-release
 	yum install -y libxml2-devel libxslt-devel libjpeg-devel gcc
-	yum install -y python37-devel python37-imaging python37-tkinter	python37-setuptools
-	easy_install-3.5 pip
+	yum install -y python38-devel python38-imaging python38-tkinter	python38-setuptools
+	easy_install-3.8 pip
 else
 	echo "++++++ Unix/Linux distribution not available for this script! +++++++"
 fi; fi; fi
@@ -87,17 +87,17 @@ LUCTERIOS_PATH="/var/lucterios2"
 
 py_version=$(python3 --version)
 py_version=${py_version:7:3}
-if [ "$py_version" != "3.6" -a "$py_version" != "3.7" -a "$py_version" != "3.8" ]
+if [ "$py_version" != "3.6" -a "$py_version" != "3.7" -a "$py_version" != "3.8" -a "$py_version" != "3.9" ]
 then
-    finish_error "Not Python 3.6, 3.7 or 3.8 (but $py_version) !"
+    finish_error "Not Python 3.6, 3.7, 3.8 or 3.9 (but $py_version) !"
 fi
 
 PYTHON_CMD="python3"
 
 set -e
 
-echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==20.2.* virtualenv"
-$PYTHON_CMD -m pip install -U $PIP_OPTION pip==20.2.* virtualenv
+echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==21.0.* virtualenv"
+$PYTHON_CMD -m pip install -U $PIP_OPTION pip==21.0.* virtualenv
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
