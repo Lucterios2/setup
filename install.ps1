@@ -41,10 +41,10 @@ echo ""
 python .\Python\Scripts\get-pip.py -U pip==21.1.* 2>&1 | Out-Null
 echo "=> python .\Python\Scripts\get-pip.py -U $packages"
 foreach($package in $packages.split()) {
-    echo "===> python .\Python\Scripts\get-pip.py -U $package"
-	python .\Python\Scripts\get-pip.py -U $package @@PIPOPTION@@
+    echo "===> python -m pip -U $package"
+	python -m pip -U $package @@PIPOPTION@@
 }
-python .\Python\Scripts\get-pip.py -U pip==21.1.* 2>&1 | Out-Null
+python -m pip -U pip==21.1.* 2>&1 | Out-Null
 python -m pip list
 
 python Python\Scripts\lucterios_admin.py update | python Python\Scripts\lucterios_admin.py refreshall | Out-Null
