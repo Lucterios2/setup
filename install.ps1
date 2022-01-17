@@ -38,8 +38,8 @@ echo ""
 echo "------ install lucterios #@@BUILD@@ ------"
 echo ""
 
-python .\Python\Scripts\get-pip.py -U install pip==21.3.* 2>&1 | Out-Null
-echo "=> python .\Python\Scripts\get-pip.py install -U $packages"
+python -m pip -U install pip==21.3.* 2>&1 | Out-Null
+echo "=> python -m pip -U install pip==21.3.*"
 foreach($package in $packages.split()) {
     echo "===> python -m pip install -U $package"
 	python -m pip install -U $package @@PIPOPTION@@
