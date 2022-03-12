@@ -16,7 +16,7 @@ setup:
     - wget -qO- https://dl.winehq.org/wine-builds/winehq.key | apt-key add -
     - add-apt-repository "deb https://dl.winehq.org/wine-builds/debian/ $(lsb_release -c -s) main"
     - apt-get update
-    - apt-get install -y winehq-stable
+    - apt-get install -y --install-recommends winehq-devel
   script:
     - ant 
   artifacts:
