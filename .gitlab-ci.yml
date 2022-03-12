@@ -15,8 +15,9 @@ setup:
     - apt install -y libopenjp2-tools rpm software-properties-common
     - wget -qO- https://dl.winehq.org/wine-builds/winehq.key | apt-key add -
     - add-apt-repository "deb https://dl.winehq.org/wine-builds/debian/ $(lsb_release -c -s) main"
+    - dpkg --add-architecture i386
     - apt-get update
-    - apt-get install -y --install-recommends winehq-devel
+    - apt-get install -y --install-recommends winehq-stable
   script:
     - ant 
   artifacts:
