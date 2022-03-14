@@ -3,7 +3,7 @@ stages:
   - deploy
 
 setup:
-  image: python:3.8
+  image: tobix/wine
   stage: setup
   variables:
    LCT_NAME: Diacamma
@@ -13,14 +13,9 @@ setup:
     - ./lct-core/utils/prep_env.sh debian
     - ./lct-core/utils/prep_env.sh ant
     - apt install -y libopenjp2-tools rpm software-properties-common
-    - apt-get install -y x11vnc xvfb fluxbox
-    - wget -qO- https://dl.winehq.org/wine-builds/winehq.key | apt-key add -
-    - add-apt-repository "deb https://dl.winehq.org/wine-builds/debian/ $(lsb_release -c -s) main"
-    - dpkg --add-architecture i386
-    - apt-get update
-    - apt-get install -y --install-recommends winehq-stable
     - curl -L  https://sourceforge.net/projects/nsis/files/NSIS%203/3.08/nsis-3.08-setup.exe > nsis-3.08-setup.exe
-    - DISPLAY=':0.0' wine nsis-3.08-setup.exe /S
+    - export DISPLAY=:0.0
+    - wine nsis-3.08-setup.exe /S
   script:
     - ant 
   artifacts:
