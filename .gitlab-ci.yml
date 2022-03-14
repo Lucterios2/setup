@@ -9,6 +9,7 @@ setup:
    LCT_NAME: Diacamma
    LCT_PACKAGES: lucterios lucterios-standard lucterios-contacts lucterios-documents diacamma-asso diacamma-syndic diacamma-financial
   before_script:
+    - apt install -y git
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.sleto.fr/lucterios2/lucterios lct-core
     - ./lct-core/utils/prep_env.sh debian
     - ./lct-core/utils/prep_env.sh ant
