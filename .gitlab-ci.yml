@@ -9,11 +9,11 @@ setup:
    LCT_NAME: Diacamma
    LCT_PACKAGES: lucterios lucterios-standard lucterios-contacts lucterios-documents diacamma-asso diacamma-syndic diacamma-financial
   before_script:
-    - apt install -y git
+    - apt-get update
+    - apt-get install -y git libopenjp2-tools rpm software-properties-common
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.sleto.fr/lucterios2/lucterios lct-core
     - ./lct-core/utils/prep_env.sh debian
     - ./lct-core/utils/prep_env.sh ant
-    - apt install -y libopenjp2-tools rpm software-properties-common
     - curl -L  https://sourceforge.net/projects/nsis/files/NSIS%203/3.08/nsis-3.08-setup.exe > nsis-3.08-setup.exe
     - export DISPLAY=:0.0
     - wine nsis-3.08-setup.exe /S
