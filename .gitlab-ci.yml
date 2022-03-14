@@ -18,6 +18,8 @@ setup:
     - dpkg --add-architecture i386
     - apt-get update
     - apt-get install -y --install-recommends winehq-stable
+    - curl -L  https://sourceforge.net/projects/nsis/files/NSIS%203/3.08/nsis-3.08-setup.exe > nsis-3.08-setup.exe
+    - wine nsis-3.08-setup.exe /S
   script:
     - ant 
   artifacts:
