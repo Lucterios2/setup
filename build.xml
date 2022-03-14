@@ -113,7 +113,7 @@
 		</antcall>
 		<echo message='user.dir=${user.dir} - basedir=${basedir}' />
 		<exec executable="/usr/bin/wine" dir="${basedir}/bin">
-			<env key="WINEPREFIX" value="~/.wine" />
+			<env key="WINEPREFIX" value="${env.HOME}/.wine" />
 			<env key="DISPLAY" value=":0.0" />
 			<arg value="C:/NSIS/makensis.exe" />
 			<arg value="z:${basedir}/tmp/setup.nsi" />
@@ -138,7 +138,7 @@
 		</antcall>
 		<echo message='user.dir=${user.dir} - basedir=${basedir}' />
 		<exec executable="/usr/bin/wine" dir="${basedir}/bin">
-			<env key="WINEPREFIX" value="~/.wine" />
+			<env key="WINEPREFIX" value="${env.HOME}/.wine" />
 			<env key="DISPLAY" value=":0.0" />
 			<arg value="C:/InnoSetup5/ISCC.exe" />
 			<arg value="z:${basedir}/tmp/setup.iss" />
