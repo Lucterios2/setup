@@ -3,7 +3,7 @@ stages:
   - deploy
 
 setup:
-  image: tobix/wine
+  image: python:3.8
   stage: setup
   variables:
    LCT_NAME: Diacamma
@@ -14,9 +14,7 @@ setup:
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.sleto.fr/lucterios2/lucterios lct-core
     - ./lct-core/utils/prep_env.sh debian
     - ./lct-core/utils/prep_env.sh ant
-    - curl -L  https://sourceforge.net/projects/nsis/files/NSIS%203/3.08/nsis-3.08-setup.exe > nsis-3.08-setup.exe
-    - export DISPLAY=:0.0
-    - wine nsis-3.08-setup.exe /S
+    - ./prerequisit.sh
   script:
     - ant 
   artifacts:
