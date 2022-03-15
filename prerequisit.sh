@@ -14,4 +14,5 @@ apt-get install -y --no-install-recommends winehq-stable
 
 curl -L  https://sourceforge.net/projects/nsis/files/NSIS%203/3.08/nsis-3.08-setup.exe > nsis-3.08-setup.exe
 export DISPLAY=:0.0
+xdpyinfo -display $DISPLAY > /dev/null || Xvfb $DISPLAY -screen 0 1024x768x16 & 
 wine nsis-3.08-setup.exe /S
