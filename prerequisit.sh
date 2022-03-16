@@ -17,7 +17,7 @@ apt-get update
 apt-get install -y --no-install-recommends winehq-stable wine32
 mkdir -p $HOME/wine/prefix
 export WINEPREFIX=$HOME/wine/prefix 
-export WINEARCH=win64 
+export WINEARCH=win32
 export WINEPATH=$HOME/wine
 wineboot -u
 
