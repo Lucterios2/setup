@@ -30,10 +30,11 @@ setup_win:
   services:
     - docker:dind
   script:
-    - apt-get update
-    - apt-get install -y git
-    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.sleto.fr/lucterios2/lucterios lct-core
-    - ./lct-core/utils/prep_env.sh ant
+    - apk install git ant wget zip
+    - mkdir -p /usr/share/java/lib
+    - wget http://www.java2s.com/Code/JarDownload/ant-contrib/ant-contrib-0.6.jar.zip
+    - unzip ant-contrib-0.6.jar.zip
+    - mv ant-contrib-0.6.jar /usr/share/java/lib/ant-contrib-0.6.jar
     - export SETUP_NAME=setup.iss
     - ant commun_win
     - docker run --rm -v "$PWD:/work" amake/innosetup "tmp/setup.iss"
