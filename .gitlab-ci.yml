@@ -48,8 +48,14 @@ setup_win:
     - sed -i "s|@@PACKAGE@@|${LCT_PACKAGES}|g" tmp/install.ps1
     - sed -i "s|@@PIPOPTION@@||g" tmp/install.ps1
     - ls -l tmp/
-    - docker run --rm -v "$PWD/tmp:/work" amake/innosetup setup.iss 2>&1
-    - cp tmp/${LCT_NAME}_setup.exe ${LCT_NAME}_setup.exe
+    - docker container create --name setup amake/innosetup setup.iss
+    - docker cp ./tmp/Python setup:/work/
+    - docker cp tmp/setup.iss setup:/work/
+    - docker cp tmp/License.txt setup:/work/
+    - docker cp tmp/install.ps1 setup:/work/
+    - docker exec setup ls -l /work/
+    - docker start -i -a setup
+    - docker cp setup:/work/${LCT_NAME}_setup.exe .
   artifacts:
     paths:  
       - ${LCT_NAME}_setup.exe  
