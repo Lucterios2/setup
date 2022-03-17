@@ -1,19 +1,24 @@
 <project name="Lucterios2" default="all" basedir=".">
 	<property name="project.name" value="lucterios" />
 	<property environment="env" />
-	<property name="certificatpath" value="/opt/sign/signCertSDL.pem" />
-	<property name="privatekeypath" value="/opt/sign/privateKey.pem" />
-	
+	<property name="certificatpath"
+		value="/opt/sign/signCertSDL.pem" />
+	<property name="privatekeypath"
+		value="/opt/sign/privateKey.pem" />
+	<property name="setup_name" value="${env.SETUP_NAME}" />
+
 	<available file="/usr/bin/wine" property="wine.present" />
 	<available file="/usr/bin/hdiutil" property="mac.present" />
-	<available file="/usr/bin/genisoimage" property="pseudomac.present" />
-	<available file="${basedir}/lct-core/client/build.json" property="clientdesktop.present" />
-	
+	<available file="/usr/bin/genisoimage"
+		property="pseudomac.present" />
+	<available file="${basedir}/lct-core/client/build.json"
+		property="clientdesktop.present" />
+
 	<condition property="sign.present">
 		<and>
-		    <available file="/usr/local/bin/osslsigncode"/>
-		    <available file="${certificatpath}"/>
-		    <available file="${privatekeypath}"/>
+			<available file="/usr/local/bin/osslsigncode" />
+			<available file="${certificatpath}" />
+			<available file="${privatekeypath}" />
 		</and>
 	</condition>
 
@@ -22,15 +27,15 @@
 	</condition>
 	<condition property="lct_name" value="Lucterios">
 		<not>
-		    <isset property="env.LCT_NAME" />
+			<isset property="env.LCT_NAME" />
 		</not>
 	</condition>
 	<condition property="pip_option" value="${env.PIP_OPTION}">
-	    <isset property="env.PIP_OPTION" />
+		<isset property="env.PIP_OPTION" />
 	</condition>
 	<condition property="pip_option" value="">
 		<not>
-		    <isset property="env.PIP_OPTION" />
+			<isset property="env.PIP_OPTION" />
 		</not>
 	</condition>
 	<condition property="lct_package" value="${env.LCT_PACKAGES}">
@@ -38,7 +43,7 @@
 	</condition>
 	<condition property="lct_package" value="lucterios-standard">
 		<not>
-		    <isset property="env.LCT_PACKAGES" />
+			<isset property="env.LCT_PACKAGES" />
 		</not>
 	</condition>
 	<condition property="lct_url" value="${env.LCT_URL}">
@@ -46,17 +51,20 @@
 	</condition>
 	<condition property="lct_url" value="">
 		<not>
-		    <isset property="env.LCT_URL" />
+			<isset property="env.LCT_URL" />
 		</not>
 	</condition>
 
 	<target name="init">
-		<exec executable="/bin/bash" outputproperty="build.tstmp" failifexecutionfails="false" errorproperty="">
+		<exec executable="/bin/bash" outputproperty="build.tstmp"
+			failifexecutionfails="false" errorproperty="">
 			<arg line="-c 'git log -1 --format=%at'" />
 		</exec>
-		<exec executable="python" outputproperty="build.num" failifexecutionfails="false" errorproperty="">
+		<exec executable="python" outputproperty="build.num"
+			failifexecutionfails="false" errorproperty="">
 			<arg value="-c" />
-			<arg value="import datetime;print(datetime.datetime.fromtimestamp(int('${build.tstmp}')).strftime('%y%m%d%H'))" />
+			<arg
+				value="import datetime;print(datetime.datetime.fromtimestamp(int('${build.tstmp}')).strftime('%y%m%d%H'))" />
 		</exec>
 		<echo>num=${build.num}</echo>
 		<echo>name=${lct_name}</echo>
@@ -65,71 +73,59 @@
 	</target>
 
 	<target name="correct_install">
-		<replace file="${file_path}" token="@@NAME@@" value="${lct_name}"/>
-		<replace file="${file_path}" token="@@PACKAGE@@" value="${lct_package}"/>
-		<replace file="${file_path}" token="@@URL@@" value="${lct_url}"/>
-		<replace file="${file_path}" token="@@BUILD@@" value="${build.num}"/>
-		<replace file="${file_path}" token="@@PIPOPTION@@" value="${pip_option}"/>
+		<replace file="${file_path}" token="@@NAME@@"
+			value="${lct_name}" />
+		<replace file="${file_path}" token="@@PACKAGE@@"
+			value="${lct_package}" />
+		<replace file="${file_path}" token="@@URL@@"
+			value="${lct_url}" />
+		<replace file="${file_path}" token="@@BUILD@@"
+			value="${build.num}" />
+		<replace file="${file_path}" token="@@PIPOPTION@@"
+			value="${pip_option}" />
 	</target>
 
 	<target name="tar">
 		<delete dir="${basedir}/${lct_name}" />
 		<copy file="${basedir}/install.sh" todir="${basedir}/${lct_name}" />
-		<copy file="${basedir}/uninstall.sh" todir="${basedir}/${lct_name}" />
-		<copy file="${basedir}/License.txt" todir="${basedir}/${lct_name}" />
+		<copy file="${basedir}/uninstall.sh"
+			todir="${basedir}/${lct_name}" />
+		<copy file="${basedir}/License.txt"
+			todir="${basedir}/${lct_name}" />
 		<antcall target="correct_install">
-			<param name="file_path" value="${basedir}/${lct_name}/install.sh" />
+			<param name="file_path"
+				value="${basedir}/${lct_name}/install.sh" />
 		</antcall>
 		<antcall target="correct_install">
-			<param name="file_path" value="${basedir}/${lct_name}/uninstall.sh" />
+			<param name="file_path"
+				value="${basedir}/${lct_name}/uninstall.sh" />
 		</antcall>
-		<chmod file="${basedir}/${lct_name}/install.sh" perm="ugo+rx"/>
-		<chmod file="${basedir}/${lct_name}/uninstall.sh" perm="ugo+rx"/>
+		<chmod file="${basedir}/${lct_name}/install.sh" perm="ugo+rx" />
+		<chmod file="${basedir}/${lct_name}/uninstall.sh" perm="ugo+rx" />
 		<exec executable="tar" dir="${basedir}">
 			<arg line="-czf ./bin/${lct_name}_setup.tar.gz ${lct_name}" />
 		</exec>
 		<delete dir="${basedir}/${lct_name}" />
 	</target>
-	
+
 	<target name="winsign" if="sign.present">
-		<copy file="bin/${lct_name}_setup.exe" tofile="bin/${lct_name}_setup-unsigned.exe" />
+		<copy file="bin/${lct_name}_setup.exe"
+			tofile="bin/${lct_name}_setup-unsigned.exe" />
 		<exec executable="osslsigncode" dir="${basedir}">
-			<arg line="sign -certs ${certificatpath} -key ${privatekeypath} -i 'http://www.sd-libre.fr' -n '${lct_name}' bin/${lct_name}_setup-unsigned.exe bin/${lct_name}_setup.exe"/>
+			<arg
+				line="sign -certs ${certificatpath} -key ${privatekeypath} -i 'http://www.sd-libre.fr' -n '${lct_name}' bin/${lct_name}_setup-unsigned.exe bin/${lct_name}_setup.exe" />
 		</exec>
 	</target>
 
-	<target name="nsis" if="wine.present">
+	<target name="commun_win">
 		<delete dir="${basedir}/tmp" />
 		<mkdir dir="${basedir}/tmp" />
 		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
-		<copy file="${basedir}/setup.nsi" tofile="${basedir}/tmp/setup.nsi" />
-		<copy file="${basedir}/install.ps1" tofile="${basedir}/tmp/install.ps1" />
-		<unzip src="${basedir}/PythonWin32.zip" dest="${basedir}/tmp/"/>
-		<antcall target="correct_install">
-			<param name="file_path" value="${basedir}/tmp/setup.nsi" />
-		</antcall>
-		<antcall target="correct_install">
-			<param name="file_path" value="${basedir}/tmp/install.ps1" />
-		</antcall>
-		<echo message='user.dir=${user.dir} - basedir=${basedir}' />
-		<exec executable="/usr/bin/wine" dir="${basedir}/bin">
-			<env key="WINEPREFIX" value="${env.HOME}/.wine" />
-			<env key="DISPLAY" value=":0.0" />
-			<arg value="C:/NSIS/makensis.exe" />
-			<arg value="z:${basedir}/tmp/setup.nsi" />
-		</exec>
-		<move file="${basedir}/tmp/${lct_name}_setup.exe" todir="${basedir}/bin/" />
-		<antcall target="winsign" />
-		<delete dir="${basedir}/tmp" />
-	</target>
-
-	<target name="inno" if="wine.present">
-		<delete dir="${basedir}/tmp" />
-		<mkdir dir="${basedir}/tmp" />
-		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
-		<copy file="${basedir}/setup.iss" tofile="${basedir}/tmp/setup.iss" />
-		<copy file="${basedir}/install.ps1" tofile="${basedir}/tmp/install.ps1" />
-		<unzip src="${basedir}/PythonWin32.zip" dest="${basedir}/tmp/"/>
+		<copy file="${basedir}/${setup_name}"
+			tofile="${basedir}/tmp/${setup_name}" />
+		<copy file="${basedir}/install.ps1"
+			tofile="${basedir}/tmp/install.ps1" />
+		<unzip src="${basedir}/PythonWin32.zip" dest="${basedir}/tmp/" />
 		<antcall target="correct_install">
 			<param name="file_path" value="${basedir}/tmp/setup.iss" />
 		</antcall>
@@ -137,10 +133,33 @@
 			<param name="file_path" value="${basedir}/tmp/install.ps1" />
 		</antcall>
 		<echo message='user.dir=${user.dir} - basedir=${basedir}' />
+	</target>
+
+	<target name="nsis" if="wine.present">
+		<antcall target="commun_win">
+			<param name="setup_name" value="setup.nsi" />
+		</antcall>
+		<exec executable="/usr/bin/wine" dir="${basedir}/bin">
+			<env key="WINEPREFIX" value="${env.HOME}/.wine" />
+			<env key="DISPLAY" value=":0.0" />
+			<arg value="C:/NSIS/makensis.exe" />
+			<arg value="z:${basedir}/tmp/setup.nsi" />
+		</exec>
+		<move file="${basedir}/tmp/${lct_name}_setup.exe"
+			todir="${basedir}/bin/" />
+		<antcall target="winsign" />
+		<delete dir="${basedir}/tmp" />
+	</target>
+
+	<target name="inno" if="wine.present">
+		<antcall target="commun_win">
+			<param name="setup_name" value="setup.iss" />
+		</antcall>
 		<exec executable="iscc" dir="${basedir}/bin">
 			<arg value="${basedir}/tmp/setup.iss" />
 		</exec>
-		<move file="${basedir}/tmp/${lct_name}_setup.exe" todir="${basedir}/bin/" />
+		<move file="${basedir}/tmp/${lct_name}_setup.exe"
+			todir="${basedir}/bin/" />
 		<antcall target="winsign" />
 		<delete dir="${basedir}/tmp" />
 	</target>
@@ -148,64 +167,95 @@
 	<target name="create_app_mac">
 		<mkdir dir="${dir_path}/${name_app}.app/Contents/MacOS" />
 		<mkdir dir="${dir_path}/${name_app}.app/Contents/Resources" />
-		<copy file="${basedir}/package.icns" todir="${dir_path}/${name_app}.app/Contents/Resources" />
-		<move file="${dir_path}/${script}" todir="${dir_path}/${name_app}.app/Contents/MacOS/" />
-		<chmod file="${dir_path}/${name_app}.app/Contents/MacOS/${script}" perm="ugo+rx"/>
-		<echo file="${dir_path}/${name_app}.app/Contents/MacOS/${name_app}">#!/bin/bash
-CURPATH=$(dirname "$0")
-cd "$CURPATH"
-open ./${script}
+		<copy file="${basedir}/package.icns"
+			todir="${dir_path}/${name_app}.app/Contents/Resources" />
+		<move file="${dir_path}/${script}"
+			todir="${dir_path}/${name_app}.app/Contents/MacOS/" />
+		<chmod
+			file="${dir_path}/${name_app}.app/Contents/MacOS/${script}"
+			perm="ugo+rx" />
+		<echo
+			file="${dir_path}/${name_app}.app/Contents/MacOS/${name_app}">#!/bin/bash
+			CURPATH=$(dirname "$0")
+			cd "$CURPATH"
+			open ./${script}
 		</echo>
-		<chmod file="${dir_path}/${name_app}.app/Contents/MacOS/${name_app}" perm="ugo+rx"/>
+		<chmod
+			file="${dir_path}/${name_app}.app/Contents/MacOS/${name_app}"
+			perm="ugo+rx" />
 		<echo file="${dir_path}/${name_app}.app/Contents/Info.plist">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
-&lt;plist version="1.0"&gt;
-&lt;dict&gt;
-	&lt;key&gt;CFBundleExecutable&lt;/key&gt;
-	&lt;string&gt;${name_app}&lt;/string&gt;
-	&lt;key&gt;CFBundleGetInfoString&lt;/key&gt;
-	&lt;string&gt;${name_app}&lt;/string&gt;
-	&lt;key&gt;CFBundleIconFile&lt;/key&gt;
-	&lt;string&gt;package.icns&lt;/string&gt;
-	&lt;key&gt;CFBundleName&lt;/key&gt;
-	&lt;string&gt;${name_app}&lt;/string&gt;
-	&lt;key&gt;CFBundlePackageType&lt;/key&gt;
-	&lt;string&gt;APPL&lt;/string&gt;
-	&lt;key&gt;CFBundleShortVersionString&lt;/key&gt;
-	&lt;string&gt;${build.num}&lt;/string&gt;
-&lt;/dict&gt;
-&lt;/plist&gt;</echo>
+			&lt;!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"
+			"http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+			&lt;plist
+			version="1.0"&gt;
+			&lt;dict&gt;
+			&lt;key&gt;CFBundleExecutable&lt;/key&gt;
+			&lt;string&gt;${name_app}&lt;/string&gt;
+			&lt;key&gt;CFBundleGetInfoString&lt;/key&gt;
+			&lt;string&gt;${name_app}&lt;/string&gt;
+			&lt;key&gt;CFBundleIconFile&lt;/key&gt;
+			&lt;string&gt;package.icns&lt;/string&gt;
+			&lt;key&gt;CFBundleName&lt;/key&gt;
+			&lt;string&gt;${name_app}&lt;/string&gt;
+			&lt;key&gt;CFBundlePackageType&lt;/key&gt;
+			&lt;string&gt;APPL&lt;/string&gt;
+			&lt;key&gt;CFBundleShortVersionString&lt;/key&gt;
+			&lt;string&gt;${build.num}&lt;/string&gt;
+			&lt;/dict&gt;
+			&lt;/plist&gt;
+		</echo>
 	</target>
 
 	<target name="commun_mac">
 		<delete dir="${basedir}/tmp" />
 		<mkdir dir="${basedir}/tmp" />
 		<delete file="${basedir}/${lct_name}_setup.dmg" />
-		<copy file="${basedir}/install_mac.sh" tofile="${basedir}/tmp/install_${lct_name}.command" />
-		<copy file="${basedir}/uninstall_mac.sh" tofile="${basedir}/tmp/uninstall_${lct_name}.command" />
-		<echo file="${basedir}/tmp/README" encoding="UTF-8">#### Install of ${lct_name} for Mac OS X ####
-To install ${lct_name}, you must to have Mac OS X 10.9 minimum (last version is better)
-Available on this image:
- - install ${lct_name}: allow to install ${lct_name} and dependancy
- - uninstall ${lct_name}: allow to uninstall ${lct_name}
-Note: Mac OS X can to ask you for confirmation to run this installation on your computer.
+		<copy file="${basedir}/install_mac.sh"
+			tofile="${basedir}/tmp/install_${lct_name}.command" />
+		<copy file="${basedir}/uninstall_mac.sh"
+			tofile="${basedir}/tmp/uninstall_${lct_name}.command" />
+		<echo file="${basedir}/tmp/README" encoding="UTF-8">#### Install of
+			${lct_name} for Mac OS X ####
+			To install ${lct_name}, you must to have
+			Mac OS X 10.9 minimum (last
+			version is better)
+			Available on this image:
+			- install ${lct_name}: allow to install ${lct_name} and dependancy
+			-
+			uninstall ${lct_name}: allow to uninstall ${lct_name}
+			Note: Mac OS X
+			can to ask you for confirmation to run this installation on
+			your
+			computer.
 
-#### Installation de ${lct_name} pour Mac OS X ####
-Pour installer ${lct_name}, vous devez disposer de Mac OS X 10.9 minimum (prévilègier la dernière version disponible)
-Disponible sur cette image:
- - install ${lct_name}: permet d'installer ${lct_name} ainsi que ces dépendance
- - uninstall ${lct_name}: permet de désinstaller ${lct_name}
-Remarque: Mac OS X peut vous demander une confirmation pour dérouler cette installation sur votre ordinateur.
+			#### Installation de ${lct_name} pour Mac OS X ####
+			Pour
+			installer ${lct_name}, vous devez disposer de Mac OS X 10.9 minimum
+			(prévilègier la dernière version disponible)
+			Disponible sur cette
+			image:
+			- install ${lct_name}: permet d'installer ${lct_name} ainsi que
+			ces
+			dépendance
+			- uninstall ${lct_name}: permet de désinstaller
+			${lct_name}
+			Remarque: Mac OS X peut vous demander une confirmation
+			pour dérouler cette
+			installation sur votre ordinateur.
 		</echo>
 		<copy file="${basedir}/License.txt" todir="${basedir}/tmp" />
 		<antcall target="correct_install">
-			<param name="file_path" value="${basedir}/tmp/install_${lct_name}.command" />
+			<param name="file_path"
+				value="${basedir}/tmp/install_${lct_name}.command" />
 		</antcall>
 		<antcall target="correct_install">
-			<param name="file_path" value="${basedir}/tmp/uninstall_${lct_name}.command" />
+			<param name="file_path"
+				value="${basedir}/tmp/uninstall_${lct_name}.command" />
 		</antcall>
-		<chmod file="${basedir}/tmp/install_${lct_name}.command" perm="ugo+rx"/>
-		<chmod file="${basedir}/tmp/uninstall_${lct_name}.command" perm="ugo+rx"/>
+		<chmod file="${basedir}/tmp/install_${lct_name}.command"
+			perm="ugo+rx" />
+		<chmod file="${basedir}/tmp/uninstall_${lct_name}.command"
+			perm="ugo+rx" />
 		<antcall target="create_app_mac">
 			<param name="name_app" value="install ${lct_name}" />
 			<param name="dir_path" value="${basedir}/tmp" />
@@ -220,55 +270,78 @@ Remarque: Mac OS X peut vous demander une confirmation pour dérouler cette inst
 
 	<target name="mac" if="mac.present" depends='commun_mac'>
 		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
-			<arg line="create -ov -srcfolder tmp -volname ${lct_name} ${lct_name}_setup.dmg" />
+			<arg
+				line="create -ov -srcfolder tmp -volname ${lct_name} ${lct_name}_setup.dmg" />
 		</exec>
 		<exec executable="/usr/bin/hdiutil" dir="${basedir}">
 			<arg line="internet-enable -yes ${lct_name}_setup.dmg" />
 		</exec>
-		<move file="${basedir}/${lct_name}_setup.dmg" todir="${basedir}/bin" />
+		<move file="${basedir}/${lct_name}_setup.dmg"
+			todir="${basedir}/bin" />
 		<delete dir="${basedir}/tmp" />
 	</target>
 
-	<target name="pseudomac" if="pseudomac.present" depends='commun_mac'>
+	<target name="pseudomac" if="pseudomac.present"
+		depends='commun_mac'>
 		<exec executable="/usr/bin/genisoimage" dir="${basedir}">
-			<arg line="-V ${lct_name} -D -R -apple -no-pad -o ${lct_name}_setup.dmg tmp" />
+			<arg
+				line="-V ${lct_name} -D -R -apple -no-pad -o ${lct_name}_setup.dmg tmp" />
 		</exec>
-		<move file="${basedir}/${lct_name}_setup.dmg" todir="${basedir}/bin" />
+		<move file="${basedir}/${lct_name}_setup.dmg"
+			todir="${basedir}/bin" />
 		<delete dir="${basedir}/tmp" />
 	</target>
 
 	<target name="clientitem" if="clientdesktop.present">
-	 	<delete dir="${basedir}/lct-core/client/platforms/electron/build" />
-		<echo file="${basedir}/lct-core/client/build.json" encoding="UTF-8">
-{
-	"electron": {
-		"${osname}": {
+		<delete
+			dir="${basedir}/lct-core/client/platforms/electron/build" />
+		<echo file="${basedir}/lct-core/client/build.json"
+			encoding="UTF-8">
+			{
+			"electron": {
+			"${osname}": {
 			"package": [
-				"${packname}"
+			"${packname}"
 			]
-		}
-	}
-}		
+			}
+			}
+			}
 		</echo>
-		<exec executable="cordova" dir="${basedir}/lct-core/client" failifexecutionfails="false">
+		<exec executable="cordova" dir="${basedir}/lct-core/client"
+			failifexecutionfails="false">
 			<arg value="build" />
 			<arg value="electron" />
 			<arg value="--release" />
-		</exec>	
-		<exec executable="/bin/bash" dir="${basedir}/lct-core/client/platforms/electron/build/" outputproperty="result_filename" failifexecutionfails="false">
+		</exec>
+		<exec executable="/bin/bash"
+			dir="${basedir}/lct-core/client/platforms/electron/build/"
+			outputproperty="result_filename" failifexecutionfails="false">
 			<arg line="-c 'ls *.${packname}'" />
 		</exec>
-		<copy file="${basedir}/lct-core/client/platforms/electron/build/${result_filename}" tofile="${basedir}/bin/Client${lct_name}_Setup.${packname}" failonerror="false"/>
+		<copy
+			file="${basedir}/lct-core/client/platforms/electron/build/${result_filename}"
+			tofile="${basedir}/bin/Client${lct_name}_Setup.${packname}"
+			failonerror="false" />
 	</target>
 
 	<target name="clientdesktop" if="clientdesktop.present">
-		<exec executable="/bin/bash" outputproperty="lct_name_lower" failifexecutionfails="false" errorproperty="">
-			<arg line="-c 'echo ${lct_name} | tr ''[:upper:]'' ''[:lower:]'' '" />
+		<exec executable="/bin/bash" outputproperty="lct_name_lower"
+			failifexecutionfails="false" errorproperty="">
+			<arg
+				line="-c 'echo ${lct_name} | tr ''[:upper:]'' ''[:lower:]'' '" />
 		</exec>
- 	 	<replaceregexp file="${basedir}/lct-core/client/config.xml" match='Lucterios' replace='${lct_name}' byline="true" />	
- 		<replaceregexp file="${basedir}/lct-core/client/config.xml" match='lucterios' replace='${lct_name_lower}' byline="true" />	
-		<replaceregexp file="${basedir}/lct-core/client/package.json" match='Lucterios' replace='${lct_name}' byline="true" />	
-		<replaceregexp file="${basedir}/lct-core/client/package.json" match='lucterios' replace='${lct_name_lower}' byline="true" />				
+		<replaceregexp
+			file="${basedir}/lct-core/client/config.xml" match='Lucterios'
+			replace='${lct_name}' byline="true" />
+		<replaceregexp
+			file="${basedir}/lct-core/client/config.xml" match='lucterios'
+			replace='${lct_name_lower}' byline="true" />
+		<replaceregexp
+			file="${basedir}/lct-core/client/package.json" match='Lucterios'
+			replace='${lct_name}' byline="true" />
+		<replaceregexp
+			file="${basedir}/lct-core/client/package.json" match='lucterios'
+			replace='${lct_name_lower}' byline="true" />
 		<antcall target="clientitem">
 			<param name="osname" value="linux" />
 			<param name="packname" value="AppImage" />
@@ -276,32 +349,33 @@ Remarque: Mac OS X peut vous demander une confirmation pour dérouler cette inst
 		<antcall target="clientitem">
 			<param name="osname" value="windows" />
 			<param name="packname" value="nsis" />
-		</antcall>					
+		</antcall>
 		<antcall target="clientitem">
 			<param name="osname" value="windows" />
 			<param name="packname" value="zip" />
-		</antcall>					
+		</antcall>
 		<antcall target="clientitem">
 			<param name="osname" value="mac" />
 			<param name="packname" value="dmg" />
-		</antcall>					
+		</antcall>
 		<antcall target="clientitem">
 			<param name="osname" value="mac" />
 			<param name="packname" value="7z" />
-		</antcall>					
+		</antcall>
 	</target>
-	
+
 	<target name="all" depends="init">
 		<delete dir="${basedir}/bin" />
 		<mkdir dir="${basedir}/bin" />
 		<antcall target="tar" />
-		<!-- antcall target="inno" /-->
-		<!-- antcall target="nsis" /-->
+		<!-- antcall target="inno" / -->
+		<!-- antcall target="nsis" / -->
 		<antcall target="pseudomac" />
 		<antcall target="mac" />
 		<antcall target="clientdesktop" />
 		<delete dir="${basedir}/tmp" />
-		<echo message="num=${build.num}" file="${basedir}/bin/${lct_name}_${build.num}" append="false" />
+		<echo message="num=${build.num}"
+			file="${basedir}/bin/${lct_name}_${build.num}" append="false" />
 		<exec executable="ls" dir="${basedir}/bin">
 			<arg line="-lh" />
 		</exec>
