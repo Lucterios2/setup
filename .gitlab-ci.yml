@@ -55,7 +55,6 @@ setup_win:
     - docker cp tmp/License.txt setup:/work/
     - docker cp tmp/install.ps1 setup:/work/
     - docker start -i -a setup
-    - docker exec setup ls -l /work/
     - docker cp setup:/work/${LCT_NAME}_setup.exe .
     - docker rm setup
   artifacts:
