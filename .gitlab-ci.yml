@@ -2,8 +2,8 @@ stages:
   - setup
   - deploy
 
-setup:
-  image: amake/innosetup
+setup_ant:
+  image: python:3.8
   stage: setup
   variables:
    LCT_NAME: Diacamma
@@ -19,6 +19,35 @@ setup:
   artifacts:
     paths:
      - bin/Diacamma_setup*
+     
+setup_win:     
+  stage: setup
+  image: docker:18
+  variables:
+   DOCKER_DRIVER: overlay2   
+   LCT_NAME: Diacamma
+   LCT_PACKAGES: lucterios lucterios-standard lucterios-contacts lucterios-documents diacamma-asso diacamma-syndic diacamma-financial
+  services:
+    - docker:dind
+  script:
+    - mkdir tmp
+    - cp License.txt tmp
+    - cp setup.iss tmp/setup.iss
+    - cp install.ps1 tmp/install.ps1
+    - cp PythonWin32.zip tmp/
+    - build_tstmp=$(git log -1 --format=%at)
+    - build_num=$(python -c "import datetime;print(datetime.datetime.fromtimestamp(int('${build_tstmp}')).strftime('%y%m%d%H'))")
+    - sed -i "s|@@NAME@@|${LCT_NAME}|g" tmp/setup.iss
+    - sed -i "s|@@BUILD@@|${build_num}|g" tmp/setup.iss
+    - sed -i "s|@@NAME@@|${LCT_NAME}|g" tmp/install.ps1
+    - sed -i "s|@@BUILD@@|${build_num}|g" tmp/install.ps1
+    - sed -i "s|@@PACKAGE@@|${LCT_PACKAGES}|g" tmp/install.ps1
+    - sed -i "s|@@PIPOPTION@@||g" tmp/install.ps1   
+    - docker run --rm -v "$PWD:/work" amake/innosetup "tmp/setup.iss"
+    - cp tmp/${LCT_NAME}_setup.exe ${LCT_NAME}_setup.exe
+  artifacts:
+    paths:  
+      - ${LCT_NAME}_setup.exe  
 
 deploy:
   image: python:3.8

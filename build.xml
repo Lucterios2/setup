@@ -295,7 +295,7 @@ Remarque: Mac OS X peut vous demander une confirmation pour dérouler cette inst
 		<delete dir="${basedir}/bin" />
 		<mkdir dir="${basedir}/bin" />
 		<antcall target="tar" />
-		<antcall target="inno" />
+		<!-- antcall target="inno" /-->
 		<!-- antcall target="nsis" /-->
 		<antcall target="pseudomac" />
 		<antcall target="mac" />
