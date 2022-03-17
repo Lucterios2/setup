@@ -23,6 +23,8 @@ setup_ant:
 setup_win:     
   stage: setup
   image: docker:18
+  tags:
+    - docker
   variables:
    DOCKER_DRIVER: overlay2   
    LCT_NAME: Diacamma
