@@ -30,7 +30,8 @@ setup_win:
   services:
     - docker:dind
   script:
-    - apk install git ant wget zip
+    - apk update
+    - apk add git ant wget zip
     - mkdir -p /usr/share/java/lib
     - wget http://www.java2s.com/Code/JarDownload/ant-contrib/ant-contrib-0.6.jar.zip
     - unzip ant-contrib-0.6.jar.zip
