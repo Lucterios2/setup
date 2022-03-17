@@ -59,5 +59,6 @@ deploy:
    - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bin/Diacamma_setup.exe administrateur@dns.lucterios.org:/home/administrateur/sdl/www/download/
    - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bin/Diacamma_setup.tar.gz administrateur@dns.lucterios.org:/home/administrateur/sdl/www/download/
   dependencies:
-   - setup
+   - setup_ant
+   - setup_win
   when: manual
