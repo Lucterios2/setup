@@ -48,6 +48,7 @@ setup_win:
     - sed -i "s|@@PACKAGE@@|${LCT_PACKAGES}|g" tmp/install.ps1
     - sed -i "s|@@PIPOPTION@@||g" tmp/install.ps1
     - ls -l tmp/
+    - docker rm setup || echo "no old container !"
     - docker container create --name setup amake/innosetup setup.iss
     - docker cp ./tmp/Python setup:/work/
     - docker cp tmp/setup.iss setup:/work/
@@ -56,6 +57,7 @@ setup_win:
     - docker start -i -a setup
     - docker exec setup ls -l /work/
     - docker cp setup:/work/${LCT_NAME}_setup.exe .
+    - docker rm setup
   artifacts:
     paths:  
       - ${LCT_NAME}_setup.exe  
