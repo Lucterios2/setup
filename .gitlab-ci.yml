@@ -31,13 +31,20 @@ setup_win:
     - docker:dind
   script:
     - apk update
-    - apk add git ant wget zip
-    - mkdir -p /usr/share/java/lib
-    - wget http://www.java2s.com/Code/JarDownload/ant-contrib/ant-contrib-0.6.jar.zip
-    - unzip ant-contrib-0.6.jar.zip
-    - mv ant-contrib-0.6.jar /usr/share/java/lib/ant-contrib-0.6.jar
-    - export SETUP_NAME=setup.iss
-    - ant commun_win
+    - apk add git
+    - mkdir tmp
+    - cp License.txt tmp
+    - cp setup.iss tmp/setup.iss
+    - cp install.ps1 tmp/install.ps1
+    - cp PythonWin32.zip tmp/
+    - build_tstmp=$(git log -1 --format=%at)
+    - build_num=$(python -c "import datetime;print(datetime.datetime.fromtimestamp(int('${build_tstmp}')).strftime('%y%m%d%H'))")
+    - sed -i "s|@@NAME@@|${LCT_NAME}|g" tmp/setup.iss
+    - sed -i "s|@@BUILD@@|${build_num}|g" tmp/setup.iss
+    - sed -i "s|@@NAME@@|${LCT_NAME}|g" tmp/install.ps1
+    - sed -i "s|@@BUILD@@|${build_num}|g" tmp/install.ps1
+    - sed -i "s|@@PACKAGE@@|${LCT_PACKAGES}|g" tmp/install.ps1
+    - sed -i "s|@@PIPOPTION@@||g" tmp/install.ps1
     - docker run --rm -v "$PWD:/work" amake/innosetup "tmp/setup.iss"
     - cp tmp/${LCT_NAME}_setup.exe ${LCT_NAME}_setup.exe
   artifacts:
