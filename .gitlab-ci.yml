@@ -53,8 +53,8 @@ setup_win:
     - docker cp tmp/setup.iss setup:/work/
     - docker cp tmp/License.txt setup:/work/
     - docker cp tmp/install.ps1 setup:/work/
-    - docker exec setup ls -l /work/
     - docker start -i -a setup
+    - docker exec setup ls -l /work/
     - docker cp setup:/work/${LCT_NAME}_setup.exe .
   artifacts:
     paths:  
