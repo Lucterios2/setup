@@ -137,11 +137,8 @@
 			<param name="file_path" value="${basedir}/tmp/install.ps1" />
 		</antcall>
 		<echo message='user.dir=${user.dir} - basedir=${basedir}' />
-		<exec executable="/usr/bin/wine" dir="${basedir}/bin">
-			<env key="WINEPREFIX" value="${env.HOME}/.wine" />
-			<env key="DISPLAY" value=":0.0" />
-			<arg value="C:/InnoSetup5/ISCC.exe" />
-			<arg value="z:${basedir}/tmp/setup.iss" />
+		<exec executable="iscc" dir="${basedir}/bin">
+			<arg value="${basedir}/tmp/setup.iss" />
 		</exec>
 		<move file="${basedir}/tmp/${lct_name}_setup.exe" todir="${basedir}/bin/" />
 		<antcall target="winsign" />
@@ -298,8 +295,8 @@ Remarque: Mac OS X peut vous demander une confirmation pour dérouler cette inst
 		<delete dir="${basedir}/bin" />
 		<mkdir dir="${basedir}/bin" />
 		<antcall target="tar" />
-		<!-- antcall target="inno" /-->
-		<antcall target="nsis" />
+		<antcall target="inno" />
+		<!-- antcall target="nsis" /-->
 		<antcall target="pseudomac" />
 		<antcall target="mac" />
 		<antcall target="clientdesktop" />

@@ -3,7 +3,7 @@ stages:
   - deploy
 
 setup:
-  image: python:3.8
+  image: amake/innosetup
   stage: setup
   variables:
    LCT_NAME: Diacamma
@@ -14,7 +14,6 @@ setup:
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.sleto.fr/lucterios2/lucterios lct-core
     - ./lct-core/utils/prep_env.sh debian
     - ./lct-core/utils/prep_env.sh ant
-    - ./prerequisit.sh
   script:
     - ant 
   artifacts:
