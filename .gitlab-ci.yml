@@ -38,7 +38,7 @@ setup_win:
     - cp License.txt tmp
     - cp setup.iss tmp/setup.iss
     - cp install.ps1 tmp/install.ps1
-    - uzip PythonWin32.zip -d tmp/
+    - unzip PythonWin32.zip -d tmp/
     - build_tstmp=$(git log -1 --format=%at)
     - build_num=$(python3 -c "import datetime;print(datetime.datetime.fromtimestamp(int('${build_tstmp}')).strftime('%y%m%d%H'))")
     - sed -i "s|@@NAME@@|${LCT_NAME}|g" tmp/setup.iss
