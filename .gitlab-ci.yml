@@ -31,7 +31,7 @@ setup_win:
     - docker:dind
   script:
     - apk update
-    - apk add git
+    - apk add --update python3.8 git
     - mkdir tmp
     - cp License.txt tmp
     - cp setup.iss tmp/setup.iss
