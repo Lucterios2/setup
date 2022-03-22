@@ -38,13 +38,13 @@ echo ""
 echo "------ install lucterios #@@BUILD@@ ------"
 echo ""
 
-python -m pip -U install pip==21.3.* 2>&1 | Out-Null
+python -m pip --user -U install pip==21.3.* 2>&1 | Out-Null
 echo "=> python -m pip -U install pip==21.3.*"
 foreach($package in $packages.split()) {
     echo "===> python -m pip install -U $package"
-	python -m pip install -U $package @@PIPOPTION@@
+	python -m pip install --user -U $package @@PIPOPTION@@
 }
-python -m pip install -U pip==21.3.* 2>&1 | Out-Null
+python -m pip install --user -U pip==21.3.* 2>&1 | Out-Null
 python -m pip list
 
 python Python\Scripts\lucterios_admin.py update | python Python\Scripts\lucterios_admin.py refreshall | Out-Null

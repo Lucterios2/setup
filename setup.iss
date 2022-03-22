@@ -40,10 +40,11 @@ Source: "Python\*"; DestDir: "{app}\Python"; Flags: ignoreversion recursesubdirs
 
 [Run]
 Filename: "PowerShell.exe"; Flags: waituntilterminated; Parameters: "-ExecutionPolicy Bypass -File ""{#INSTDIR}\install.ps1"" "
+Filename: {#INSTDIR}\{#MyAppName}.lnk; Flags: shellexec skipifsilent nowait; Tasks: StartAfterInstall
 
 [Tasks]
-Name: start; Description: "Demarrer automatiquement avec Windows"; GroupDescription: "Fin d'installation"; Flags: unchecked
-Name: launch; Description: "Lancer l'application en fin d'installation"; GroupDescription: "Fin d'installation"
+Name: StartLoginWindows; Description: "Demarrer automatiquement avec Windows"; GroupDescription: "Fin d'installation"; Flags: unchecked
+Name: StartAfterInstall; Description: "Lancer l'application en fin d'installation"; GroupDescription: "Fin d'installation"
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);
@@ -54,17 +55,10 @@ begin
     begin
       FileCopy(ExpandConstant('{#INSTDIR}\{#MyAppName}.lnk'), ExpandConstant('{commondesktop}\{#MyAppName}.lnk'), False);
       FileCopy(ExpandConstant('{#INSTDIR}\{#MyAppName}.lnk'), ExpandConstant('{group}\{#MyAppName}.lnk'), False);
-      if IsTaskSelected('start') then 
-      begin
-      	FileCopy(ExpandConstant('{#INSTDIR}\{#MyAppName}.lnk'), ExpandConstant('{userappdata}\Microsoft\Windows\Start Menu\Programs\Startup'), False);
-      end;
-      if IsTaskSelected('launch') then 
-      begin
-      	Exec(ExpandConstant('{#INSTDIR}\{#MyAppName}.lnk'),'', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
-      end;
     end;
 end;
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
+Name: "{userstartup}\{#MyAppName}"; Filename: "{#INSTDIR}\{#MyAppName}.lnk; WorkingDir: "{#INSTDIR}"; Tasks: StartLoginWindows 
 
