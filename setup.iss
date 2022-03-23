@@ -48,8 +48,6 @@ Name: StartAfterInstall; Description: "Lancer l'application en fin d'installatio
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);
-var
-    ResultCode: Integer;
 begin
     if CurStep = ssDone then 
     begin
@@ -60,5 +58,5 @@ end;
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{userstartup}\{#MyAppName}"; Filename: "{#INSTDIR}\{#MyAppName}.lnk; WorkingDir: "{#INSTDIR}"; Tasks: StartLoginWindows 
+Name: "{commonstartup}\{#MyAppName}"; Filename: "{#INSTDIR}\{#MyAppName}.lnk"; WorkingDir: "{#INSTDIR}"; Tasks: StartLoginWindows 
 

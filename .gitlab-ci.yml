@@ -33,21 +33,8 @@ setup_win:
     - docker:dind
   script:
     - apk update
-    - apk add --update python3 git zip unzip
-    - mkdir tmp
-    - cp License.txt tmp/License.txt
-    - cp setup.iss tmp/setup.iss
-    - cp install.ps1 tmp/install.ps1
-    - unzip PythonWin32.zip -d tmp/
-    - build_tstmp=$(git log -1 --format=%at)
-    - build_num=$(python3 -c "import datetime;print(datetime.datetime.fromtimestamp(int('${build_tstmp}')).strftime('%y%m%d%H'))")
-    - sed -i "s|@@NAME@@|${LCT_NAME}|g" tmp/setup.iss
-    - sed -i "s|@@BUILD@@|${build_num}|g" tmp/setup.iss
-    - sed -i "s|@@NAME@@|${LCT_NAME}|g" tmp/install.ps1
-    - sed -i "s|@@BUILD@@|${build_num}|g" tmp/install.ps1
-    - sed -i "s|@@PACKAGE@@|${LCT_PACKAGES}|g" tmp/install.ps1
-    - sed -i "s|@@PIPOPTION@@||g" tmp/install.ps1
-    - ls -l tmp/
+    - apk add --update python3 git zip unzip apache-ant
+    - SETUP_NAME=setup.iss ant init commun_win
     - docker rm setup || echo "no old container !"
     - docker container create --name setup amake/innosetup setup.iss
     - docker cp ./tmp/Python setup:/work/
