@@ -60,7 +60,7 @@
 			failifexecutionfails="false" errorproperty="">
 			<arg line="-c 'git log -1 --format=%at'" />
 		</exec>
-		<exec executable="python" outputproperty="build.num"
+		<exec executable="python3" outputproperty="build.num"
 			failifexecutionfails="false" errorproperty="">
 			<arg value="-c" />
 			<arg

@@ -33,7 +33,7 @@ setup_win:
     - docker:dind
   script:
     - apk update
-    - apk add --update python3 git zip unzip apache-ant
+    - apk add --update --no-cache bash python3 git zip unzip apache-ant
     - SETUP_NAME=setup.iss ant init commun_win
     - docker rm setup || echo "no old container !"
     - docker container create --name setup amake/innosetup setup.iss
