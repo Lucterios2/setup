@@ -40,7 +40,7 @@ Source: "Python\*"; DestDir: "{app}\Python"; Flags: ignoreversion recursesubdirs
 
 [Run]
 Filename: "PowerShell.exe"; Flags: waituntilterminated; Parameters: "-ExecutionPolicy Bypass -File ""{#INSTDIR}\install.ps1"" "
-Filename: {#INSTDIR}\{#MyAppName}.lnk; Flags: shellexec skipifsilent nowait; Tasks: StartAfterInstall
+Filename: "PowerShell.exe"; Flags: shellexec skipifsilent nowait; Parameters: "-WindowStyle Hidden -ExecutionPolicy Bypass -File ""{#INSTDIR}\lucterios_qt.ps1"" "; Tasks: StartAfterInstall
 
 [Tasks]
 Name: StartLoginWindows; Description: "Demarrer automatiquement avec Windows"; GroupDescription: "Fin d'installation"; Flags: unchecked
@@ -58,5 +58,5 @@ end;
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{commonstartup}\{#MyAppName}"; Filename: "{#INSTDIR}\{#MyAppName}.lnk"; WorkingDir: "{#INSTDIR}"; Tasks: StartLoginWindows 
+Name: "{commonstartup}\{#MyAppName}"; Filename: "PowerShell.exe"; WorkingDir: "{#INSTDIR}"; Parameters: "-WindowStyle Hidden -ExecutionPolicy Bypass -File ""{#INSTDIR}\lucterios_qt.ps1"" "; Tasks: StartLoginWindows 
 
