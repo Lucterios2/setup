@@ -40,6 +40,8 @@ echo ""
 
 python -m pip -U install pip==21.3.* 2>&1 | Out-Null
 echo "=> python -m pip -U install pip==21.3.*"
+python -m pip uninstall PIL
+python -m pip uninstall Pillow
 foreach($package in $packages.split()) {
     echo "===> python -m pip install -U $package"
 	python -m pip install -U $package @@PIPOPTION@@

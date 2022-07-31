@@ -123,6 +123,8 @@ echo "------ install lucterios ------"
 echo
 
 . $LUCTERIOS_PATH/virtual_for_lucterios/bin/activate
+pip uninstall PIL
+pip uninstall Pillow
 pip install -U $PIP_OPTION $PACKAGES
 
 [ -z "$(pip list 2>/dev/null | grep 'Django ')" ] && finish_error "Django not installed !"
