@@ -99,8 +99,7 @@ echo
 echo "------ configure virtual environment ------"
 echo
 
-py_version=$(python3 --version)
-py_version=${py_version:7:3}
+py_version=$(python3 --version | egrep -o '([0-9]+\.[0-9]+)')
 if [ "$py_version" != "3.6" -a "$py_version" != "3.7" -a "$py_version" != "3.8" -a "$py_version" != "3.9" -a "$py_version" != "3.10" ]
 then
     finish_error "Not Python 3.6, 3.7, 3.8, 3.9 or 3.10 (but $py_version) !"
