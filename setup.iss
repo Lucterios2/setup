@@ -33,6 +33,9 @@ SolidCompression=yes
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 
+[InstallDelete]
+Type: filesandordirs; Name: "{app}\Python"
+
 [Files]
 Source: "install.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Python\*"; DestDir: "{app}\Python"; Flags: ignoreversion recursesubdirs createallsubdirs
