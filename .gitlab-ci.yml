@@ -54,10 +54,28 @@ deploy:
   script:
    - eval `ssh-agent -s`
    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-   - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bin/Diacamma_setup.dmg administrateur@dns.lucterios.org:/home/administrateur/sdl/www/download/
-   - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bin/Diacamma_setup.exe administrateur@dns.lucterios.org:/home/administrateur/sdl/www/download/
-   - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bin/Diacamma_setup.tar.gz administrateur@dns.lucterios.org:/home/administrateur/sdl/www/download/
+   - scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bin/Diacamma_setup.dmg sdlibre@download.sd-libre.fr:/home/sdlibre/download_sdl/
+   - scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bin/Diacamma_setup.exe sdlibre@download.sd-libre.fr:/home/sdlibre/download_sdl/
+   - scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bin/Diacamma_setup.tar.gz sdlibre@download.sd-libre.fr:/home/sdlibre/download_sdl/
   dependencies:
    - setup_ant
    - setup_win
+  when: manual
+
+usermanual:
+  image: python:3.8
+  stage: deploy
+  script:
+   - apt-get update
+   - apt-get install -y curl
+   - mkdir doc
+   - |
+      curl --output doc/LucteriosStandard.pdf --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" https://gitlab.sleto.fr/api/v4/projects/4/jobs/artifacts/master/raw/lucterios/standard/pdf/build_fr/latex/LucteriosStandard.pdf?job=build
+   - |
+      curl --output doc/DiacammaAsso.pdf --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" https://gitlab.sleto.fr/api/v4/projects/9/jobs/artifacts/master/raw/diacamma/asso/pdf/build_fr/latex/DiacammaAsso.pdf?job=build
+   - |
+      curl --output doc/DiacammaSyndic.pdf --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" https://gitlab.sleto.fr/api/v4/projects/11/jobs/artifacts/master/raw/diacamma/syndic/pdf/build_fr/latex/DiacammaSyndic.pdf?job=build
+   - eval `ssh-agent -s`
+   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+   - scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no doc/*.pdf sdlibre@download.sd-libre.fr:/home/sdlibre/download_sdl/
   when: manual
