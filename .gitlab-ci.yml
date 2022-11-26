@@ -52,14 +52,20 @@ deploy:
   image: python:3.8
   stage: deploy
   script:
+   - apt-get update
+   - apt-get install -y curl
+   - mkdir bin
+   - |
+      curl --output bin/Diacamma_setup.dmg --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" https://gitlab.sleto.fr/api/v4/projects/5/jobs/artifacts/master/raw/bin/Diacamma_setup.dmg?job=setup_ant
+   - |
+      curl --output bin/Diacamma_setup.tar.gz --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" https://gitlab.sleto.fr/api/v4/projects/5/jobs/artifacts/master/raw/bin/Diacamma_setup.tar.gz?job=setup_ant
+   - |
+      curl --output bin/Diacamma_setup.exe --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" https://gitlab.sleto.fr/api/v4/projects/5/jobs/artifacts/master/raw/bin/Diacamma_setup.exe?job=setup_win
    - eval `ssh-agent -s`
    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
    - scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bin/Diacamma_setup.dmg sdlibre@download.sd-libre.fr:/home/sdlibre/download_sdl/
-   - scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bin/Diacamma_setup.exe sdlibre@download.sd-libre.fr:/home/sdlibre/download_sdl/
    - scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bin/Diacamma_setup.tar.gz sdlibre@download.sd-libre.fr:/home/sdlibre/download_sdl/
-  dependencies:
-   - setup_ant
-   - setup_win
+   - scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no bin/Diacamma_setup.exe sdlibre@download.sd-libre.fr:/home/sdlibre/download_sdl/
   when: manual
 
 usermanual:
