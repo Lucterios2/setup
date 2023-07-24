@@ -35,7 +35,7 @@ cd $lucterios_path
 $env:Path="$lucterios_path\Python;$lucterios_path\Python\Scripts;$env:Path"
 
 echo ""
-echo "------ install lucterios #@@BUILD@@ ------"
+echo "------ install @@NAME@@ #@@BUILD@@ ------"
 echo ""
 
 python -m pip -U install pip==23.1.* 2>&1 | Out-Null

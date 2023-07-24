@@ -11,7 +11,7 @@ APP_NAME="@@NAME@@"
 
 function usage
 {
-	echo "${0##*/}: installation for Lucterios"
+	echo "${0##*/}: installation for @@NAME@@"
 	echo "	${0##*/} -h"
 	echo "	${0##*/} [-p <packages>] [-n <application_name>]"
 	echo "option:"
@@ -64,7 +64,7 @@ then
 	fi
 fi
 
-echo "====== install lucterios #@@BUILD@@ ======"
+echo "====== install @@NAME@@ #@@BUILD@@ ======"
 
 echo "install: packages=$PACKAGES application_name=$APP_NAME"
 
@@ -118,7 +118,7 @@ sudo rm -rf virtual_for_lucterios
 $PYTHON_CMD -m virtualenv virtual_for_lucterios
 
 echo
-echo "------ install lucterios ------"
+echo "------ install @@NAME@@ ------"
 echo
 
 . $LUCTERIOS_PATH/virtual_for_lucterios/bin/activate
