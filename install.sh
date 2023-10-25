@@ -65,6 +65,7 @@ if [ ! -z "$(which apt-get 2>/dev/null)" ]; then  # DEB linux like
 	apt-get install -y libxml2-dev libxslt-dev libjpeg-dev libfreetype6 libfreetype6-dev zlib1g-dev
 	apt-get install -y python3-pip python3-dev 
 	apt-get install -y python3-tk 'python3-imaging|python3-pil'
+	apt-get install -y pipx python3-dev default-libmysqlclient-dev build-essential pkg-config
 else if [ ! -z "$(which dnf 2>/dev/null)" ]; then # RPM unix/linux like
 	dnf install -y libxml2-devel libxslt-devel libjpeg-devel gcc
 	dnf install -y libfreetype6 libfreetype6-devel
