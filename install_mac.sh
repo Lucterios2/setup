@@ -72,10 +72,10 @@ echo
 echo "------ check perquisite -------"
 echo
 
-sudo chown -R "$USER":admin /usr/local
-[ -d /Library/Caches/Homebrew ] && sudo chown -R "$USER":admin /Library/Caches/Homebrew	
-
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+BREW_PATH="$HOME/lucterios2_brew"
+export PKG_CONFIG_PATH="$BREW_PATH/opt/openssl/lib/pkgconfig"
+export PATH="$BREW_PATH/bin/:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin"
+mkdir -p $BREW_PATH && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C $BREW_PATH
 
 if [ ! -z "$(which brew 2>/dev/null)" ]; then	
 	brew update
@@ -88,7 +88,9 @@ if [ ! -z "$(which brew 2>/dev/null)" ]; then
     brew uninstall --force tcl-tk || echo '-- no tcl-tk --'
 	brew uninstall --force python3 || echo '-- no python3 --'
 	brew install libxml2 libxslt libjpeg libpng libtiff giflib tcl-tk
-	brew install python3
+	brew install python3@3.11
+	brew install python-tk@3.11
+	brew install python-gdbm@3.11
 else
 	finish_error "brew not installed on Mac OS X!"
 fi
