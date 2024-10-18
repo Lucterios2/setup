@@ -79,16 +79,15 @@ mkdir -p $BREW_PATH && curl -L https://github.com/Homebrew/brew/tarball/master |
 
 if [ ! -z "$(which brew 2>/dev/null)" ]; then	
 	brew update
-	brew uninstall --force libxslt || echo '-- no libxslt --'	
-	brew uninstall --force libxml2 || echo '-- no libxml2 --'	
-	brew uninstall --force libtiff || echo '-- no libtiff --'	
-	brew uninstall --force libjpeg || echo '-- no libjpeg --'
-	brew uninstall --force libpng || echo '-- no libpng --'	
-	brew uninstall --force giflib || echo '-- no giflib --'	
-    brew uninstall --force tcl-tk || echo '-- no tcl-tk --'
-	brew uninstall --force python3 || echo '-- no python3 --'
+	liblist="libxml2 libxslt libjpeg libpng libtiff giflib tcl-tk cairo pango gdk-pixbuf libffi python3 poppler"
+	for libname in $liblist
+	do 
+	   brew uninstall --force $libname || echo "-- no $libname --"	
+	done
 	brew install libxml2 libxslt libjpeg libpng libtiff giflib tcl-tk
-	brew install python3@3.11
+	brew install cairo pango gdk-pixbuf libffi
+	brew install poppler
+	brew install python@3.11
 	brew install python-tk@3.11
 	brew install python-gdbm@3.11
 else
@@ -102,9 +101,9 @@ echo "------ configure virtual environment ------"
 echo
 
 py_version=$(python3 --version | egrep -o '([0-9]+\.[0-9]+)')
-if [ "$py_version" != "3.7" -a "$py_version" != "3.8" -a "$py_version" != "3.9" -a "$py_version" != "3.10" -a "$py_version" != "3.11" ]
+if [ "$py_version" != "3.7" -a "$py_version" != "3.8" -a "$py_version" != "3.9" -a "$py_version" != "3.10" -a "$py_version" != "3.11" -a "$py_version" != "3.12" ]
 then
-    finish_error "Not Python 3.7, 3.8, 3.9, 3.10 or 3.11 (but $py_version) !"
+    finish_error "Not Python 3.7, 3.8, 3.9, 3.10, 3.11 or 3.12 (but $py_version) !"
 fi
 PYTHON_CMD="python3"
 
