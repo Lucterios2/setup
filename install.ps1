@@ -38,8 +38,8 @@ echo ""
 echo "------ install @@NAME@@ #@@BUILD@@ ------"
 echo ""
 
-python -m pip -U install pip==24.0 2>&1 | Out-Null
-echo "=> python -m pip -U install pip==24.0"
+python -m pip -U install pip==24.2 2>&1 | Out-Null
+echo "=> python -m pip -U install pip==24.2"
 python -m pip uninstall PIL
 python -m pip uninstall Pillow
 foreach($package in $packages.split()) {

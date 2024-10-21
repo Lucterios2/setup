@@ -87,17 +87,17 @@ LUCTERIOS_PATH="/var/lucterios2"
 [ -z "$(which "pip3")" ] && echo "No pip3 found!" && exit 1
 
 py_version=$(python3 --version | egrep -o '([0-9]+\.[0-9]+)')
-if [ "$py_version" != "3.7" -a "$py_version" != "3.8" -a "$py_version" != "3.9" -a "$py_version" != "3.10" -a "$py_version" != "3.11" ]
+if [ "$py_version" != "3.7" -a "$py_version" != "3.8" -a "$py_version" != "3.9" -a "$py_version" != "3.10" -a "$py_version" != "3.11" -a "$py_version" != "3.11" ]
 then
-    finish_error "Not Python 3.7, 3.8, 3.9, 3.10 or 3.11 (but $py_version) !"
+    finish_error "Not Python 3.7, 3.8, 3.9, 3.10, 3.11 or 3.12 (but $py_version) !"
 fi
 
 PYTHON_CMD="python3"
 
 set -e
 
-echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==24.0 virtualenv"
-$PYTHON_CMD -m pip install -U $PIP_OPTION pip==24.0 virtualenv
+echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==24.2 virtualenv"
+$PYTHON_CMD -m pip install -U $PIP_OPTION pip==24.2 virtualenv
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
