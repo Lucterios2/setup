@@ -66,6 +66,8 @@ if [ ! -z "$(which apt-get 2>/dev/null)" ]; then  # DEB linux like
 	apt-get install -y python3-pip python3-dev 
 	apt-get install -y python3-tk 'python3-imaging|python3-pil'
 	apt-get install -y pipx python3-dev default-libmysqlclient-dev build-essential pkg-config
+	apt-get install -y libxcb-cursor-dev
+	apt-get install -y python3-venv | echo 'no venv'
 else if [ ! -z "$(which dnf 2>/dev/null)" ]; then # RPM unix/linux like
 	dnf install -y libxml2-devel libxslt-devel libjpeg-devel gcc
 	dnf install -y libfreetype6 libfreetype6-devel
@@ -87,7 +89,7 @@ LUCTERIOS_PATH="/var/lucterios2"
 [ -z "$(which "pip3")" ] && echo "No pip3 found!" && exit 1
 
 py_version=$(python3 --version | egrep -o '([0-9]+\.[0-9]+)')
-if [ "$py_version" != "3.7" -a "$py_version" != "3.8" -a "$py_version" != "3.9" -a "$py_version" != "3.10" -a "$py_version" != "3.11" -a "$py_version" != "3.11" ]
+if [ "$py_version" != "3.7" -a "$py_version" != "3.8" -a "$py_version" != "3.9" -a "$py_version" != "3.10" -a "$py_version" != "3.11" -a "$py_version" != "3.12" ]
 then
     finish_error "Not Python 3.7, 3.8, 3.9, 3.10, 3.11 or 3.12 (but $py_version) !"
 fi
@@ -97,7 +99,11 @@ PYTHON_CMD="python3"
 set -e
 
 echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==24.2 virtualenv"
-$PYTHON_CMD -m pip install -U $PIP_OPTION pip==24.2 virtualenv
+$PYTHON_CMD -m pip install -U $PIP_OPTION pip==24.2 | echo "** no install pip **"
+if [ -z "$($PYTHON_CMD -m venv -h)" ]
+then
+    $PYTHON_CMD -m pip install -U $PIP_OPTION virtualenv | echo "** no install virtualenv **"
+fi
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
