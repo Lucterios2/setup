@@ -38,15 +38,17 @@ echo ""
 echo "------ install @@NAME@@ #@@BUILD@@ ------"
 echo ""
 
-python -m pip -U install pip==24.2 2>&1 | Out-Null
-echo "=> python -m pip -U install pip==24.2"
+python -m pip -U install pip~=24.3 2>&1 | Out-Null
+echo "=> python -m pip -U install pip~=24.3"
 python -m pip uninstall PIL
 python -m pip uninstall Pillow
 foreach($package in $packages.split()) {
     echo "===> python -m pip install -U $package"
 	python -m pip install -U $package @@PIPOPTION@@
 }
-python -m pip install -U pip==24.0 2>&1 | Out-Null
+python -m pip install -U pip~=24.3 2>&1 | Out-Null
+python -m pip uninstall python-magic
+python -m pip install python-magic-bin~=0.4
 python -m pip list
 
 python Python\Scripts\lucterios_admin.py update | python Python\Scripts\lucterios_admin.py refreshall | Out-Null
