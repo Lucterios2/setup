@@ -47,11 +47,14 @@ foreach($package in $packages.split()) {
 	python -m pip install -U $package @@PIPOPTION@@
 }
 python -m pip install -U pip~=24.3 2>&1 | Out-Null
-python -m pip uninstall python-magic
-python -m pip install python-magic-bin~=0.4
-python -m pip list
 
 python Python\Scripts\lucterios_admin.py update | python Python\Scripts\lucterios_admin.py refreshall | Out-Null
+
+python -m pip uninstall python-magic | Out-Null
+python -m pip uninstall python-magic-bin | Out-Null
+python -m pip install libmagic
+python -m pip install python-magic-bin~=0.4
+python -m pip list
 
 echo ""
 echo "------ create starter bat ------"
