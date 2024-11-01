@@ -67,7 +67,7 @@ if [ ! -z "$(which apt-get 2>/dev/null)" ]; then  # DEB linux like
 	apt-get install -y python3-tk 'python3-imaging|python3-pil'
 	apt-get install -y pipx python3-dev default-libmysqlclient-dev build-essential pkg-config
 	apt-get install -y libxcb-cursor-dev
-	apt-get install -y python3-venv | echo 'no venv'
+	apt-get install -y "python3-virtualenv" | echo 'no venv'
 else if [ ! -z "$(which dnf 2>/dev/null)" ]; then # RPM unix/linux like
 	dnf install -y libxml2-devel libxslt-devel libjpeg-devel gcc
 	dnf install -y libfreetype6 libfreetype6-devel
@@ -100,7 +100,7 @@ set -e
 
 echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==24.2 virtualenv"
 $PYTHON_CMD -m pip install -U $PIP_OPTION pip==24.2 | echo "** no install pip **"
-if [ -z "$($PYTHON_CMD -m venv -h)" ]
+if [ -z "$($PYTHON_CMD -m virtualenv -h)" ]
 then
     $PYTHON_CMD -m pip install -U $PIP_OPTION virtualenv | echo "** no install virtualenv **"
 fi
