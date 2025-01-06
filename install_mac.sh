@@ -156,7 +156,7 @@ then
 	echo "export LANG=en_US.UTF-8" >> $LUCTERIOS_PATH/launch_lucterios.sh
 fi
 
-qt_version=$($PYTHON_CMD -c 'from PyQt5.QtCore import QT_VERSION_STR;print(QT_VERSION_STR)' 2>/dev/null) 
+qt_version=$($PYTHON_CMD -c 'from PyQt6.QtCore import QT_VERSION_STR;print(QT_VERSION_STR)' 2>/dev/null) 
 
 cp $LUCTERIOS_PATH/launch_lucterios.sh $LUCTERIOS_PATH/launch_lucterios_gui.sh
 echo "lucterios_gui.py" >> $LUCTERIOS_PATH/launch_lucterios_gui.sh
@@ -210,7 +210,7 @@ echo '' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
 echo '. $HOME/lucterios2/virtual_for_lucterios/bin/activate' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
 echo 'cd $HOME/lucterios2/' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
 echo 'export LANG=fr_FR.UTF-8' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
-if [ "${qt_version:0:2}" == "5." ]
+if [ "${qt_version:0:2}" == "6." ]
 then
 	echo 'lucterios_qt.py | lucterios_gui.py' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
 else

@@ -115,7 +115,7 @@ if (Test-Path $env:Public\Desktop\$app_name.lnk) {
 
 $icon_path = Get-ChildItem -Path "$lucterios_path\python" -Recurse -Filter "$app_name.ico" | Select-Object -First 1 | % { $_.FullName }
 Try {
-	$qt_version= & python -c 'from PyQt5.QtCore import QT_VERSION_STR;print(QT_VERSION_STR)'
+	$qt_version= & python -c 'from PyQt6.QtCore import QT_VERSION_STR;print(QT_VERSION_STR)'
 }Catch {
 	$qt_version="---"
 }
@@ -125,7 +125,7 @@ echo ">> Qt = $qt_version"
 $WshShell = New-Object -ComObject WScript.shell
 $Shortcut = $WshShell.CreateShortcut("$lucterios_path\$app_name.lnk")
 $Shortcut.TargetPath = "PowerShell.exe"
-if ($qt_version.Substring(0,2).equals("5.")) {
+if ($qt_version.Substring(0,2).equals("6.")) {
 	$Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File $lucterios_path\lucterios_qt.ps1"
 } else {
 	$Shortcut.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File $lucterios_path\lucterios_gui.ps1"
