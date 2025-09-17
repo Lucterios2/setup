@@ -101,16 +101,16 @@ echo "------ configure virtual environment ------"
 echo
 
 py_version=$(python3 --version | egrep -o '([0-9]+\.[0-9]+)')
-if [ "$py_version" != "3.7" -a "$py_version" != "3.8" -a "$py_version" != "3.9" -a "$py_version" != "3.10" -a "$py_version" != "3.11" -a "$py_version" != "3.12" ]
+if [ "$py_version" != "3.10" -a "$py_version" != "3.11" -a "$py_version" != "3.12" -a "$py_version" != "3.13" ]
 then
-    finish_error "Not Python 3.7, 3.8, 3.9, 3.10, 3.11 or 3.12 (but $py_version) !"
+    finish_error "Not Python 3.10, 3.11, 3.12 or 3.13 (but $py_version) !"
 fi
 PYTHON_CMD="python3"
 
 set -e
 
-echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip==24.2 virtualenv"
-sudo $PYTHON_CMD -m pip install -U $PIP_OPTION pip==24.2 virtualenv
+echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip virtualenv"
+sudo $PYTHON_CMD -m pip install -U $PIP_OPTION pip virtualenv
 
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
