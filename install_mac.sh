@@ -72,7 +72,6 @@ echo
 echo "------ check prerequisite -------"
 echo
 
-# Fix #8: Detect system Homebrew first (uses bottles = fast), fallback to isolated install
 if [ -x "/opt/homebrew/bin/brew" ]; then
 	BREW_PATH="/opt/homebrew"
 	echo "Using system Homebrew at $BREW_PATH"
@@ -93,10 +92,11 @@ if [ ! -z "$(which brew 2>/dev/null)" ]; then
 	brew install libxml2 libxslt libjpeg libpng libtiff giflib tcl-tk
 	brew install cairo pango gdk-pixbuf libffi
 	brew install poppler
-	# Fix #1: Install generic python3 instead of hardcoded python@3.11
-	brew install python3
-	brew install python-tk@3 2>/dev/null || brew install python-tk@3.11 2>/dev/null || echo "-- python-tk not available --"
-	brew install python-gdbm@3 2>/dev/null || brew install python-gdbm@3.11 2>/dev/null || echo "-- python-gdbm not available --"
+	# python3 - version between [3.10 / 3.13]  
+	brew install python@3.13 || brew install python@3.12 || brew install python@3.11 || brew install python@3.10
+	py_version=$(python3 --version | egrep -o '([0-9]+\.[0-9]+)')  
+	brew install python-tk@$py_version 2>/dev/null || echo "-- python-tk not available --"
+	brew install python-gdbm@$py_version 2>/dev/null || echo "-- python-gdbm not available --"
 else
 	finish_error "brew not installed on Mac OS X!"
 fi
@@ -107,19 +107,14 @@ echo
 echo "------ configure virtual environment ------"
 echo
 
-# Fix #2: Numeric version check >= 3.9 instead of whitelist
 py_version=$(python3 --version | egrep -o '([0-9]+\.[0-9]+)')
-py_major=$(echo $py_version | cut -d. -f1)
-py_minor=$(echo $py_version | cut -d. -f2)
-if [ "$py_major" -ne 3 ] || [ "$py_minor" -lt 9 ]
-then
-    finish_error "Python >= 3.9 required (found $py_version)"
+if [ "$py_version" != "3.10" -a "$py_version" != "3.11" -a "$py_version" != "3.12" -a "$py_version" != "3.13" ]
+    finish_error "Not Python 3.10, 3.11, 3.12 or 3.13 (but $py_version) !"
 fi
 PYTHON_CMD="python3"
 
 set -e
 
-# Fix #3: Use stdlib venv instead of sudo pip install virtualenv (PEP 668)
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
 echo "$PYTHON_CMD -m venv virtual_for_lucterios"
@@ -132,7 +127,6 @@ echo
 
 . $LUCTERIOS_PATH/virtual_for_lucterios/bin/activate
 
-# Fix #4: Add -y flag to avoid blocking on confirmation
 pip uninstall -y PIL 2>/dev/null || true
 pip uninstall -y Pillow 2>/dev/null || true
 pip install -U $PIP_OPTION $PACKAGES
@@ -180,7 +174,6 @@ echo 'lucterios_admin.py $@' >> $LUCTERIOS_PATH/launch_lucterios.sh
 chmod +x $LUCTERIOS_PATH/launch_lucterios.sh
 chmod -R ogu+w $LUCTERIOS_PATH
 
-# Fix #5: Symlinks to /usr/local/bin may fail due to SIP — warn but don't fail
 ln -sf $LUCTERIOS_PATH/launch_lucterios.sh /usr/local/bin/launch_lucterios 2>/dev/null || echo "Warning: cannot create symlink in /usr/local/bin (SIP). Use full path instead."
 ln -sf $LUCTERIOS_PATH/launch_lucterios_gui.sh /usr/local/bin/launch_lucterios_gui 2>/dev/null || echo "Warning: cannot create symlink in /usr/local/bin (SIP). Use full path instead."
 ln -sf $LUCTERIOS_PATH/launch_lucterios_qt.sh /usr/local/bin/launch_lucterios_qt 2>/dev/null || echo "Warning: cannot create symlink in /usr/local/bin (SIP). Use full path instead."
@@ -190,7 +183,6 @@ icon_path=$(find "$LUCTERIOS_PATH/virtual_for_lucterios" -name "$APP_NAME.png" |
 
 APPDIR="$PWD/$APP_NAME.command"
 echo '#!/usr/bin/env bash' > $APPDIR
-# Fix #6: Use direct path instead of symlink that may not exist
 echo "$LUCTERIOS_PATH/launch_lucterios_gui.sh" >> $APPDIR
 chmod ogu+rx "$APPDIR"
 
@@ -218,8 +210,6 @@ mkdir -p /Applications/$APP_NAME.app/Contents/MacOS
 mkdir -p /Applications/$APP_NAME.app/Contents/Resources
 cp $HOME/lucterios2/$APP_NAME.icns /Applications/$APP_NAME.app/Contents/Resources/ 2>/dev/null || true
 
-# Fix #6 (continued): Use direct path in .app instead of symlink
-# Fix #7: Use || (fallback) instead of | (pipe) for lucterios_qt.py / lucterios_gui.py
 cat > /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME << 'LAUNCHER'
 #!/usr/bin/env bash
 
