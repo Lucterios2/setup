@@ -168,7 +168,7 @@ then
 	echo "export LANG=en_US.UTF-8" >> $LUCTERIOS_PATH/launch_lucterios.sh
 fi
 
-qt_version=$($PYTHON_CMD -c 'from PyQt6.QtCore import QT_VERSION_STR;print(QT_VERSION_STR)' 2>/dev/null) 
+qt_version=$(python -c 'from PyQt6.QtCore import QT_VERSION_STR;print(QT_VERSION_STR)' 2>/dev/null || true) 
 
 cp $LUCTERIOS_PATH/launch_lucterios.sh $LUCTERIOS_PATH/launch_lucterios_gui.sh
 echo "lucterios_gui.py" >> $LUCTERIOS_PATH/launch_lucterios_gui.sh
