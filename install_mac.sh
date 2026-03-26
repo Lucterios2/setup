@@ -109,6 +109,7 @@ echo
 
 py_version=$(python3 --version | egrep -o '([0-9]+\.[0-9]+)')
 if [ "$py_version" != "3.10" -a "$py_version" != "3.11" -a "$py_version" != "3.12" -a "$py_version" != "3.13" ]
+then
     finish_error "Not Python 3.10, 3.11, 3.12 or 3.13 (but $py_version) !"
 fi
 PYTHON_CMD="python3"
