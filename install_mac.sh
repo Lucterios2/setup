@@ -87,9 +87,22 @@ if [ ! -z "$(which brew 2>/dev/null)" ]; then
 	brew install libxml2 libxslt libjpeg libpng libtiff giflib tcl-tk
 	brew install cairo pango gdk-pixbuf libffi
 	brew install poppler
-	brew install python@3.11
-	brew install python-tk@3.11
-	brew install python-gdbm@3.11
+	# python3 - version between [3.10 / 3.13]
+	brew install python@3.13 || brew install python@3.12 || brew install python@3.11 || brew install python@3.10
+	# Resolve the installed supported Python by explicit path, since
+	# the unversioned "python3" symlink may point to a system or
+	# unsupported Homebrew version (e.g. 3.9 or 3.14).
+	PYTHON_CMD=""
+	for v in 3.13 3.12 3.11 3.10; do
+		if [ -x "$BREW_PATH/bin/python$v" ]; then
+			PYTHON_CMD="$BREW_PATH/bin/python$v"
+			break
+		fi
+	done
+	[ -z "$PYTHON_CMD" ] && finish_error "No supported Python (3.10-3.13) found in $BREW_PATH/bin"
+	py_version=$($PYTHON_CMD --version | egrep -o '([0-9]+\.[0-9]+)')
+	brew install python-tk@$py_version 2>/dev/null || echo "-- python-tk not available --"
+	brew install python-gdbm@$py_version 2>/dev/null || echo "-- python-gdbm not available --"
 else
 	finish_error "brew not installed on Mac OS X!"
 fi
@@ -100,12 +113,11 @@ echo
 echo "------ configure virtual environment ------"
 echo
 
-py_version=$(python3 --version | egrep -o '([0-9]+\.[0-9]+)')
+py_version=$($PYTHON_CMD --version | egrep -o '([0-9]+\.[0-9]+)')
 if [ "$py_version" != "3.10" -a "$py_version" != "3.11" -a "$py_version" != "3.12" -a "$py_version" != "3.13" ]
 then
     finish_error "Not Python 3.10, 3.11, 3.12 or 3.13 (but $py_version) !"
 fi
-PYTHON_CMD="python3"
 
 set -e
 
