@@ -52,14 +52,14 @@ then
 	PIP_OPTION="$PIP_OPTION --proxy=$http_proxy"
 fi
 
-LUCTERIOS_PATH="$HOME/lucterios2" 
+LUCTERIOS_PATH="$HOME/lucterios2"
 if [ -d "/var/lucterios2" ] # conversion from old installation
 then
 	if [ -d $LUCTERIOS_PATH ]
 	then
 		sudo rm -rf "/var/lucterios2"
 	else
-		sudo mv "/var/lucterios2" "$LUCTERIOS_PATH"  
+		sudo mv "/var/lucterios2" "$LUCTERIOS_PATH"
 		sudo chown -R $LOGNAME "$LUCTERIOS_PATH"
 	fi
 fi
@@ -69,21 +69,26 @@ echo "====== install @@NAME@@ #@@BUILD@@ ======"
 echo "install: packages=$PACKAGES application_name=$APP_NAME"
 
 echo
-echo "------ check perquisite -------"
+echo "------ check prerequisite -------"
 echo
 
-BREW_PATH="$HOME/lucterios2_brew"
-export PKG_CONFIG_PATH="$BREW_PATH/opt/openssl/lib/pkgconfig"
-export PATH="$BREW_PATH/bin/:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin"
-mkdir -p $BREW_PATH && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C $BREW_PATH
+if [ -x "/opt/homebrew/bin/brew" ]; then
+	BREW_PATH="/opt/homebrew"
+	echo "Using system Homebrew at $BREW_PATH"
+elif [ -x "/usr/local/bin/brew" ]; then
+	BREW_PATH="/usr/local"
+	echo "Using system Homebrew at $BREW_PATH"
+else
+	BREW_PATH="$HOME/lucterios2_brew"
+	echo "No system Homebrew found, installing isolated Homebrew at $BREW_PATH"
+	mkdir -p $BREW_PATH && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C $BREW_PATH
+fi
 
-if [ ! -z "$(which brew 2>/dev/null)" ]; then	
+export PKG_CONFIG_PATH="$BREW_PATH/opt/openssl/lib/pkgconfig"
+export PATH="$BREW_PATH/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin"
+
+if [ ! -z "$(which brew 2>/dev/null)" ]; then
 	brew update
-	liblist="libxml2 libxslt libjpeg libpng libtiff giflib tcl-tk cairo pango gdk-pixbuf libffi python3 poppler"
-	for libname in $liblist
-	do 
-	   brew uninstall --force $libname || echo "-- no $libname --"	
-	done
 	brew install libxml2 libxslt libjpeg libpng libtiff giflib tcl-tk
 	brew install cairo pango gdk-pixbuf libffi
 	brew install poppler
@@ -121,26 +126,24 @@ fi
 
 set -e
 
-echo "$PYTHON_CMD -m pip install -U $PIP_OPTION pip virtualenv"
-sudo $PYTHON_CMD -m pip install -U $PIP_OPTION pip virtualenv
-
 mkdir -p $LUCTERIOS_PATH
 cd $LUCTERIOS_PATH
-echo "$PYTHON_CMD -m virtualenv virtual_for_lucterios"
-sudo rm -rf virtual_for_lucterios
-$PYTHON_CMD -m virtualenv virtual_for_lucterios
+echo "$PYTHON_CMD -m venv virtual_for_lucterios"
+rm -rf virtual_for_lucterios
+$PYTHON_CMD -m venv virtual_for_lucterios
 
 echo
 echo "------ install @@NAME@@ ------"
 echo
 
 . $LUCTERIOS_PATH/virtual_for_lucterios/bin/activate
-pip uninstall PIL
-pip uninstall Pillow
+
+pip uninstall -y PIL 2>/dev/null || true
+pip uninstall -y Pillow 2>/dev/null || true
 pip install -U $PIP_OPTION $PACKAGES
 
 [ -z "$(pip list 2>/dev/null | grep 'Django ')" ] && finish_error "Django not installed !"
-[ -z "$(pip list 2>/dev/null | grep 'lucterios ')" ]&& finish_error "Lucterios not installed !"
+[ -z "$(pip list 2>/dev/null | grep 'lucterios ')" ] && finish_error "Lucterios not installed !"
 
 if [ -f virtual_for_lucterios/lib/python$py_version/site-packages/lucterios/framework/settings.py ]
 then
@@ -182,16 +185,16 @@ echo 'lucterios_admin.py $@' >> $LUCTERIOS_PATH/launch_lucterios.sh
 chmod +x $LUCTERIOS_PATH/launch_lucterios.sh
 chmod -R ogu+w $LUCTERIOS_PATH
 
-ln -sf $LUCTERIOS_PATH/launch_lucterios.sh /usr/local/bin/launch_lucterios
-ln -sf $LUCTERIOS_PATH/launch_lucterios_gui.sh /usr/local/bin/launch_lucterios_gui
-ln -sf $LUCTERIOS_PATH/launch_lucterios_qt.sh /usr/local/bin/launch_lucterios_qt
+ln -sf $LUCTERIOS_PATH/launch_lucterios.sh /usr/local/bin/launch_lucterios 2>/dev/null || echo "Warning: cannot create symlink in /usr/local/bin (SIP). Use full path instead."
+ln -sf $LUCTERIOS_PATH/launch_lucterios_gui.sh /usr/local/bin/launch_lucterios_gui 2>/dev/null || echo "Warning: cannot create symlink in /usr/local/bin (SIP). Use full path instead."
+ln -sf $LUCTERIOS_PATH/launch_lucterios_qt.sh /usr/local/bin/launch_lucterios_qt 2>/dev/null || echo "Warning: cannot create symlink in /usr/local/bin (SIP). Use full path instead."
 
 
 icon_path=$(find "$LUCTERIOS_PATH/virtual_for_lucterios" -name "$APP_NAME.png" | head -n 1)
 
 APPDIR="$PWD/$APP_NAME.command"
 echo '#!/usr/bin/env bash' > $APPDIR
-echo 'launch_lucterios_gui' >> $APPDIR
+echo "$LUCTERIOS_PATH/launch_lucterios_gui.sh" >> $APPDIR
 chmod ogu+rx "$APPDIR"
 
 rm -rf $APP_NAME.iconset
@@ -216,39 +219,44 @@ fi
 
 mkdir -p /Applications/$APP_NAME.app/Contents/MacOS
 mkdir -p /Applications/$APP_NAME.app/Contents/Resources
-cp $HOME/lucterios2/$APP_NAME.icns /Applications/$APP_NAME.app/Contents/Resources/
-echo '#!/usr/bin/env bash' > /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
-echo '' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
-echo '. $HOME/lucterios2/virtual_for_lucterios/bin/activate' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
-echo 'cd $HOME/lucterios2/' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
-echo 'export LANG=fr_FR.UTF-8' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
+cp $HOME/lucterios2/$APP_NAME.icns /Applications/$APP_NAME.app/Contents/Resources/ 2>/dev/null || true
+
+cat > /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME << 'LAUNCHER'
+#!/usr/bin/env bash
+
+. $HOME/lucterios2/virtual_for_lucterios/bin/activate
+cd $HOME/lucterios2/
+export LANG=fr_FR.UTF-8
+LAUNCHER
+
 if [ "${qt_version:0:2}" == "6." ]
 then
-	echo 'lucterios_qt.py | lucterios_gui.py' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
+	echo 'lucterios_qt.py || lucterios_gui.py' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
 else
 	echo 'lucterios_gui.py' >> /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
 fi
 chmod ugo+rx /Applications/$APP_NAME.app/Contents/MacOS/$APP_NAME
 
-
-echo '<?xml version="1.0" encoding="UTF-8"?>' > /Applications/$APP_NAME.app/Contents/Info.plist
-echo '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" " www.apple.com/DTDs/PropertyList-1.0.dtd ">' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo '<plist version="1.0">' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo '<dict>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <key>CFBundleExecutable</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <string>'$APP_NAME'</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <key>CFBundleGetInfoString</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <string>'$APP_NAME'</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <key>CFBundleIconFile</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <string>'$APP_NAME'.icns</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <key>CFBundleName</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <string>'$APP_NAME'</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <key>CFBundlePackageType</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <string>APPL</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <key>CFBundleShortVersionString</key>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo ' <string>@@BUILD@@</string>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo '</dict>' >> /Applications/$APP_NAME.app/Contents/Info.plist
-echo '</plist>' >> /Applications/$APP_NAME.app/Contents/Info.plist
+cat > /Applications/$APP_NAME.app/Contents/Info.plist << PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+ <key>CFBundleExecutable</key>
+ <string>$APP_NAME</string>
+ <key>CFBundleGetInfoString</key>
+ <string>$APP_NAME</string>
+ <key>CFBundleIconFile</key>
+ <string>$APP_NAME.icns</string>
+ <key>CFBundleName</key>
+ <string>$APP_NAME</string>
+ <key>CFBundlePackageType</key>
+ <string>APPL</string>
+ <key>CFBundleShortVersionString</key>
+ <string>@@BUILD@@</string>
+</dict>
+</plist>
+PLIST
 
 chmod -R ogu+rw "$LUCTERIOS_PATH"
 
