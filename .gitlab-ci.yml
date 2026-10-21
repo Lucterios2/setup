@@ -10,7 +10,7 @@ setup_ant:
    LCT_PACKAGES: lucterios lucterios-contacts lucterios-documents lucterios-standard diacamma-financial diacamma-asso diacamma-syndic
   before_script:
     - apt-get update
-    - apt-get install -y git libopenjp2-tools rpm software-properties-common genisoimage
+    - apt-get install -y git libopenjp2-tools rpm genisoimage
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.sleto.fr/lucterios2/lucterios lct-core
     - ./lct-core/utils/prep_env.sh debian
     - ./lct-core/utils/prep_env.sh ant
@@ -37,7 +37,6 @@ setup_win:
     - SETUP_NAME=setup.iss ant init commun_win
     - docker rm setup || echo "no old container !"
     - docker container create --name setup amake/innosetup setup.iss
-    - docker cp ./tmp/Python setup:/work/
     - docker cp tmp/setup.iss setup:/work/
     - docker cp tmp/License.txt setup:/work/
     - docker cp tmp/install.ps1 setup:/work/
