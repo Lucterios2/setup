@@ -72,11 +72,6 @@ else if [ ! -z "$(which dnf 2>/dev/null)" ]; then # RPM unix/linux like
 	dnf install -y libxml2-devel libxslt-devel libjpeg-devel gcc
 	dnf install -y libfreetype6 libfreetype6-devel
 	dnf install -y python3-devel python3-imaging python3-tkinter
-else if [ ! -z "$(which yum 2>/dev/null)" ]; then # RPM unix/linux like
-	yum install -y epel-release
-	yum install -y libxml2-devel libxslt-devel libjpeg-devel gcc
-	yum install -y python38-devel python38-imaging python38-tkinter	python38-setuptools
-	easy_install-3.8 pip
 else
 	echo "++++++ Unix/Linux distribution not available for this script! +++++++"
 fi; fi; fi
@@ -89,9 +84,9 @@ LUCTERIOS_PATH="/var/lucterios2"
 [ -z "$(which "pip3")" ] && echo "No pip3 found!" && exit 1
 
 py_version=$(python3 --version | egrep -o '([0-9]+\.[0-9]+)')
-if [ "$py_version" != "3.10" -a "$py_version" != "3.11" -a "$py_version" != "3.12" -a "$py_version" != "3.13" ]
+if [ "$py_version" != "3.11" -a "$py_version" != "3.12" -a "$py_version" != "3.13" -a "$py_version" != "3.14" ]
 then
-    finish_error "Not Python 3.10, 3.11, 3.12 or 3.13 (but $py_version) !"
+    finish_error "Not Python 3.11, 3.12, 3.13 or 3.14 (but $py_version) !"
 fi
 
 PYTHON_CMD="python3"

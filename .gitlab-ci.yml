@@ -3,11 +3,11 @@ stages:
   - deploy
 
 setup_ant:
-  image: python:3.8
+  image: python:3.13
   stage: setup
   variables:
    LCT_NAME: Diacamma
-   LCT_PACKAGES: lucterios lucterios-standard lucterios-contacts lucterios-documents diacamma-asso diacamma-syndic diacamma-financial
+   LCT_PACKAGES: lucterios lucterios-contacts lucterios-documents lucterios-standard diacamma-financial diacamma-asso diacamma-syndic
   before_script:
     - apt-get update
     - apt-get install -y git libopenjp2-tools rpm software-properties-common genisoimage
@@ -49,7 +49,7 @@ setup_win:
       - ${LCT_NAME}_setup.exe  
 
 deploy:
-  image: python:3.8
+  image: python:3.13
   stage: deploy
   script:
    - apt-get update
@@ -69,7 +69,7 @@ deploy:
   when: manual
 
 usermanual:
-  image: python:3.8
+  image: python:3.13
   stage: deploy
   script:
    - apt-get update

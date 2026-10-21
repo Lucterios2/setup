@@ -38,7 +38,6 @@ Type: filesandordirs; Name: "{app}\Python"
 
 [Files]
 Source: "install.ps1"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Python\*"; DestDir: "{app}\Python"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Run]

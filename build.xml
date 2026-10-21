@@ -125,7 +125,6 @@
 			tofile="${basedir}/tmp/${setup_name}" />
 		<copy file="${basedir}/install.ps1"
 			tofile="${basedir}/tmp/install.ps1" />
-		<unzip src="${basedir}/PythonWin32.zip" dest="${basedir}/tmp/" />
 		<antcall target="correct_install">
 			<param name="file_path" value="${basedir}/tmp/setup.iss" />
 		</antcall>

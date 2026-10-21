@@ -83,7 +83,6 @@ Section "install"
   SetOutPath "$INSTDIR"
   RMDir /r $INSTDIR/Python
   File "install.ps1"
-  File /r "Python" 
 
   ExecWait 'PowerShell.exe -ExecutionPolicy Bypass -File $INSTDIR\install.ps1'
 

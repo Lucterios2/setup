@@ -32,7 +32,25 @@ $lucterios_path="c:\lucterios2"
 
 cd $lucterios_path
 
-$env:Path="$lucterios_path\Python;$lucterios_path\Python\Scripts;$env:Path"
+echo ""
+echo "------ install Python ------"
+echo ""
+
+Invoke-WebRequest -Uri https://www.python.org/ftp/python/3.13.16/python-3.13.16-embed-amd64.zip -OutFile $lucterios_path/python-embed.zip
+Expand-Archive -Path $lucterios_path/python-embed.zip $lucterios_path\Python\
+rm $lucterios_path/python-embed.zip
+
+Expand-Archive -Path $lucterios_path\Python\python313.zip $lucterios_path\Python\tmp_folder
+rm $lucterios_path\Python\python313.zip
+mv $lucterios_path\Python\tmp_folder $lucterios_path\Python\python313.zip
+(Get-Content -Path $lucterios_path\Python\python313._pth) -Replace '#import', 'import' | Set-Content -Path $lucterios_path\Python\python313._pth
+$env:Path="$lucterios_path\Python;$env:Path"
+
+Invoke-WebRequest -Uri https://bootstrap.pypa.io/get-pip.py -OutFile $lucterios_path/get-pip.py
+python $lucterios_path/get-pip.py
+rm $lucterios_path/get-pip.py
+
+winget install -e --id tschoonj.GTKForWindows --silent --accept-package-agreements --accept-source-agreements
 
 echo ""
 echo "------ install @@NAME@@ #@@BUILD@@ ------"
@@ -40,8 +58,8 @@ echo ""
 
 python -m pip -U install pip 2>&1 | Out-Null
 echo "=> python -m pip -U install pip"
-python -m pip uninstall PIL
-python -m pip uninstall Pillow
+python -m pip install setuptools
+python -m pip install python_magic_bin
 foreach($package in $packages.split()) {
     echo "===> python -m pip install -U $package"
 	python -m pip install -U $package @@PIPOPTION@@
@@ -81,7 +99,7 @@ echo "echo '$app_name GUI launcher'" >> $lucterios_path\lucterios_admin.ps1
 echo "" >> $lucterios_path\lucterios_admin.ps1
 echo "cd $lucterios_path" >> $lucterios_path\lucterios_admin.ps1
 echo "" >> $lucterios_path\lucterios_admin.ps1
-echo "`$env:Path='$lucterios_path\Python;$lucterios_path\Python\Scripts;$env:Path'" >> $lucterios_path\lucterios_admin.ps1
+echo "`$env:Path='$lucterios_path\Python;$lucterios_path\Python\Scripts;C:\Program Files\GTK3-Runtime Win64\bin;$env:Path'" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:TCL_LIBRARY='$lucterios_path\Python\tcl\tcl8.6'" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:TK_LIBRARY='$lucterios_path\Python\tcl\tcl8.6'" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:LUCTERIOS_INSTALL='@@BUILD@@'" >> $lucterios_path\lucterios_admin.ps1
