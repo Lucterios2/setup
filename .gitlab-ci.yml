@@ -11,7 +11,7 @@ setup_ant:
   before_script:
     - apt-get update
     - apt-get install -y git libopenjp2-tools rpm genisoimage
-    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.sleto.fr/lucterios2/lucterios lct-core
+    - git clone https://oauth2:$GITLAB_CI_FULL@gitlab.sleto.fr/lucterios2/lucterios lct-core
     - ./lct-core/utils/prep_env.sh debian
     - ./lct-core/utils/prep_env.sh ant
   script:
