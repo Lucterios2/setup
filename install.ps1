@@ -65,6 +65,7 @@ foreach($package in $packages.split()) {
 	python -m pip install -U $package @@PIPOPTION@@
 }
 python -m pip install -U pip 2>&1 | Out-Null
+python -m pip install --force-reinstall python_magic_bin
 
 python Python\Scripts\lucterios_admin.py update | python Python\Scripts\lucterios_admin.py refreshall | Out-Null
 python -m pip list
