@@ -52,6 +52,9 @@ rm $lucterios_path/get-pip.py
 
 winget install -e --id tschoonj.GTKForWindows --silent --accept-package-agreements --accept-source-agreements
 
+Invoke-WebRequest -Uri https://github.com/oschwartz10612/poppler-windows/releases/download/v26.09.0-0/Release-26.09.0-0.zip -OutFile $lucterios_path\poppler-windows.zip 
+Expand-Archive -Path $lucterios_path\poppler-windows.zip $lucterios_path\
+
 echo ""
 echo "------ install @@NAME@@ #@@BUILD@@ ------"
 echo ""
@@ -100,7 +103,7 @@ echo "echo '$app_name GUI launcher'" >> $lucterios_path\lucterios_admin.ps1
 echo "" >> $lucterios_path\lucterios_admin.ps1
 echo "cd $lucterios_path" >> $lucterios_path\lucterios_admin.ps1
 echo "" >> $lucterios_path\lucterios_admin.ps1
-echo "`$env:Path='$lucterios_path\Python;$lucterios_path\Python\Scripts;C:\Program Files\GTK3-Runtime Win64\bin;$env:Path'" >> $lucterios_path\lucterios_admin.ps1
+echo "`$env:Path='$lucterios_path\Python;$lucterios_path\Python\Scripts;C:\Program Files\GTK3-Runtime Win64\bin;$lucterios_path\poppler-26.09.0\Library\bin;$env:Path'" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:TCL_LIBRARY='$lucterios_path\Python\tcl\tcl8.6'" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:TK_LIBRARY='$lucterios_path\Python\tcl\tcl8.6'" >> $lucterios_path\lucterios_admin.ps1
 echo "`$env:LUCTERIOS_INSTALL='@@BUILD@@'" >> $lucterios_path\lucterios_admin.ps1
