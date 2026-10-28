@@ -33,9 +33,6 @@ SolidCompression=yes
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 
-[InstallDelete]
-Type: filesandordirs; Name: "{app}"
-
 [Files]
 Source: "install.ps1"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files

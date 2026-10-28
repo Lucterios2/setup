@@ -92,11 +92,11 @@ if [ ! -z "$(which brew 2>/dev/null)" ]; then
 	brew install libxml2 libxslt libjpeg libpng libtiff giflib tcl-tk
 	brew install cairo pango gdk-pixbuf libffi
 	brew install poppler
-	# python3 - version between [3.10 / 3.13]
+	# python3 - version between [3.11 / 3.14]
 	brew install python@3.14 || brew install python@3.13 || brew install python@3.12 || brew install python@3.11
 	# Resolve the installed supported Python by explicit path, since
 	# the unversioned "python3" symlink may point to a system or
-	# unsupported Homebrew version (e.g. 3.9 or 3.14).
+	# unsupported Homebrew version (e.g. 3.10 or 3.15).
 	PYTHON_CMD=""
 	for v in 3.14 3.13 3.12 3.11; do
 		if [ -x "$BREW_PATH/bin/python$v" ]; then
