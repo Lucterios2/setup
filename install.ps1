@@ -36,6 +36,7 @@ echo ""
 echo "------ install Python ------"
 echo ""
 
+Remove-Item -Recurse -Force -ErrorAction Ignore $lucterios_path\Python
 Invoke-WebRequest -Uri https://www.python.org/ftp/python/3.13.16/python-3.13.16-embed-amd64.zip -OutFile $lucterios_path/python-embed.zip
 Expand-Archive -Path $lucterios_path/python-embed.zip $lucterios_path\Python\
 rm $lucterios_path/python-embed.zip
@@ -52,6 +53,7 @@ rm $lucterios_path/get-pip.py
 
 winget install -e --id tschoonj.GTKForWindows --silent --accept-package-agreements --accept-source-agreements
 
+Remove-Item -Recurse -Force -ErrorAction Ignore $lucterios_path\poppler-*
 Invoke-WebRequest -Uri https://github.com/oschwartz10612/poppler-windows/releases/download/v26.09.0-0/Release-26.09.0-0.zip -OutFile $lucterios_path\poppler-windows.zip 
 Expand-Archive -Path $lucterios_path\poppler-windows.zip $lucterios_path\
 

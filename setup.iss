@@ -34,7 +34,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 
 [InstallDelete]
-Type: filesandordirs; Name: "{app}\Python"
+Type: filesandordirs; Name: "{app}"
 
 [Files]
 Source: "install.ps1"; DestDir: "{app}"; Flags: ignoreversion
