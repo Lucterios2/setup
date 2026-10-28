@@ -56,6 +56,7 @@ winget install -e --id tschoonj.GTKForWindows --silent --accept-package-agreemen
 Remove-Item -Recurse -Force -ErrorAction Ignore $lucterios_path\poppler-*
 Invoke-WebRequest -Uri https://github.com/oschwartz10612/poppler-windows/releases/download/v26.09.0-0/Release-26.09.0-0.zip -OutFile $lucterios_path\poppler-windows.zip 
 Expand-Archive -Path $lucterios_path\poppler-windows.zip $lucterios_path\
+rm $lucterios_path\poppler-windows.zip
 
 echo ""
 echo "------ install @@NAME@@ #@@BUILD@@ ------"
