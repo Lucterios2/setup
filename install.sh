@@ -68,13 +68,15 @@ if [ ! -z "$(which apt-get 2>/dev/null)" ]; then  # DEB linux like
 	apt-get install -y pipx python3-dev default-libmysqlclient-dev build-essential pkg-config
 	apt-get install -y libxcb-cursor-dev
 	apt-get install -y "python3-virtualenv" | echo 'no venv'
-else if [ ! -z "$(which dnf 2>/dev/null)" ]; then # RPM unix/linux like
-	dnf install -y libxml2-devel libxslt-devel libjpeg-devel gcc
-	dnf install -y libfreetype6 libfreetype6-devel
-	dnf install -y python3-devel python3-imaging python3-tkinter
-else
-	echo "++++++ Unix/Linux distribution not available for this script! +++++++"
-fi; fi; fi
+else 
+    if [ ! -z "$(which dnf 2>/dev/null)" ]; then # RPM unix/linux like
+    	dnf install -y libxml2-devel libxslt-devel libjpeg-devel gcc
+    	dnf install -y libfreetype6 libfreetype6-devel
+    	dnf install -y python3-devel python3-imaging python3-tkinter
+    else
+    	echo "++++++ Unix/Linux distribution not available for this script! +++++++"
+    fi
+fi
 
 echo
 echo "------ configure virtual environment ------"
